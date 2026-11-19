@@ -76,11 +76,34 @@ a.lnk{color:var(--ice);font-weight:700;text-align:center;display:block;text-deco
 table{width:100%;border-collapse:collapse}
 td{padding:9px 6px;border-bottom:1px solid var(--line)}
 td:last-child{text-align:right;font-weight:700}
+.coin{display:inline-block;width:.9em;height:.9em;border-radius:50%;background:#ffc400;border:2px solid #b88700;vertical-align:-.1em;margin-right:4px}
+.top{display:flex;gap:10px;align-items:center}
+.pill{padding:6px 12px;border-radius:99px;background:var(--card);border:2px solid var(--line);font-weight:700;font-size:15px;white-space:nowrap}
+.tabs{display:flex;gap:8px;overflow:auto;padding-bottom:2px}
+.tabs .chip{white-space:nowrap}
+.item{display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;background:var(--card);border:2px solid var(--line)}
+.item.on{border-color:var(--or)}
+.item .i{flex:1;min-width:0}.item .i b{display:block}
+.item .btn{padding:10px 14px;font-size:17px;border-radius:14px}
+.sk{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.sk .item{flex-direction:column;text-align:center;gap:6px}
+.dot{position:absolute;top:6px;right:8px;width:12px;height:12px;border-radius:50%;background:#e22;border:2px solid #fff}
+.rel{position:relative}
+.pb{height:10px;background:#0a1220;border-radius:99px;overflow:hidden;border:1px solid var(--line)}.pb i{display:block;height:100%;background:var(--ok)}
+.wheel{position:relative;width:min(300px,78vw);aspect-ratio:1;margin:8px auto}
+.wheel .w{position:absolute;inset:0;border-radius:50%;border:4px solid #fff;transition:transform 4.2s cubic-bezier(.12,.7,.1,1);box-shadow:0 0 30px rgba(255,106,0,.4)}
+.wheel .w span{position:absolute;left:50%;top:50%;transform-origin:0 0;font:900 22px "Archivo";text-shadow:0 1px 3px #0008;text-align:center;width:70px;margin-left:-35px;line-height:1}
+.wheel .w small{display:block;font:700 11px "Public Sans"}
+.wheel .pt{position:absolute;left:50%;top:-14px;transform:translateX(-50%);width:0;height:0;border:14px solid transparent;border-top:26px solid #fff;z-index:2}
+.cf{position:fixed;top:-20px;width:10px;height:14px;z-index:20;pointer-events:none;animation:cf 2.6s ease-in forwards}
+@keyframes cf{to{transform:translateY(110vh) rotate(720deg)}}
+@media (prefers-reduced-motion:reduce){.cf{display:none}.wheel .w{transition-duration:.01s}}
 </style>
 </head>
 <body>
 <div id="app" aria-live="polite"></div>
 <script src="rules.js"></script>
+<script src="meta.js"></script>
 <script src="games.js"></script>
 <script src="games2.js"></script>
 <script src="games3.js"></script>
