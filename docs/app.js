@@ -1,7 +1,12 @@
 (()=>{
 'use strict';
 const ALL=[["penalty","Penalty-Duell","Sport"],["goalie","Torwart-Panik","Sport"],["airhockey","Air-Hockey","Sport"],["puckgolf","Puck-Golf","Sport"],["ballrain","Ballregen","Sport"],["powershot","Power-Schuss","Sport"],["hotpuck","Heisser Puck","Sport"],["sumo","Eis-Sumo","Sport"],["ninja","Puck-Ninja","Sport"],["juggle","Ballhalten","Sport"],["quiz","Unihockey-Quiz","Sport"],["duel","Schläger-Duell","Sport"],["dash","Bären-Sprint","Sport"],["flappy","Flatter-Bär","Party"],["hopper","Bären-Hüpfer","Party"],["stack","Bären-Turm","Party"],["simon","Grizzly Says","Party"],["reaction","Reaktions-Duell","Party"],["numbers","Zahlen-Jagd","Party"],["colors","Farben-Falle","Party"],["balance","Eis-Balance","Party"],["territory","Revierkampf","Party"],["tapsprint","Tap-Sprint","Party"],["whack","Puck-Jagd","Sport"],["memory","Bären-Memory","Party"],["curling","Eis-Curling","Sport"],["slalom","Slalom-Dribbling","Sport"],["pong","Puck-Pong","Sport"],["bowling","Bären-Bowling","Party"],["tugwar","Tauziehen","Party"],["darts","Bären-Darts","Party"],["hoops","Korbjagd","Sport"],["hurdles","Hürdenlauf","Party"],["mathduel","Kopfrechnen","Party"],["rhythm","Takt-Tipper","Party"],["billiard","Puck-Billard","Sport"],["arrows","Pfeil-Panik","Party"],["oddone","Ausreisser","Party"],["compare","Grösser oder kleiner","Party"],["sorter","Farb-Sortierer","Party"],["dodge","Puck-Ausweichen","Sport"],["cave","Höhlenflug","Party"],["pendulum","Pendel-Wurf","Sport"],["count","Puck-Zähler","Party"],["stoptime","Zeit-Stopp","Party"],["slide","Eis-Rutsch","Sport"],["snowball","Schneeballschlacht","Party"],["zigzag","Zickzack-Bär","Party"],["lightsout","Lichter aus","Party"],["reflex","Finger-Blitz","Party"]];
-const G=window.GAMES,R=window.Runner,M=window.META;
+const G=window.GAMES,R=window.Runner,M=window.META,AR=window.Arcade;
+const UNIT={penalty:'Tore',puckgolf:'Tore',goalie:'Paraden',juggle:'Serie',hopper:'Höhe',stack:'Höhe',flappy:'Tore'};const unitOf=id=>UNIT[id]||'Punkte';
+const playable=id=>!!(AR.has(id)||G[id]);
+const isNew=id=>AR.has(id);
+const GI=id=>({name:NAME[id],help:(window.RULES||{})[id]||'',sub:'ca. '+(window.SECS||{})[id]+' Sekunden',versus:!!(G[id]&&G[id].versus&&!isNew(id))});
+const layoutOf=id=>isNew(id)?AR.reg[id].layout:'zones';
 const NAME={},TAG={};ALL.forEach(a=>{NAME[a[0]]=a[1];TAG[a[0]]=a[2]});
 const DN=['EINSTEIGER','LEICHT','MITTEL','SCHWER','EXTREM'],DC=['#66f299','#40ff73','#ff8a00','#ff6650','#ff4db3'],SK=[.04,.14,.26,.42,.64];
 const DB=['Die CPU patzt oft und lässt dir viel Raum. Perfekt zum Üben.','Du hast gute Siegchancen, die CPU macht noch regelmässig Fehler.','Ein faires Duell: Wer konzentriert spielt, gewinnt.','Eine echte Herausforderung. Die CPU reagiert schnell und patzt selten.','Fast unmöglich, aber machbar: Die CPU spielt am Limit. Nur für Profis.'];
@@ -41,11 +46,12 @@ const STAT={goals:['penalty','powershot','hoops','puckgolf'],balls:['ballrain','
 const ctx={mode:'play',rounds:5,sess:null,tour:null,inGame:false,ov:'',confirmReset:false,tab:'skins',filter:'all',spin:false,cur:'hub'};
 const canvas=document.createElement('canvas');canvas.width=360;canvas.height=640;canvas.setAttribute('aria-label','Spielfeld');
 R.mount(canvas);
+const canvas2=document.createElement('canvas');canvas2.setAttribute('aria-label','Spielfeld');AR.mount(canvas2);ctx.ratio=9/16;
 const activeCards=()=>[0,1,2,3].filter(i=>S.slots[i]!=='off');
 const seatsOf=()=>activeCards().map(c=>({card:c,cpu:S.slots[c]==='cpu',name:S.slots[c]==='cpu'?CPUN[c]:((S.names[c]||'').trim()||'Spieler '+(c+1)),skin:S.skinIds[c]}));
 const nSeats=()=>activeCards().length,nHum=()=>activeCards().filter(c=>S.slots[c]==='human').length;
-const compatible=(id,n)=>G[id]&&(!G[id].versus||n===2);
-const gamesFor=n=>Object.keys(G).filter(id=>compatible(id,n));
+const compatible=(id,n)=>isNew(id)?(n>=2&&n<=(id==='tugwar'?2:4)):(G[id]&&(!G[id].versus||n===2));
+const gamesFor=n=>ALL.map(a=>a[0]).filter(id=>playable(id)&&compatible(id,n));
 const featured=()=>{const p=gamesFor(nSeats());return p[M.doy()%p.length]};
 const accOf=id=>M.ACC[id]||'#ff8a00';
 
@@ -103,27 +109,28 @@ setup(){const ss=activeCards();
  <div class="diff" style="margin-top:10px">${[0,1,2,3,4].map(i=>`<button data-d="${i}" aria-pressed="${d===i}" style="--c:${DC[i]}"><i>${[0,1,2,3,4].map(j=>`<s class="${j<=i?'on':''}" style="height:${8+j*3}px"></s>`).join('')}</i>${i+1}</button>`).join('')}</div><p class="mut" style="margin-top:10px;font-size:12px">${DB[d]}</p></div></div>
  <div class="foot"><button class="btn" data-a="back" ${ss.length<2?'disabled':''}>✓ Fertig</button></div>`},
 
-picker(){const n=nSeats(),f=ctx.filter,list=ALL.filter(a=>G[a[0]]&&(f==='all'||(f==='sport'&&a[2]==='Sport')||(f==='party'&&a[2]==='Party'))),rest=ALL.filter(a=>!G[a[0]]);
- const tile=(id,ok)=>{const c=accOf(id),g=G[id];return `<button class="tile${ok?'':' dis'}" style="--c:${c}" data-g="${id}" data-ok="${ok?1:0}"><img src="img/games/${id}.jpg" alt="" loading="lazy"><span class="t"><b>${NAME[id]}</b><span class="m"><span>${TAG[id]==='Sport'?'Unihockey':'Party'}</span><span>${g?g.sub.replace('ca. ','').replace(' Sekunden','s'):''}</span></span></span></button>`};
+picker(){const n=nSeats(),f=ctx.filter,list=ALL.filter(a=>playable(a[0])&&(f==='all'||(f==='sport'&&a[2]==='Sport')||(f==='party'&&a[2]==='Party'))),rest=ALL.filter(a=>!playable(a[0]));
+ const tile=(id,ok)=>{const c=accOf(id),g=GI(id);return `<button class="tile${ok?'':' dis'}" style="--c:${c}" data-g="${id}" data-ok="${ok?1:0}"><img src="img/games/${id}.jpg" alt="" loading="lazy"><span class="t"><b>${NAME[id]}</b><span class="m"><span>${TAG[id]==='Sport'?'Unihockey':'Party'}</span><span>${(window.SECS||{})[id]||''}s</span></span></span></button>`};
  return bar('SPIELE',true,coinPill())+`<div class="body"><div class="chips">${[['all','Alle '+ALL.length],['sport','Unihockey'],['party','Party']].map(x=>`<button class="chip" style="--cc:#ff8a00" data-f="${x[0]}" aria-pressed="${f===x[0]}">${x[1]}</button>`).join('')}</div>
  <div class="grid2">${list.map(a=>tile(a[0],compatible(a[0],n))).join('')}</div>
  ${rest.length&&f==='all'?`<div class="lab" style="margin-top:6px">Nur in der App</div><div class="grid2">${rest.map(a=>tile(a[0],false)).join('')}</div>`:''}
  <p class="mut" style="text-align:center">${n} Spieler · ${nHum()} Mensch${nHum()===1?'':'en'}</p></div>`},
 
-intro(){const id=ctx.sess.id,g=G[id],sd=ctx.sess.seats,c=accOf(id),t=ctx.tour;
+intro(){const id=ctx.sess.id,g=GI(id),sd=ctx.sess.seats,c=accOf(id),t=ctx.tour,n=sd.length,lay=layoutOf(id);
+ const hint=lay==='turns'?'Ihr spielt der Reihe nach auf dem ganzen Bildschirm. Gib das Handy weiter, wenn du fertig bist.':lay==='arena'?(n>=3?'Gemeinsames Spielfeld: Jeder steuert von seiner Handy-Kante aus (unten, oben, links, rechts).':'Gemeinsames Spielfeld: einer unten, einer oben.'):(n>=3?'Jeder hat sein eigenes Viertel des Bildschirms.':'Jeder hat seine eigene Bildschirmhälfte: einer unten, einer oben.');
  return `<div class="bar"><button class="ib" data-a="back" aria-label="Zurück" style="width:auto;border-radius:99px;padding:0 14px;font-size:15px;height:40px">‹ ZURÜCK</button></div><div class="body">
  <div class="card" style="--c:${c};padding:6px;overflow:hidden"><img src="img/games/${id}.jpg" alt="Spielbild ${g.name}" style="width:100%;border-radius:12px;display:block;aspect-ratio:16/10;object-fit:cover;object-position:top"><div style="text-align:center;padding:10px 4px 6px"><b style="font-size:26px;text-transform:uppercase;letter-spacing:.02em">${g.name}</b></div></div>
- <div class="lab" style="text-align:center;color:${c}">${TAG[id]==='Sport'?'Unihockey':'Party'} · ${g.sub} · ${g.versus?'2':'1-4'} Spieler</div>
- <div class="card" style="--c:${c}"><div class="lab" style="color:var(--yel)">💡 So geht's</div><p style="font-size:17px;margin-top:6px;font-weight:700">${g.help}</p>${g.versus?'<p class="mut" style="margin-top:8px">'+(sd.every(s=>!s.cpu)?esc(sd[0].name)+' spielt unten, '+esc(sd[1].name)+' oben.':'Du spielst unten, die CPU oben.')+'</p>':sd.length>1?'<p class="mut" style="margin-top:8px">Jeder spielt für sich, der Reihe nach. Gib das Handy weiter, wenn du fertig bist.</p>':''}</div>
+ <div class="lab" style="text-align:center;color:${c}">${TAG[id]==='Sport'?'Unihockey':'Party'} · ${g.sub.replace('Sekunden','Sek.').toUpperCase()} · ${id==='tugwar'?'2':'2-4'} Spieler</div>
+ <div class="card" style="--c:${c}"><div class="lab" style="color:var(--yel)">💡 So geht's</div><p style="font-size:17px;margin-top:6px;font-weight:700">${g.help}</p>${isNew(id)?'<p class="mut" style="margin-top:8px">'+hint+'</p>':g.versus?'<p class="mut" style="margin-top:8px">'+(sd.every(s=>!s.cpu)?esc(sd[0].name)+' spielt unten, '+esc(sd[1].name)+' oben.':'Du spielst unten, die CPU oben.')+'</p>':sd.length>1?'<p class="mut" style="margin-top:8px">Jeder spielt für sich, der Reihe nach. Gib das Handy weiter, wenn du fertig bist.</p>':''}</div>
  <div class="strip" style="cursor:default">${sd.map(s=>`<div class="p">${bimg(s.skin,40,true)}<span style="color:${SEAT[s.card]}">${esc(s.name)}</span>${s.cpu?'<span class="mut" style="font-size:9px">CPU</span>':''}</div>`).join('')}</div></div>
  <div class="foot"><button class="btn" data-a="start">▶ Los geht's</button></div>`},
 
-game(){const g=G[ctx.sess.id];
+game(){const g=GI(ctx.sess.id);
  return `<div class="bar" style="padding-bottom:6px"><button class="ib" data-a="pause" aria-label="Pause" style="font-size:15px">❚❚</button><h2 style="font-size:20px">${g.name}</h2></div><div class="stage"><div class="frame" id="frame"></div></div>`},
 
 result(){const r=ctx.res,t=ctx.tour,fin=t&&t.round===t.rounds-1;
- const rows=r.order.map((si,k)=>{const s=r.seats[si],sc=r.scores[si];return `<div class="rank${k===0?' win':''}"><span class="p">${r.pos[k]}</span>${bimg(s.skin,34,true)}<span class="nm" style="color:${SEAT[s.card]}">${esc(s.name)}</span><span class="sc">${sc==null?(k===0?'Sieg':''):sc+(G[ctx.sess.id].unit||'')}${t?'<br>+'+r.pts[si]+' Pkt':''}</span></div>`}).join('');
- return `<div class="body" style="justify-content:center"><div style="text-align:center"><div class="lab">${G[ctx.sess.id].name}</div><div class="big" style="margin-top:6px">${r.tie?'Unentschieden':esc(r.seats[r.order[0]].name)+' gewinnt'}</div>${r.gain?`<div class="mut" style="margin-top:10px">+${r.coins} ${coin(' s')} · +${r.gain} XP${r.rec?' · Neuer Rekord!':''}</div>`:''}${(r.msgs||[]).map(m=>`<div class="pill" style="margin-top:6px">${esc(m)}</div>`).join('<br>')}</div>
+ const rows=r.order.map((si,k)=>{const s=r.seats[si],sc=r.scores[si];return `<div class="rank${k===0?' win':''}"><span class="p">${r.pos[k]}</span>${bimg(s.skin,34,true)}<span class="nm" style="color:${SEAT[s.card]}">${esc(s.name)}</span><span class="sc">${sc==null?(k===0?'Sieg':''):sc+' '+unitOf(ctx.sess.id)}${t?'<br>+'+r.pts[si]+' Pkt':''}</span></div>`}).join('');
+ return `<div class="body" style="justify-content:center"><div style="text-align:center"><div class="lab">${NAME[ctx.sess.id]}</div><div class="big" style="margin-top:6px">${r.tie?'Unentschieden':esc(r.seats[r.order[0]].name)+' gewinnt'}</div>${r.gain?`<div class="mut" style="margin-top:10px">+${r.coins} ${coin(' s')} · +${r.gain} XP${r.rec?' · Neuer Rekord!':''}</div>`:''}${(r.msgs||[]).map(m=>`<div class="pill" style="margin-top:6px">${esc(m)}</div>`).join('<br>')}</div>
  <div style="display:grid;gap:10px">${rows}</div>
  ${t?`<button class="btn" data-a="next">${fin?'Zur Siegerehrung':'Nächste Runde'}</button>`:`<button class="btn" data-a="again">↻ Nochmal</button><button class="btn blue sm" data-a="picker2">Anderes Spiel</button><button class="btn alt sm" data-a="home">Hauptmenü</button>`}</div>`},
 
@@ -158,7 +165,7 @@ shop(){const tabs=[['skins','Skins','#ff4db3'],['titles','Titel','#ff8a00'],['ch
 
 stats(){const st=[['🎮',S.played,'Spiele'],['🥇',S.wins,'Siege'],['🏆',S.tWon,'Turniersiege'],['🎯',S.goals,'Tore'],['🧠',S.quiz,'Quiz richtig'],['🧤',S.balls,'Bälle'],['◎',S.hits,'Treffer'],['⚡',S.bestReact?S.bestReact+' ms':'-','Reaktion'],['✦',S.kinds.length+'/'+ALL.length,'Spiele entdeckt']];
  return bar('STATISTIK',true,coinPill())+`<div class="body"><div class="g3">${st.map(x=>`<div class="stat"><span class="ic">${x[0]}</span><b>${x[1]}</b><span>${x[2]}</span></div>`).join('')}</div>
- <div class="card" style="--c:rgba(255,138,0,.5)"><div class="lab" style="color:var(--or)">Rekorde</div>${ALL.map(a=>{const id=a[0],r=S.rec[id];return `<div class="rec"><i style="background:${accOf(id)}"></i>${a[1]}<span class="${r==null?'z':''}">${r==null?'–':r+(G[id]?G[id].unit||'':'')}</span></div>`}).join('')}</div></div>`},
+ <div class="card" style="--c:rgba(255,138,0,.5)"><div class="lab" style="color:var(--or)">Rekorde</div>${ALL.map(a=>{const id=a[0],r=S.rec[id];return `<div class="rec"><i style="background:${accOf(id)}"></i>${a[1]}<span class="${r==null?'z':''}">${r==null?'–':r+' '+unitOf(id)}</span></div>`}).join('')}</div></div>`},
 
 ach(){const tasks=M.todays();
  return bar('ERFOLGE',true,coinPill())+`<div class="body"><div class="card" style="--c:rgba(255,138,0,.6)"><div class="lab" style="color:var(--or)">Heute</div>${tasks.map(t=>{const p=Math.min(t.prog(S.daily),t.goal);return `<div style="margin-top:12px"><div class="row" style="justify-content:space-between"><b>${t.title}</b><span class="rew">${S.daily.claimed.includes(t.id)?'✓ ':''}+${t.reward} ${coin(' s')}</span></div><div class="pb" style="margin:6px 0 3px"><i style="width:${p/t.goal*100}%"></i></div><span class="mut" style="font-size:11px">${p}/${t.goal}</span></div>`}).join('')}<p class="mut" style="margin-top:10px;font-size:12px">Jeden Tag gibt es neue Aufgaben.</p></div>
@@ -183,23 +190,28 @@ wheel(){const n=M.WHEEL.length,seg=360/n,grad=M.WHEEL.map((p,i)=>`${p.color} ${i
 
 function render(name){
   ctx.cur=name;
-  if(name!=='game'){ctx.inGame=false;R.stop()}
+  if(name!=='game'){ctx.inGame=false;R.stop();AR.stop()}
   $app.innerHTML=SCREENS[name]();
-  if(name==='game'){document.getElementById('frame').appendChild(canvas);const ov=document.createElement('div');ov.className='ov';ov.id='ov';ov.hidden=true;document.getElementById('frame').appendChild(ov);if(ctx.ov)setOv(ctx.ov);fit()}
+  if(name==='game'){const nw=isNew(ctx.sess.id);ctx.ratio=nw?390/844:9/16;document.getElementById('frame').appendChild(nw?canvas2:canvas);const ov=document.createElement('div');ov.className='ov';ov.id='ov';ov.hidden=true;document.getElementById('frame').appendChild(ov);if(ctx.ov)setOv(ctx.ov);fit()}
   const b=$app.querySelector('.body');if(b)b.scrollTop=0;
 }
 M.onbear=()=>{if(ctx.cur!=='game')render(ctx.cur)};
 if(M.bearCanvas(M.SKINS[1],10))M.onbear=()=>{};
-function fit(){const st=document.querySelector('.stage'),fr=document.getElementById('frame');if(!st||!fr)return;let h=st.clientHeight-10-parseFloat(getComputedStyle(st).paddingBottom||0),w=h*9/16;if(w>st.clientWidth-20){w=st.clientWidth-20;h=w*16/9}fr.style.width=Math.floor(w)+'px';fr.style.height=Math.floor(h)+'px'}
+function fit(){const st=document.querySelector('.stage'),fr=document.getElementById('frame');if(!st||!fr)return;let h=st.clientHeight-10-parseFloat(getComputedStyle(st).paddingBottom||0),w=h*(ctx.ratio||9/16);if(w>st.clientWidth-20){w=st.clientWidth-20;h=w/(ctx.ratio||9/16)}fr.style.width=Math.floor(w)+'px';fr.style.height=Math.floor(h)+'px'}
 window.addEventListener('resize',fit);
 function setOv(html){ctx.ov=html;const ov=document.getElementById('ov');if(!ov)return;ov.innerHTML=html;ov.hidden=!html}
 
 /* ---------- Spielablauf ---------- */
 function begin(id,fromReplace){
-  ctx.sess={id,seats:seatsOf(),scores:[],turn:0};
+  ctx.sess={id,seats:ctx.tour?ctx.tour.seats:seatsOf(),scores:[],turn:0};
   ctx.inGame=true;ctx.ov='';
   if(fromReplace)replace('game');else push('game');
-  ctx.inGame=true;nextTurn()}
+  ctx.inGame=true;
+  if(isNew(id)){startNew();return}
+  nextTurn()}
+function startNew(){const s=ctx.sess;ctx.ov='';setOv('');
+  Sfx.music('game');
+  AR.play(s.id,{seats:s.seats,difficulty:S.diff},r=>{Sfx.music('menu');finish({scores:r.scores,stats:r.stats,neu:true})},()=>{pause()})}
 function nextTurn(){
   const s=ctx.sess,g=G[s.id],humans=s.seats.filter(x=>!x.cpu);
   if(g.versus){GA.skin=skinOf(s.seats[0].skin);
@@ -216,8 +228,8 @@ function nextTurn(){
 }
 const TABLE={2:[3,0],3:[4,2,0],4:[5,3,1,0]};
 function finish(o){
-  const s=ctx.sess,g=G[s.id],n=s.seats.length;let order;
-  if(o.winner!=null){order=[o.winner,1-o.winner];if(n<2)order=[0]}
+  const s=ctx.sess,g=G[s.id]||{best:'hoch'},n=s.seats.length;let order;
+  if(o.neu){order=s.seats.map((_,i)=>i).sort((a,b)=>o.scores[b]-o.scores[a])}else if(o.winner!=null){order=[o.winner,1-o.winner];if(n<2)order=[0]}
   else{const hi=g.best==='hoch';order=s.seats.map((_,i)=>i).sort((a,b)=>hi?o.scores[b]-o.scores[a]:o.scores[a]-o.scores[b])}
   const pos=[];order.forEach((si,k)=>{const prev=k&&o.scores&&o.scores[si]===o.scores[order[k-1]]?pos[k-1]:k+1;pos.push(prev)});
   const scores=o.winner!=null?s.seats.map(()=>null):o.scores,pts=s.seats.map(()=>0),tb=TABLE[Math.min(Math.max(n,2),4)],fin=ctx.tour&&ctx.tour.round===ctx.tour.rounds-1;
@@ -228,11 +240,12 @@ function finish(o){
   S.played++;S.daily.games++;if(winnerHuman){S.wins++;S.daily.wins++}
   if(!S.kinds.includes(s.id))S.kinds.push(s.id);if(!S.daily.kinds.includes(s.id))S.daily.kinds.push(s.id);
   const best=scores&&scores[hs[0]]!=null?hs.map(i=>scores[i]):[];
-  hs.forEach(i=>{if(g.best&&scores[i]!=null){const old=S.rec[s.id],hi=g.best==='hoch';if(old==null||(hi?scores[i]>old:scores[i]<old)){if(!(hi&&scores[i]<=0)){S.rec[s.id]=scores[i];rec=old!=null}}}});
+  hs.forEach(i=>{if((o.neu||g.best)&&scores[i]!=null){const old=S.rec[s.id],hi=o.neu||g.best==='hoch';if(old==null||(hi?scores[i]>old:scores[i]<old)){if(!(hi&&scores[i]<=0)){S.rec[s.id]=scores[i];rec=old!=null}}}});
   const top=best.length?Math.max(...best.map(Math.abs)):0;
-  ['goals','balls','hits'].forEach(k=>{if(STAT[k].includes(s.id)&&top>0){const v=Math.min(Math.round(top),k==='goals'?8:20);S[k]+=v;if(k==='goals')S.daily.goals+=v;if(k==='balls')S.daily.balls+=v}});
-  if(s.id==='quiz'&&top>0){const v=Math.min(6,Math.max(1,Math.round(top/10)));S.quiz+=v;S.daily.quiz+=v}
-  if((s.id==='reflex'||s.id==='reaction')&&best.length){const m=Math.min(...best);if(m>0&&m<900&&(!S.bestReact||m<S.bestReact))S.bestReact=m}
+  if(o.neu&&o.stats){const st=o.stats;if(st.goals){S.goals+=st.goals;S.daily.goals+=st.goals}if(st.balls){S.balls+=st.balls;S.daily.balls+=st.balls}if(st.hits)S.hits+=st.hits;if(st.quiz){S.quiz+=st.quiz;S.daily.quiz+=st.quiz}if(st.reaction&&(!S.bestReact||st.reaction<S.bestReact))S.bestReact=st.reaction}
+  if(!o.neu)['goals','balls','hits'].forEach(k=>{if(STAT[k].includes(s.id)&&top>0){const v=Math.min(Math.round(top),k==='goals'?8:20);S[k]+=v;if(k==='goals')S.daily.goals+=v;if(k==='balls')S.daily.balls+=v}});
+  if(!o.neu&&s.id==='quiz'&&top>0){const v=Math.min(6,Math.max(1,Math.round(top/10)));S.quiz+=v;S.daily.quiz+=v}
+  if(!o.neu&&(s.id==='reflex'||s.id==='reaction')&&best.length){const m=Math.min(...best);if(m>0&&m<900&&(!S.bestReact||m<S.bestReact))S.bestReact=m}
   coins=4+(winnerHuman?6:0);if(S.coinBoost>0){coins*=2;S.coinBoost--}addCoins(coins);
   gain=14+(winnerHuman?18:0)+(ctx.tour?6:0);if(S.xpBoost>0){gain*=2;S.xpBoost--}
   msgs.push(...addXP(gain),...checkAch(),...checkDaily());save();
@@ -240,7 +253,7 @@ function finish(o){
   ctx.res={seats:s.seats,order,pos,scores,pts,gain,coins,rec,winnerHuman,tie,msgs};beep(winnerHuman?660:330,.25);buzz(30);if(winnerHuman)setTimeout(confetti,300);
   ctx.inGame=false;replace('result');
 }
-function pause(){if(!ctx.inGame)return;R.pause();ctx.prevOv=ctx.ov;setOv('<h2>Pause</h2><button class="btn" data-a="resume">Weiterspielen</button><button class="btn alt" data-a="quit">Spiel beenden</button>')}
+function pause(){if(!ctx.inGame)return;if(isNew(ctx.sess.id)){AR.pause();ctx.prevOv='';setOv(`<h2>Pause</h2><p>${esc(RULES[ctx.sess.id]||'')}</p><button class="btn" data-a="resume">▶ Weiter</button><button class="btn alt" data-a="restart">Neu starten</button><button class="btn red" data-a="quit">${ctx.tour?'Turnier abbrechen':'Zur Spielwahl'}</button>`);return}R.pause();ctx.prevOv=ctx.ov;setOv('<h2>Pause</h2><button class="btn" data-a="resume">Weiterspielen</button><button class="btn alt" data-a="quit">Spiel beenden</button>')}
 
 /* ---------- Eingaben ---------- */
 $app.addEventListener('click',e=>{
@@ -285,8 +298,9 @@ $app.addEventListener('click',e=>{
    case'again':begin(ctx.sess.id,true);break;
    case'home':ctx.tour=null;replace('hub');break;
    case'pause':pause();break;
-   case'resume':setOv(ctx.prevOv||'');R.resume();break;
-   case'quit':ctx.inGame=false;R.stop();ctx.ov='';history.back();break;
+   case'resume':setOv(ctx.prevOv||'');if(isNew(ctx.sess.id))AR.resume();else R.resume();break;
+   case'restart':begin(ctx.sess.id,true);break;
+   case'quit':ctx.inGame=false;R.stop();AR.stop();ctx.ov='';ctx.tour=null;history.back();break;
    case'tourgo':{const seats=seatsOf();ctx.tour={round:0,rounds:ctx.rounds,seats,points:seats.map(()=>0),last:null,next:null};pickRound();push('tour');break}
    case'tourplay':ctx.sess={id:ctx.tour.next,seats:ctx.tour.seats};begin(ctx.tour.next);break;
    case'next':{const tr=ctx.tour;tr.round++;if(tr.round>=tr.rounds){S.tPlayed++;const ord=tr.seats.map((_,i)=>i).sort((a,b)=>tr.points[b]-tr.points[a]);if(!tr.seats[ord[0]].cpu&&(ord.length<2||tr.points[ord[0]]>tr.points[ord[1]])){S.tWon++;confetti()}const m=checkAch();save();if(m.length)toast(m[0]);replace('podium')}else{pickRound();replace('tour')}break}
