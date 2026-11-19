@@ -24,5 +24,32 @@ function bearSVG(sk,size){const c=sk.color,dark=(parseInt(c.slice(1,3),16)*.3+pa
  if(sk.acc==='headband')acc='<rect x="18" y="22" width="44" height="8" rx="4" fill="#fff" stroke="#999"/>';
  if(sk.acc==='helmet')acc='<path d="M18 32 Q40 4 62 32Z" fill="#e8eef5" stroke="#8a97a6" stroke-width="2"/>';
  return `<svg viewBox="0 0 80 80" width="${size}" height="${size}" aria-hidden="true"><circle cx="20" cy="22" r="10" fill="${c}" stroke="#0006" stroke-width="2"/><circle cx="60" cy="22" r="10" fill="${c}" stroke="#0006" stroke-width="2"/><circle cx="40" cy="44" r="27" fill="${c}" stroke="#0006" stroke-width="2"/>${acc}<circle cx="31" cy="42" r="3.4" fill="${ink}"/><circle cx="49" cy="42" r="3.4" fill="${ink}"/><ellipse cx="40" cy="54" rx="10" ry="8" fill="#ffd9b0"/><circle cx="40" cy="51" r="3.2" fill="#111"/></svg>`}
-return{SKINS,TITLES,CHEERS,BOOSTS,WHEEL,POOL,ACH,levelInfo,rank,key,doy,todays,bearSVG,pad}
+
+/* ---- Echte Bären aus der App (bear_body / bear_detail) ---- */
+const BI={body:new Image(),detail:new Image(),ok:0};
+BI.body.onload=BI.detail.onload=()=>{BI.ok++;if(BI.ok===2&&META.onbear)META.onbear()};
+BI.body.src='img/bear_body.png';BI.detail.src='img/bear_detail.png';
+const ASP=918/777,BC={};
+function isDark(c){return(parseInt(c.slice(1,3),16)*.3+parseInt(c.slice(3,5),16)*.6+parseInt(c.slice(5,7),16)*.1)/255<.45}
+function tint(img,w,h,color){const k=document.createElement('canvas');k.width=w;k.height=h;const x=k.getContext('2d');x.drawImage(img,0,0,w,h);x.globalCompositeOperation='source-in';x.fillStyle=color;x.fillRect(0,0,w,h);return k}
+function bearCanvas(sk,h){const key=sk.id+'|'+Math.round(h)+'|'+(sk.num||''),hit=BC[key];if(hit)return hit;if(BI.ok<2)return null;
+ const sc=2,w=h*ASP,PW=Math.ceil(w*1.14),PH=Math.ceil(h*1.18),cv=document.createElement('canvas');cv.width=PW*sc;cv.height=PH*sc;const c=cv.getContext('2d');c.scale(sc,sc);
+ const cx=PW/2,fy=PH-h*.04,dark=isDark(sk.color);
+ c.drawImage(tint(BI.body,Math.round(w*1.07*sc),Math.round(h*1.07*sc),dark?'#fff':'#1a1a1a'),cx-w*1.07/2,fy-h*1.07+h*.03*1.07,w*1.07,h*1.07);
+ c.drawImage(tint(BI.body,Math.round(w*sc),Math.round(h*sc),sk.color),cx-w/2,fy-h,w,h);
+ c.drawImage(BI.detail,cx-w/2,fy-h,w,h);
+ if(sk.num){c.font='900 '+h*.2+'px "Avenir Next","Avenir",Figtree,system-ui,sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillStyle=dark?'#FF8A00':'rgba(26,26,26,.85)';c.fillText(sk.num,cx+w*.2,fy-h*.55)}
+ const hx=cx-.12*w;
+ if(sk.acc==='crown'){const cw=w*.2,ch=h*.13;c.save();c.translate(hx,fy-h*.93);c.rotate(-.15);c.beginPath();c.moveTo(-cw/2,0);c.lineTo(-cw/2,-ch);c.lineTo(-cw/4,-ch*.6);c.lineTo(0,-ch*1.1);c.lineTo(cw/4,-ch*.6);c.lineTo(cw/2,-ch);c.lineTo(cw/2,0);c.closePath();c.fillStyle='#ffd61a';c.strokeStyle='#996600';c.lineWidth=2;c.fill();c.stroke();c.restore()}
+ if(sk.acc==='headband'){c.save();c.translate(hx,fy-h*.86);c.rotate(.12);const bw=w*.26,bh=h*.05;c.beginPath();c.roundRect(-bw/2,-bh/2,bw,bh,3);c.fillStyle='#fff';c.strokeStyle='#FF8A00';c.lineWidth=2;c.fill();c.stroke();c.restore()}
+ if(sk.acc==='helmet'){c.save();c.translate(hx,fy-h*.93);c.rotate(.05);c.beginPath();c.ellipse(0,0,w*.135,h*.08,0,0,7);c.fillStyle='#f2f2f2';c.strokeStyle='#333';c.lineWidth=2;c.fill();c.stroke();c.restore()}
+ return BC[key]={cv,PW,PH,fy,cx}}
+const URLC={};
+function bearURL(sk,h){const k=sk.id+'|'+h;if(URLC[k])return URLC[k];const b=bearCanvas(sk,h);if(!b)return'';try{return URLC[k]=b.cv.toDataURL()}catch(e){return''}}
+/* Zeichnen im Spiel: (x,y)=Kopfmitte wie der alte Kreisbär, s=Radius */
+function drawBear(c,x,y,s,col,GAskin){let sk=GAskin&&(!col)?GAskin:null;if(!sk){const f=col&&col!=='#FF6A00'?col:null;sk=f?{id:'c'+f,color:f,acc:'none',num:0}:SKINS[1]}
+ const h=s*2.7,b=bearCanvas(sk,h);if(!b)return false;c.drawImage(b.cv,x-b.cx,y+s*1.25-b.fy,b.PW,b.PH);return true}
+const ACC={"penalty": "#ff594c", "goalie": "#33e699", "airhockey": "#4cbfff", "puckgolf": "#66e64c", "ballrain": "#66a6ff", "powershot": "#ffcc1a", "hotpuck": "#ff731a", "sumo": "#80e6ff", "ninja": "#e64ce6", "juggle": "#f2f266", "quiz": "#a666ff", "duel": "#ff8099", "dash": "#ffb21a", "flappy": "#4cd9e6", "hopper": "#9980ff", "stack": "#ff994c", "simon": "#4cffb2", "reaction": "#4cff66", "numbers": "#66ccff", "colors": "#ff66cc", "balance": "#b2e6ff", "territory": "#ff8a00", "tapsprint": "#ff6666", "whack": "#e6cc4c", "memory": "#cc80ff", "curling": "#59ccff", "slalom": "#ff8c33", "pong": "#8cff8c", "bowling": "#f2598c", "tugwar": "#ffd94c", "darts": "#ff4c59", "hoops": "#ff8c1a", "hurdles": "#4cd9ff", "mathduel": "#99b2ff", "rhythm": "#e659ff", "billiard": "#33e6b2", "arrows": "#59e6ff", "oddone": "#ffbf4c", "compare": "#8cccff", "sorter": "#ff73bf", "dodge": "#e6804c", "cave": "#8066e6", "pendulum": "#4cff99", "count": "#f2d959", "stoptime": "#ff5959", "slide": "#99e6ff", "snowball": "#b2f2ff", "zigzag": "#4cf280", "lightsout": "#ffe64c", "reflex": "#66ffb2"};
+const META=Object.assign({},{SKINS,TITLES,CHEERS,BOOSTS,WHEEL,POOL,ACH,levelInfo,rank,key,doy,todays,bearSVG,pad,bearCanvas,bearURL,drawBear,ACC,isDark,onbear:null});
+return META;
 })();
