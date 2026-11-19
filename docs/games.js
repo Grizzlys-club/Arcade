@@ -4,9 +4,15 @@
 const W=360,H=640,OR='#FF6A00',BL='#38c8ff',BG='#0d1a2b';
 let c=null,cv=null;
 const rnd=(a,b)=>a+Math.random()*(b-a);
-function text(t,x,y,s,col,al){c.font=`900 ${s}px Archivo, Impact, sans-serif`;c.fillStyle=col||'#fff';c.textAlign=al||'center';c.textBaseline='middle';c.fillText(t,x,y)}
+function text(t,x,y,s,col,al){c.font=`900 ${s}px "Avenir Next",Avenir,Figtree,Archivo,Impact,sans-serif`;c.fillStyle=col||'#fff';c.textAlign=al||'center';c.textBaseline='middle';c.fillText(t,x,y)}
 function circle(x,y,r,col,glow){c.save();if(glow){c.shadowColor=col;c.shadowBlur=glow}c.fillStyle=col;c.beginPath();c.arc(x,y,r,0,7);c.fill();c.restore()}
-function bg(){c.fillStyle=BG;c.fillRect(0,0,W,H)}
+const LOGO=new Image();LOGO.src='img/logo.png';let BK=null;
+function makeBK(){const k=document.createElement('canvas');k.width=W*2;k.height=H*2;const x=k.getContext('2d');x.scale(2,2);
+ const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#10223a');g.addColorStop(1,'#080d18');x.fillStyle=g;x.fillRect(0,0,W,H);
+ x.strokeStyle='rgba(64,204,255,.07)';x.lineWidth=1;x.beginPath();for(let i=0;i<=W;i+=30){x.moveTo(i,0);x.lineTo(i,H)}for(let j=0;j<=H;j+=30){x.moveTo(0,j);x.lineTo(W,j)}x.stroke();
+ if(LOGO.complete&&LOGO.naturalWidth){x.globalAlpha=.07;x.drawImage(LOGO,W/2-150,H/2-150,300,300);x.globalAlpha=1}
+ const v=x.createRadialGradient(W/2,H/2,220,W/2,H/2,560);v.addColorStop(0,'rgba(0,0,0,0)');v.addColorStop(1,'rgba(0,0,0,.55)');x.fillStyle=v;x.fillRect(0,0,W,H);return k}
+function bg(){if(!BK||(!BK.l&&LOGO.complete&&LOGO.naturalWidth)){BK=makeBK();BK.l=LOGO.complete&&LOGO.naturalWidth>0}c.drawImage(BK,0,0,W,H)}
 function bear(x,y,s,col){if(window.META&&META.drawBear(GA.c,x,y,s,col===OR?null:col,GA.skin))return;col=col||OR;circle(x,y,s,col);circle(x-s*.62,y-s*.78,s*.32,col);circle(x+s*.62,y-s*.78,s*.32,col);circle(x-s*.3,y-s*.1,s*.11,'#111');circle(x+s*.3,y-s*.1,s*.11,'#111');circle(x,y+s*.28,s*.3,'#ffd9b0');circle(x,y+s*.2,s*.1,'#111')}
 function rrect(x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
 
