@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grizzlys Arcade – 50 Spiele für ein Handy</title>
+<meta name="description" content="Die Spiele-App von Unihockey am Greifensee Grizzlys: 50 Minispiele für 1 bis 4 Spieler an einem iPhone. Ohne Werbung, ohne Anmeldung, ohne Internet.">
+<meta property="og:title" content="Grizzlys Arcade">
+<meta property="og:description" content="50 Minispiele. 1 bis 4 Spieler. Ein Handy.">
+<meta property="og:image" content="img/icon1024.png">
+<link rel="icon" href="img/icon1024.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Public+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --eis:#EDF3F7; --kreide:#FFFFFF; --baer:#1B1C1F; --orange:#FF6A00; --orange-d:#C94F00;
+  --linie:#2F6FB5; --grau:#5B6570;
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:var(--eis);color:var(--baer);font:400 18px/1.6 "Public Sans",system-ui,sans-serif;overflow-x:hidden}
+h1,h2,h3{font-family:"Archivo",Impact,sans-serif;font-stretch:75%;font-weight:900;line-height:.95;letter-spacing:-.01em;text-transform:none}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--orange);outline-offset:3px;border-radius:4px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+
+/* Kopf */
+header.top{position:sticky;top:0;z-index:20;background:rgba(237,243,247,.92);backdrop-filter:blur(8px);border-bottom:2px solid var(--baer)}
+header.top .wrap{display:flex;align-items:center;gap:14px;height:64px}
+header.top img{width:42px;height:42px;border-radius:50%}
+header.top b{font:900 22px "Archivo";font-stretch:75%;letter-spacing:.01em}
+header.top nav{margin-left:auto;display:flex;gap:22px;font-weight:700;font-size:15px}
+header.top nav a{text-decoration:none}
+header.top nav a:hover{color:var(--orange-d)}
+@media(max-width:640px){header.top nav a:not(.cta){display:none}header.top b{font-size:19px;white-space:nowrap}.cta{white-space:nowrap;padding:8px 14px;font-size:14px}header.top .wrap{gap:10px}}
+.cta{background:var(--orange);color:var(--baer);padding:10px 18px;border-radius:999px;font-weight:700;text-decoration:none;border:2px solid var(--baer)}
+.cta:hover{background:var(--baer);color:#fff}
+
+/* Hero: Spielfeld-Linien */
+.hero{position:relative;padding:56px 0 80px;overflow:hidden}
+.hero::before{content:"";position:absolute;right:-180px;top:-120px;width:760px;height:760px;border:6px solid var(--linie);border-radius:50%;opacity:.22}
+.hero::after{content:"";position:absolute;right:199px;top:-300px;width:6px;height:1400px;background:var(--linie);opacity:.22}
+.hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;position:relative;z-index:1}
+.hero h1{font-size:clamp(46px,8.2vw,112px)}
+.hero h1 span{display:block;white-space:nowrap}
+.hero h1 .o{color:var(--orange);-webkit-text-stroke:0}
+.hero p.lead{max-width:34ch;font-size:22px;margin:26px 0 30px}
+.hero .row{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.badge{display:inline-flex;gap:10px;align-items:center;background:var(--baer);color:#fff;padding:12px 20px;border-radius:14px;font-weight:700}
+.badge small{display:block;font-weight:400;font-size:12px;opacity:.75}
+.facts{display:flex;gap:26px;margin-top:34px;flex-wrap:wrap;font-weight:500;font-size:16px;color:var(--grau)}
+.facts b{color:var(--baer)}
+.phone{justify-self:center;width:min(300px,70vw);aspect-ratio:9/19.5;background:var(--baer);border-radius:44px;padding:11px;transform:rotate(5deg);box-shadow:14px 18px 0 var(--orange),0 0 0 2px var(--baer);position:relative}
+.phone img{width:100%;height:100%;object-fit:cover;border-radius:34px;display:block}
+.phone .logo{position:absolute;left:-46px;bottom:48px;width:96px;height:96px;border-radius:50%;box-shadow:0 0 0 4px var(--eis);transform:rotate(-12deg)}
+@media(max-width:860px){.hero .wrap{grid-template-columns:1fr}.phone{margin-top:30px;transform:rotate(3deg)}.hero::before{right:-380px}}
+
+/* Streifen */
+.band{background:var(--baer);color:#fff;overflow:hidden;border-block:3px solid var(--orange)}
+.band .track{display:flex;gap:40px;padding:14px 0;white-space:nowrap;width:max-content;animation:lauf 50s linear infinite;font:900 26px "Archivo";font-stretch:75%}
+.band span:nth-child(even){color:var(--orange)}
+@keyframes lauf{to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.band .track{animation:none}}
+
+section{padding:88px 0}
+h2{font-size:clamp(40px,6vw,76px);margin-bottom:18px}
+.intro{max-width:56ch;color:var(--grau);margin-bottom:40px}
+
+/* So geht's */
+.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:3px solid var(--baer);background:var(--kreide)}
+.mode{padding:30px 26px 34px;border-right:3px solid var(--baer)}
+.mode:last-child{border-right:0}
+.mode h3{font-size:38px;margin-bottom:10px}
+.mode p{font-size:17px}
+.mode .n{font:900 120px/0.8 "Archivo";font-stretch:62%;color:var(--orange);display:block;margin-bottom:14px}
+@media(max-width:860px){.modes{grid-template-columns:1fr}.mode{border-right:0;border-bottom:3px solid var(--baer)}.mode:last-child{border-bottom:0}}
+
+/* Spiele */
+.filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px}
+.filters button{font:700 16px "Public Sans";padding:10px 18px;border-radius:999px;border:2px solid var(--baer);background:transparent;cursor:pointer}
+.filters button[aria-pressed=true]{background:var(--baer);color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:18px}
+.card{background:var(--kreide);border:2px solid var(--baer);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;transition:transform .15s}
+.card:hover{transform:translateY(-4px) rotate(-.6deg);box-shadow:6px 6px 0 var(--orange)}
+.card img{width:100%;aspect-ratio:9/16;object-fit:cover;display:block;background:var(--baer)}
+.card div{padding:12px 14px 14px;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.card b{font:800 18px/1.1 "Archivo";font-stretch:80%}
+.card small{color:var(--grau);font-size:13px;white-space:nowrap}
+.card[hidden]{display:none}
+
+/* Turnier */
+.dark{background:var(--baer);color:#fff;position:relative;overflow:hidden}
+.dark .intro{color:#c8ced4}
+.dark .split{display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:center}
+.dark h2 em{font-style:normal;color:var(--orange)}
+.levels{display:grid;gap:10px}
+.lvl{display:grid;grid-template-columns:130px 1fr;gap:16px;align-items:center;font-weight:700}
+.lvl i{display:block;height:22px;background:var(--orange);border-radius:4px}
+@media(max-width:860px){.dark .split{grid-template-columns:1fr}.lvl{grid-template-columns:100px 1fr}}
+
+/* Privacy */
+.priv{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.priv div{background:var(--kreide);border:2px solid var(--baer);border-radius:18px;padding:22px}
+.priv h3{font-size:30px;margin-bottom:8px}
+@media(max-width:900px){.priv{grid-template-columns:1fr 1fr}}@media(max-width:520px){.priv{grid-template-columns:1fr}}
+
+footer{background:var(--orange);color:var(--baer);padding:56px 0 40px;border-top:3px solid var(--baer)}
+footer .wrap{display:flex;gap:30px;flex-wrap:wrap;align-items:center}
+footer img{width:96px;height:96px;border-radius:50%;border:3px solid var(--baer)}
+footer p{max-width:46ch;font-weight:500}
+footer nav{margin-left:auto;display:flex;gap:20px;font-weight:700}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <img src="img/icon1024.png" alt="Logo Unihockey am Greifensee Grizzlys">
+    <b>Grizzlys Arcade</b>
+    <nav>
+      <a href="#spiele">Spiele</a>
+      <a href="#turnier">Turnier</a>
+      <a href="#datenschutz">Datenschutz</a>
+      <a class="cta" href="#download">Bald im App Store</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <h1><span>Ein Handy.</span><span>Vier Bären.</span><span class="o">50 Spiele.</span></h1>
+      <p class="lead">Handy auf den Tisch, rundherum hinsetzen, losspielen. Die offizielle Spiele-App von Unihockey am Greifensee Grizzlys.</p>
+      <div class="row">
+        <a class="cta" href="#spiele">Alle Spiele ansehen</a>
+        <span class="badge"><span>Für iPhone<small>Erscheint bald im App Store</small></span></span>
+      </div>
+      <div class="facts">
+        <span><b>1–4</b> Spieler</span>
+        <span><b>5</b> CPU-Stufen</span>
+        <span><b>0</b> Werbung</span>
+        <span><b>Offline</b> spielbar</span>
+      </div>
+    </div>
+    <div class="phone">
+      <img src="img/games/airhockey.jpg" alt="Air-Hockey in Grizzlys Arcade: zwei Spieler, Puck mit Leuchtspur">
+      <img class="logo" src="img/icon1024.png" alt="">
+    </div>
+  </div>
+</section>
+
+<div class="band" aria-hidden="true"><div class="track" id="track"></div></div>
+
+<section id="so">
+  <div class="wrap">
+    <h2>So spielt ihr</h2>
+    <p class="intro">Alle spielen am selben iPhone. Je nach Spiel sitzt jeder an seiner Ecke, oder ihr gebt das Handy nach jeder Runde weiter.</p>
+    <div class="modes">
+      <div class="mode"><span class="n">1</span><h3>Allein</h3><p>Gegen Computer-Bären in fünf Stufen, von „Anfänger“ bis „Grizzly“.</p></div>
+      <div class="mode"><span class="n">2</span><h3>Zu zweit</h3><p>Gegenüber sitzen, jeder auf seiner Spielfeld-Hälfte. Air-Hockey, Pong, Tauziehen und mehr.</p></div>
+      <div class="mode"><span class="n">4</span><h3>Zu viert</h3><p>Jeder hat seine Ecke. Bei Darts, Bowling und Curling kommt jeder der Reihe nach dran.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="spiele" style="padding-top:20px">
+  <div class="wrap">
+    <h2>50 Spiele</h2>
+    <p class="intro">Von Penalty-Duell bis Finger-Blitz. Die Bilder hier stammen direkt aus der App.</p>
+    <div class="filters" role="group" aria-label="Spiele filtern">
+      <button data-f="alle" aria-pressed="true">Alle 50</button>
+      <button data-f="hockey" aria-pressed="false">Unihockey &amp; Sport</button>
+      <button data-f="party" aria-pressed="false">Party</button>
+    </div>
+    <div class="grid" id="grid"></div>
+  </div>
+</section>
+
+<section id="turnier" class="dark">
+  <div class="wrap split">
+    <div>
+      <h2>Turnier mit <em>Glücksmaschine</em></h2>
+      <p class="intro">Wählt 3 bis 15 Runden. Vor jeder Runde lost die Maschine ein Spiel aus. Das Finale zählt doppelt, und der Sieger steht mit Pokal oben auf dem Podest.</p>
+      <p style="color:#c8ced4">Dazu: Bären-Skins zum Freispielen, Rekorde, Erfolge, tägliche Aufgaben und ein Glücksrad.</p>
+    </div>
+    <div class="levels" aria-label="Die fünf Computer-Stufen">
+      <div class="lvl">Anfänger<i style="width:20%"></i></div>
+      <div class="lvl">Leicht<i style="width:40%"></i></div>
+      <div class="lvl">Okay<i style="width:60%"></i></div>
+      <div class="lvl">Stark<i style="width:80%"></i></div>
+      <div class="lvl">Grizzly<i style="width:100%"></i></div>
+    </div>
+  </div>
+</section>
+
+<section id="datenschutz">
+  <div class="wrap">
+    <h2>Sauber gespielt</h2>
+    <p class="intro">Die App sammelt keine Daten von euch. Alles bleibt auf dem Gerät.</p>
+    <div class="priv">
+      <div><h3>Keine Werbung</h3><p>Nirgends. Auch nicht zwischen den Runden.</p></div>
+      <div><h3>Keine Anmeldung</h3><p>Installieren, Namen eintippen, spielen.</p></div>
+      <div><h3>Kein Internet</h3><p>Die App baut keine Verbindung auf und funktioniert überall.</p></div>
+      <div><h3>Keine Käufe</h3><p>Münzen gibt es nur fürs Spielen.</p></div>
+    </div>
+    <p style="margin-top:28px"><a href="datenschutz.html"><b>Datenschutzerklärung lesen</b></a></p>
+  </div>
+</section>
+
+<section id="download" style="padding-top:0">
+  <div class="wrap">
+    <h2>Bald im App Store</h2>
+    <p class="intro">Die App ist für das iPhone gemacht und kostenlos. Sobald sie im App Store steht, findet ihr hier den Link.</p>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <img src="img/icon1024.png" alt="">
+    <p><b>Unihockey am Greifensee Grizzlys</b><br>Grizzlys Arcade ist die offizielle Spiele-App des Vereins. Name und Logo mit Erlaubnis des Vereins.</p>
+    <nav><a href="datenschutz.html">Datenschutz</a><a href="impressum.html">Impressum</a></nav>
+  </div>
+</footer>
+
+<script>
+const G=[
+["penalty","Penalty-Duell","h"],["goalie","Torwart-Panik","h"],["airhockey","Air-Hockey","h"],["puckgolf","Puck-Golf","h"],["ballrain","Ballregen","h"],["powershot","Power-Schuss","h"],["hotpuck","Heisser Puck","h"],["sumo","Eis-Sumo","h"],["ninja","Puck-Ninja","h"],["juggle","Ballhalten","h"],["quiz","Unihockey-Quiz","h"],["duel","Schläger-Duell","h"],["dash","Bären-Sprint","h"],
+["flappy","Flatter-Bär","p"],["hopper","Bären-Hüpfer","p"],["stack","Bären-Turm","p"],["simon","Grizzly Says","p"],["reaction","Reaktions-Duell","p"],["numbers","Zahlen-Jagd","p"],["colors","Farben-Falle","p"],["balance","Eis-Balance","p"],["territory","Revierkampf","p"],["tapsprint","Tap-Sprint","p"],["whack","Puck-Jagd","p"],["memory","Bären-Memory","p"],
+["curling","Eis-Curling","h"],["slalom","Slalom-Dribbling","h"],["pong","Puck-Pong","h"],["bowling","Bären-Bowling","p"],["tugwar","Tauziehen","p"],
+["darts","Bären-Darts","p"],["hoops","Korbjagd","h"],["hurdles","Hürdenlauf","p"],["mathduel","Kopfrechnen","p"],["rhythm","Takt-Tipper","p"],["billiard","Puck-Billard","h"],
+["arrows","Pfeil-Panik","p"],["oddone","Ausreisser","p"],["compare","Grösser oder kleiner","p"],["sorter","Farb-Sortierer","p"],["dodge","Puck-Ausweichen","h"],["cave","Höhlenflug","p"],["pendulum","Pendel-Wurf","h"],["count","Puck-Zähler","p"],["stoptime","Zeit-Stopp","p"],["slide","Eis-Rutsch","h"],["snowball","Schneeballschlacht","p"],["zigzag","Zickzack-Bär","p"],["lightsout","Lichter aus","p"],["reflex","Finger-Blitz","p"]];
+const grid=document.getElementById('grid');
+G.forEach(([id,t,k])=>{
+  const c=document.createElement('article');c.className='card';c.dataset.k=k==='h'?'hockey':'party';
+  c.innerHTML=`<img loading="lazy" src="img/games/${id}.jpg" alt="Spielbild ${t}"><div><b>${t}</b><small>${k==='h'?'Sport':'Party'}</small></div>`;
+  grid.appendChild(c);
+});
+document.querySelectorAll('.filters button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.filters button').forEach(x=>x.setAttribute('aria-pressed',x===b));
+  grid.querySelectorAll('.card').forEach(c=>c.hidden=!(b.dataset.f==='alle'||c.dataset.k===b.dataset.f));
+}));
+const names=G.map(g=>g[1]);const t=document.getElementById('track');
+t.innerHTML=[...names,...names].map(n=>`<span>${n}</span>`).join('');
+</script>
+</body>
+</html>
