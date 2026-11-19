@@ -130,5 +130,5 @@ const Runner={cur:null,running:false,paused:false,last:0,
   this.cur=g;this.running=true;this.last=performance.now()},
  pause(){this.paused=true},resume(){this.paused=false;this.last=performance.now()},
  stop(){this.cur=null;this.running=false;this.paused=false}};
-window.GAMES=G;window.Runner=Runner;
+window.GAMES=G;window.Runner=Runner;window.GA={W,H,OR,BL,BG,rnd,text,circle,bg,bear,rrect,get c(){return c},R:Runner,G};
 })();
