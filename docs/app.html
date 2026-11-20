@@ -6,7 +6,7 @@
 <title>Grizzlys Arcade – Web-App</title>
 <meta name="theme-color" content="#0b1524">
 <link rel="icon" href="img/icon1024.png">
-<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@600;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Figtree:wght@600;800;900&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0d0d17;--panel:#1c1c2b;--or:#ff8a00;--blue:#40ccff;--green:#40ff73;--pink:#ff4db3;--yel:#ffd61a;--red:#ff4d4d;--tx:#fff;--mut:rgba(255,255,255,.62);--line:rgba(255,255,255,.14)}
 *{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
@@ -144,6 +144,42 @@ table{width:100%;border-collapse:collapse}td{padding:8px 4px;border-bottom:1px s
 @keyframes cf{to{transform:translateY(110vh) rotate(720deg)}}
 #toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%);background:#fff;color:#111;font-weight:900;padding:12px 18px;border-radius:99px;z-index:30;max-width:90vw;text-align:center;display:none}
 @media (prefers-reduced-motion:reduce){.cf{display:none}.wheel .w{transition-duration:.01s}}
+
+/* ===== Modern skin ===== */
+:root{--bg:#09090d;--panel:#14141c;--line:rgba(255,255,255,.09);--mut:rgba(244,241,236,.58);--tx:#f4f1ec;--or:#ff6a00;--r:24px;--disp:"Bricolage Grotesque",Figtree,system-ui,sans-serif}
+body{font:500 15px/1.4 Inter,Figtree,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body::before{background:radial-gradient(70vw 55vw at 85% -10%,rgba(255,106,0,.24),transparent 60%),radial-gradient(60vw 45vw at -10% 105%,rgba(64,140,255,.12),transparent 60%)!important}
+body::after{opacity:.02}
+b,.h,.bar h2,.t1,.t2,.btn{font-family:var(--disp)}
+.bar h2{font-size:28px;letter-spacing:-.03em;text-transform:none!important;font-weight:800}
+.h{text-transform:none;letter-spacing:-.02em}
+.ib{width:42px;height:42px;border:1px solid var(--line);background:rgba(255,255,255,.06);backdrop-filter:blur(12px);box-shadow:none;font-size:20px;transition:transform .15s,background .2s}
+.ib:hover{background:rgba(255,255,255,.12)}.ib:active{transform:scale(.92)}
+.coinp{border:1px solid rgba(255,200,60,.35);background:rgba(255,200,60,.08);box-shadow:none;font-size:15px}
+.btn{font-weight:800;font-size:19px;text-transform:none;letter-spacing:-.01em;min-height:56px;border-radius:999px;border:0!important;background:var(--or);color:#160700;box-shadow:0 10px 30px -10px rgba(255,106,0,.8)!important;transition:transform .15s,box-shadow .2s,filter .2s}
+.btn:hover{filter:brightness(1.08)}.btn:active{transform:scale(.97)}
+.btn.blue{background:#4cc9ff;color:#00202c;box-shadow:0 10px 30px -10px rgba(76,201,255,.7)!important}
+.btn.green{background:#3dff7a;color:#02260f;box-shadow:0 10px 30px -10px rgba(61,255,122,.6)!important}
+.btn.red{background:rgba(255,77,77,.9);color:#fff;box-shadow:none!important;font-size:16px}
+.btn.alt{background:rgba(255,255,255,.07);color:var(--tx);box-shadow:inset 0 0 0 1px var(--line)!important}
+.btn.sm{font-size:16px;min-height:46px}
+.card,button.card{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:var(--r);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transition:transform .2s,border-color .2s,background .2s}
+button.card:hover,.tile:hover{border-color:rgba(255,106,0,.5);background:rgba(255,255,255,.07)}
+button.card:active{transform:scale(.98)}
+.pill,.chip{border:1px solid var(--line);background:rgba(255,255,255,.06);font-weight:600;font-size:13px}
+.lab{font-family:var(--disp);letter-spacing:.02em;text-transform:none;font-size:14px;font-weight:700}
+.lv{border:1px solid rgba(255,106,0,.35);background:rgba(255,106,0,.08)}
+.t1{font-size:46px;letter-spacing:-.045em;text-shadow:none;background:linear-gradient(100deg,#ff6a00,#ffb36b);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:800}
+.t2{font-size:13px;letter-spacing:.42em;font-weight:700;color:var(--mut)}
+.logo{filter:drop-shadow(0 18px 50px rgba(255,106,0,.45))}
+.strip{border:1px solid var(--line);background:rgba(255,255,255,.04);backdrop-filter:blur(14px);border-radius:22px}
+.mini{border:1px solid var(--line)!important;background:rgba(255,255,255,.04)!important;border-radius:20px;font-family:var(--disp);text-transform:none;font-size:12px;font-weight:700;transition:transform .15s,background .2s}
+.mini:hover{background:rgba(255,255,255,.09)!important}.mini:active{transform:scale(.95)}
+.feat{border:1px solid var(--line)!important;background:rgba(255,255,255,.04)!important;border-radius:22px;transition:transform .15s,border-color .2s}.feat:hover{border-color:rgba(255,106,0,.5)!important}.feat:active{transform:scale(.98)}
+.dot{border-color:var(--bg)}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}}
+.body>*{animation:rise .5s cubic-bezier(.2,.8,.2,1) both}.body>*:nth-child(2){animation-delay:.05s}.body>*:nth-child(3){animation-delay:.1s}.body>*:nth-child(4){animation-delay:.15s}.body>*:nth-child(5){animation-delay:.2s}.body>*:nth-child(n+6){animation-delay:.25s}
+@media(prefers-reduced-motion:reduce){.body>*{animation:none}}
 </style>
 </head>
 <body>
