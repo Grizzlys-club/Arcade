@@ -142,7 +142,7 @@ class MiniScene extends Node{
 }
 
 /* ---------- Host ---------- */
-const Arcade={reg:{},scene:null,cv:null,c:null,raf:0,last:0,running:false,
+const Arcade={SKC(){return SKC},setSH(v){SH=v;if(this.cv){const d=this.dpr||2;this.cv.width=Math.round(SW*d);this.cv.height=Math.round(SH*d)}},reg:{},scene:null,cv:null,c:null,raf:0,last:0,running:false,
  register(id,cls){this.reg[id]=cls},has(id){return!!this.reg[id]},
  mount(cv){this.cv=cv;const dpr=Math.min(Math.max(window.devicePixelRatio||1,2),3);cv.width=Math.round(SW*dpr);cv.height=Math.round(SH*dpr);this.c=cv.getContext('2d');this.dpr=dpr;
   const pt=e=>{const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width*SW,y:SH-(e.clientY-r.top)/r.height*SH}};

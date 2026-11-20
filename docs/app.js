@@ -152,6 +152,7 @@ intro(){const id=ctx.sess.id,g=GI(id),sd=ctx.sess.seats,c=accOf(id),t=ctx.tour,n
  <div class="foot"><button class="btn" data-a="start"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="vertical-align:-2px"><path d="M7 4l13 8-13 8z"/></svg> Los geht's</button></div>`},
 
 game(){const g=GI(ctx.sess.id);
+ if(isNew(ctx.sess.id))return `<div class="stage full"><div class="frame full" id="frame"></div></div>`;
  return `<div class="bar" style="padding-bottom:6px"><button class="ib" data-a="pause" aria-label="Pause" style="font-size:15px">❚❚</button><h2 style="font-size:20px">${g.name}</h2></div><div class="stage"><div class="frame" id="frame"></div></div>`},
 
 result(){const r=ctx.res,t=ctx.tour,fin=t&&t.round===t.rounds-1;
@@ -231,7 +232,7 @@ function render(name){
 }
 M.onbear=()=>{if(ctx.cur!=='game')render(ctx.cur)};
 if(M.bearCanvas(M.SKINS[1],10))M.onbear=()=>{};
-function fit(){const st=document.querySelector('.stage'),fr=document.getElementById('frame');if(!st||!fr)return;let h=st.clientHeight-10-parseFloat(getComputedStyle(st).paddingBottom||0),w=h*(ctx.ratio||9/16);if(w>st.clientWidth-20){w=st.clientWidth-20;h=w/(ctx.ratio||9/16)}fr.style.width=Math.floor(w)+'px';fr.style.height=Math.floor(h)+'px'}
+function fit(){const st=document.querySelector('.stage'),fr=document.getElementById('frame');if(!st||!fr)return;if(st.classList.contains('full')){if(ctx.inGame&&ctx.sess&&isNew(ctx.sess.id)){const W=st.clientWidth,H=st.clientHeight;if(W>0&&H>0){const sh=Math.max(640,Math.min(1100,Math.round(390*H/W)));if(sh!==AR.SKC().SH&&!ctx.running){AR.setSH(sh)}}}fr.style.width='100%';fr.style.height='100%';return}let h=st.clientHeight-10-parseFloat(getComputedStyle(st).paddingBottom||0),w=h*(ctx.ratio||9/16);if(w>st.clientWidth-20){w=st.clientWidth-20;h=w/(ctx.ratio||9/16)}fr.style.width=Math.floor(w)+'px';fr.style.height=Math.floor(h)+'px'}
 window.addEventListener('resize',fit);
 function setOv(html){ctx.ov=html;const ov=document.getElementById('ov');if(!ov)return;ov.innerHTML=html;ov.hidden=!html}
 
@@ -245,7 +246,7 @@ function begin(id,fromReplace){
   ctx.inGame=true;
   if(isNew(id)){startNew();return}
   nextTurn()}
-function startNew(){const s=ctx.sess;ctx.ov='';setOv('');
+function startNew(){const s=ctx.sess;ctx.ov='';setOv('');fit();
   Sfx.music('game');
   AR.play(s.id,{seats:s.seats,difficulty:S.diff},r=>{Sfx.music('menu');finish({scores:r.scores,stats:r.stats,neu:true})},()=>{pause()})}
 function nextTurn(){

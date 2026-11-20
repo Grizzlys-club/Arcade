@@ -296,6 +296,10 @@ radial-gradient(50% 25% at 50% 104%,rgba(255,106,0,.18),transparent 70%);mix-ble
 #splash span{display:block;margin-top:2px;font:500 11px Inter,sans-serif;letter-spacing:.5em;color:#a8946a}
 @keyframes spl{from{opacity:0;transform:scale(.88) translateY(10px)}}
 @media(prefers-reduced-motion:reduce){#splash .in{animation:none}}
+.stage.full{position:absolute;inset:0;padding:0;z-index:5;background:#05070b}
+.frame.full{border-radius:0!important;width:100%;height:100%;border-width:2px!important;box-shadow:inset 0 0 22px -6px var(--fra,#d9ac5c)!important}
+.frame.full canvas{width:100%;height:100%;display:block}
+@media(min-width:900px){.frame.full{border-radius:0!important}}
 </style>
 </head>
 <body><div id="splash" aria-hidden="true"><div class="in"><img src="img/logo.png" alt=""><b>GRIZZLYS</b><span>ARCADE</span></div></div><script>setTimeout(function(){var s=document.getElementById("splash");if(s){s.classList.add("out");setTimeout(function(){s.remove()},800)}},1300)</script><svg width="0" height="0" style="position:absolute"><defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6e3b4"/><stop offset=".5" stop-color="#d9ac5c"/><stop offset="1" stop-color="#9c6f2a"/></linearGradient></defs></svg>
