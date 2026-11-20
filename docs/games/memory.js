@@ -1,6 +1,6 @@
 (()=>{
 const {Node,Sprite,Label,A,Gfx,Theme,rgba,white,label}=SK;
-const ICONS=['★','◆','▲','●','✚','LOGO'];
+const ICONS=['stick','ball','glove','goal','trophy','LOGO'];
 const alpha=(c,a)=>c.replace(/[\d.]+\)$/,a+')');
 class MemoryGame extends MiniScene{
  setupGame(){this.duration=60;const r=this.newRand(),layout=r.shuffled([0,0,1,1,2,2,3,3,4,4,5,5]);this.states=[];this.finishOrder=[];
@@ -11,7 +11,7 @@ class MemoryGame extends MiniScene{
     const node=new Sprite(null,cw,ch);node.x=x;node.y=y;node.z=5;s.field.add(node);
     const back=new Node(),bs=new Sprite(Gfx.pill(cw,ch,alpha(s.color,.55),white(1,.5),10),cw,ch);back.add(bs);const ls=Math.min(cw,ch)*.62,logo=new Sprite(Gfx.logo,ls,ls);logo.alpha=.55;logo.z=1;back.add(logo);node.add(back);
     const front=new Node(),fs=new Sprite(Gfx.pill(cw,ch,white(.95),s.color,10),cw,ch);front.add(fs);const pair=layout[i],icon=ICONS[pair];
-    if(icon==='LOGO'){const l=new Sprite(Gfx.logo,ls*1.1,ls*1.1);l.z=1;front.add(l)}else{const l=label(icon,Math.min(cw,ch)*.55);l.z=1;front.add(l)}
+    if(icon==='LOGO'){const l=new Sprite(Gfx.logo,ls*1.1,ls*1.1);l.z=1;front.add(l)}else{const l=NK.icon(icon,Math.min(cw,ch)*.78);l.z=1;front.add(l)}
     front.hidden=true;node.add(front);st.cards.push({node,front,back,pair,open:false,matched:false})}
    this.states.push(st)}}
  gameStarted(){for(const s of this.seats)if(s.isCPU)this.states[s.index].cpuTimer=.8+Math.random()*.4}

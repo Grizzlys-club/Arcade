@@ -1,6 +1,6 @@
 (()=>{
 const {Node,Sprite,A,Gfx,Theme,rgba,white,label}=SK;
-const COLS=[rgba(1,.25,.3),rgba(.2,.6,1),rgba(.2,.95,.45),rgba(1,.85,.15)],ICONS=['▲','●','■','◆'],SOUNDS=['beep','pop','kick','bounce'];
+const COLS=[rgba(1,.25,.3),rgba(.2,.6,1),rgba(.2,.95,.45),rgba(1,.85,.15)],ICONS=['stick','goal','trophy','glove'],SOUNDS=['beep','pop','kick','bounce'];
 const alpha=(c,a)=>c.replace(/[\d.]+\)$/,a+')');
 class SimonGame extends MiniScene{
  setupGame(){this.rand=this.newRand();this.hasHumans=this.seats.some(s=>!s.isCPU);this.states=[];this.sequence=[];this.stp='pause';this.timer=0;this.showIndex=0;this.showLit=false;this.inputLeft=0;this.round=0;
@@ -8,7 +8,7 @@ class SimonGame extends MiniScene{
    for(let i=0;i<4;i++){const col=i%2,row=Math.floor(i/2),x=(col-.5)*(side+gap),y=cy+(.5-row)*(side+gap),c=COLS[i];
     const glow=new Sprite(Gfx.glow(),side*1.9,side*1.9);glow.color=c;glow.cbf=1;glow.blend='add';glow.alpha=0;glow.x=x;glow.y=y;glow.z=4;s.field.add(glow);
     const node=new Sprite(Gfx.pill(side,side,alpha(c,.9),white(1,.7),side*.22),side,side);node.x=x;node.y=y;node.alpha=.35;node.z=5;s.field.add(node);
-    const icon=label(ICONS[i],side*.42);icon.z=1;node.add(icon);st.pads.push({node,glow,x,y,side})}
+    const icon=NK.icon(ICONS[i],side*.62);icon.z=1;node.add(icon);st.pads.push({node,glow,x,y,side})}
    st.status=label('MERKEN!',Math.min(22,s.w*.1),'#fff');st.status.y=usableTop-4;st.status.z=10;s.field.add(st.status);this.states.push(st)}}
  gameStarted(){this.nextRound()}
  nextRound(){this.round++;this.sequence.push(this.rand.int(0,3));this.stp='pause';this.timer=.7;this.showIndex=0;this.showLit=false;
