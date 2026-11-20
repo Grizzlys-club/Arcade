@@ -9,24 +9,25 @@
 **Altersfreigabe:** 4+ (alle Fragen im Fragebogen mit «Keine» beantworten)
 
 **Werbetext (max. 170):**
-25 Minispiele, ein Handy, bis zu 4 Spieler: Penalty, Air-Hockey, Eis-Sumo und Quiz. Der Grizzlys-Bär fordert euch heraus – wer holt den Pokal?
+50 Minispiele, ein Handy, bis zu 4 Spieler: Penalty, Air-Hockey, Bowling, Curling und mehr. Gleichzeitig spielen, Turnier gewinnen, Pokal holen.
 
 **Beschreibung:**
 Die offizielle Spiele-App von Unihockey am Greifensee Grizzlys!
 
-Leg das Handy auf den Tisch, setzt euch rundherum und los geht's: Bis zu vier Spieler spielen gleichzeitig an einem iPhone – jeder von seiner Seite aus. Allein spielst du gegen schlaue Computer-Bären in drei Stärken.
+Leg das Handy auf den Tisch, setzt euch rundherum und los geht's: Bis zu vier Spieler spielen gleichzeitig an einem iPhone – jeder von seiner Seite aus. Allein spielst du gegen schlaue Computer-Bären in fünf Stärken.
 
-25 MINISPIELE
-• Unihockey: Penalty-Duell, Torwart-Panik, Air-Hockey, Puck-Golf, Power-Schuss, Eis-Sumo, Heisser Puck, Puck-Ninja, Ballhalten, Bären-Sprint, Ballregen, Schläger-Duell und das Unihockey-Quiz
-• Party-Klassiker: Flatter-Bär, Bären-Hüpfer, Bären-Turm, Grizzly Says, Reaktions-Duell, Zahlen-Jagd, Farben-Falle, Eis-Balance, Revierkampf, Tap-Sprint, Puck-Jagd und Bären-Memory
+50 MINISPIELE
+• Unihockey & Sport: Penalty-Duell, Torwart-Panik, Air-Hockey, Puck-Golf, Ballregen, Power-Schuss, Heisser Puck, Eis-Sumo, Puck-Ninja, Ballhalten, Unihockey-Quiz, Schläger-Duell, Bären-Sprint, Puck-Jagd, Eis-Curling, Slalom-Dribbling, Puck-Pong, Korbjagd, Puck-Billard, Puck-Ausweichen, Pendel-Wurf, Eis-Rutsch
+• Party & Denken: Flatter-Bär, Bären-Hüpfer, Bären-Turm, Grizzly Says, Reaktions-Duell, Zahlen-Jagd, Farben-Falle, Eis-Balance, Revierkampf, Tap-Sprint, Bären-Memory, Bären-Bowling, Tauziehen, Bären-Darts, Hürdenlauf, Kopfrechnen, Takt-Tipper, Pfeil-Panik, Ausreisser, Grösser oder kleiner, Farb-Sortierer, Höhlenflug, Puck-Zähler, Zeit-Stopp, Schneeballschlacht, Zickzack-Bär, Lichter aus, Finger-Blitz
 
 TURNIER-MODUS
 Wähle 3 bis 15 Runden – die Glücksmaschine lost jede Runde ein zufälliges Spiel aus. Punkte sammeln, das Finale zählt doppelt, und der Sieger steht mit Pokal ganz oben auf dem Podest.
 
 UND NOCH MEHR
 • Bären-Skins und Trikots zum Freispielen
+• Tägliches Glücksrad mit Streak-Bonus
 • Rekorde, Statistiken, Erfolge und tägliche Aufgaben
-• Neon-Look, Sound und Vibration
+• Edler Gold-Look, Sound und Vibration
 • Keine Werbung, keine Käufe, kein Tracking, funktioniert offline
 
 **Keywords (max. 100, ohne Leerzeichen nach Komma):**
@@ -76,6 +77,9 @@ Kontakt: Unihockey am Greifensee Grizzlys, [Adresse / E-Mail des Vereins]
 - [ ] Texte aus Abschnitt 1 einfügen, Screenshots hochladen (6,9"-iPhone, z. B. aus dem Simulator «iPhone 18 Pro Max» mit ⌘S).
 - [ ] App-Datenschutz: «Keine Daten erfasst». Altersfreigabe-Fragebogen ausfüllen.
 - [ ] Zur Prüfung einreichen. Die Prüfung dauert meist 1–3 Tage.
+
+## 3b. Screenshots
+Im Ordner `app/store/` liegen 6 fertige Werbebilder (1290 × 2796 px, passend für 6,9"). Sie sind aus der Web-App erstellt. Apple verlangt Bilder aus der echten App: mache für den Upload zusätzlich Screenshots im Xcode-Simulator (⌘S) und lege sie in dieselben Rahmen, oder nimm die Simulator-Bilder direkt.
 
 ## 4. Technisch bereits erledigt
 - Nur iPhone, nur Hochformat, iOS 16+

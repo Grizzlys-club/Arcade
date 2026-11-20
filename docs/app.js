@@ -194,13 +194,16 @@ settings(){const tg=(k,l,i)=>`<div class="trow"><span style="width:24px;text-ali
  <p class="mut" style="text-align:center;font-size:12px">Münzen, Skins, Erfolge, Rekorde und Namen liegen nur in deinem Browser. Sie sind nicht mit der iPhone-App verbunden.</p>
  <button class="btn red" data-a="reset">${ctx.confirmReset?'Wirklich alles löschen?':'Fortschritt zurücksetzen'}</button><a class="lnk" href="index.html">Zur Webseite</a></div>`},
 
-wheel(){const n=M.WHEEL.length,seg=360/n,grad=M.WHEEL.map((p,i)=>`${p.color} ${i*seg}deg ${(i+1)*seg}deg`).join(','),can=canWheel()&&!ctx.spin,bonus=Math.min(Math.max(S.streak,1),7)*5;
- const lab=M.WHEEL.map((p,i)=>`<span style="transform:rotate(${i*seg+seg/2-90}deg) translate(105px,-11px) rotate(90deg)">${p.label}<small>${p.sub}</small></span>`).join('');
- return SCREENS.hub()+`<div class="ovl"><div class="row" style="align-items:center"><h2 style="font-weight:900;font-size:28px;color:var(--or);flex:1;text-transform:uppercase">Glücksrad</h2><button class="ib" data-a="back" aria-label="Schliessen" style="border-color:#fff;background:rgba(255,255,255,.12)">✕</button></div>
- <p style="text-align:center;font-weight:800">🔥 Tages-Streak: ${S.streak} <span class="mut">· Bonus +${bonus} Münzen</span></p>
- <div class="wheel"><div class="pt"></div><div class="w" id="wh" style="background:conic-gradient(from 0deg,${grad})">${lab}</div><div class="hubi"></div></div>
- <div id="wres" class="big" style="font-size:30px;text-align:center;min-height:36px"></div>
- <button class="btn" data-a="spin" ${can?'':'disabled'} style="margin-top:auto">↻ ${canWheel()?'Drehen':'Morgen wieder'}</button></div>`}
+wheel(){const W=M.WHEEL,n=W.length,seg=360/n,can=canWheel()&&!ctx.spin,bonus=Math.min(Math.max(S.streak,1),7)*5,C=200,R=176,pol=(r,d)=>{const t=(d-90)*Math.PI/180;return[C+r*Math.cos(t),C+r*Math.sin(t)]};
+ const fills={coins:'#1b1510',xp:'#141b24',boost:'#3a1d0b'};
+ const paths=W.map((p,k)=>{const [x1,y1]=pol(R,k*seg),[x2,y2]=pol(R,(k+1)*seg),top=p.label==='100'||p.kind==='boost',fill=top?'url(#gld)':(k%2?fills[p.kind]:'#0f0c09'),tc=top?'#1a1006':'#f3ece0',[lx,ly]=pol(R*.7,k*seg+seg/2);
+  return `<path d="M${C} ${C}L${x1} ${y1}A${R} ${R} 0 0 1 ${x2} ${y2}Z" fill="${fill}" stroke="rgba(232,201,138,.55)" stroke-width="1.4"/><g transform="translate(${lx} ${ly}) rotate(${k*seg+seg/2})"><text text-anchor="middle" y="4" font-family="Instrument Serif,Georgia,serif" font-size="${p.label.length>2?30:36}" fill="${tc}">${p.label}</text><text text-anchor="middle" y="24" font-family="Inter,sans-serif" font-size="10" font-weight="600" letter-spacing="1.5" fill="${top?'#3a2308':'rgba(243,236,224,.6)'}">${p.sub.toUpperCase()}</text></g>`}).join('');
+ const studs=Array.from({length:24},(_,k)=>{const [x,y]=pol(190,k*15);return `<circle class="stud" style="animation-delay:${(k%2)*.5}s" cx="${x}" cy="${y}" r="3.2"/>`}).join('');
+ return SCREENS.hub()+`<div class="ovl"><div class="row" style="align-items:center"><h2 style="font-size:36px;flex:1;font-style:italic;background:linear-gradient(120deg,#f6e3b4,#d9ac5c 50%,#9c6f2a);-webkit-background-clip:text;background-clip:text;color:transparent">Glücksrad</h2><button class="ib" data-a="back" aria-label="Schliessen">✕</button></div>
+ <p style="text-align:center;font-weight:600;color:var(--mut)">🔥 Tages-Streak ${S.streak} · Bonus +${bonus} Münzen</p>
+ <div class="wheel"><div class="pt"></div><div class="w" id="wh"><svg viewBox="0 0 400 400" width="100%" height="100%"><defs><linearGradient id="gld" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6e3b4"/><stop offset=".5" stop-color="#d9ac5c"/><stop offset="1" stop-color="#9c6f2a"/></linearGradient><radialGradient id="rim" cx=".5" cy=".5" r=".5"><stop offset=".9" stop-color="#9c6f2a"/><stop offset=".96" stop-color="#f6e3b4"/><stop offset="1" stop-color="#7a5320"/></radialGradient></defs><circle cx="200" cy="200" r="199" fill="url(#rim)"/><circle cx="200" cy="200" r="180" fill="#0a0807"/>${paths}<circle cx="200" cy="200" r="${R}" fill="none" stroke="url(#gld)" stroke-width="3"/>${studs}</svg></div><div class="hubi"></div></div>
+ <div id="wres" class="big" style="font-size:34px;text-align:center;min-height:42px"></div>
+ <button class="btn" data-a="spin" ${can?'':'disabled'} style="margin-top:auto">${canWheel()?'Drehen':'Morgen wieder'}</button></div>`}
 };
 
 function render(name){
@@ -304,9 +307,9 @@ $app.addEventListener('click',e=>{
    case'spin':{if(!canWheel()||ctx.spin)break;ctx.spin=true;let r=Math.random()*M.WHEEL.reduce((a,p)=>a+p.weight,0),k=0;for(;k<M.WHEEL.length;k++){if(r<M.WHEEL[k].weight)break;r-=M.WHEEL[k].weight}k=Math.min(k,M.WHEEL.length-1);
      const pz=M.WHEEL[k],bonus=Math.min(Math.max(S.streak,1),7)*5;S.lastWheel=M.key();
      if(pz.kind==='coins')addCoins(pz.amount);else if(pz.kind==='xp')addXP(pz.amount);else S.coinBoost+=pz.amount;addCoins(bonus);const m=checkAch();save();
-     const seg=360/M.WHEEL.length,wh=document.getElementById('wh');wh.style.transform='rotate('+(360*6-(k*seg+seg/2))+'deg)';
-     document.querySelector('[data-a=spin]').disabled=true;beep(440,.1);
-     setTimeout(()=>{const e=document.getElementById('wres');if(e)e.textContent=(pz.kind==='boost'?'Booster x2 (5 Spiele)':pz.label+' '+pz.sub)+' + '+bonus+' Münzen';beep(880,.3);confetti();if(m.length)toast(m[0]);ctx.spin=false},matchMedia('(prefers-reduced-motion:reduce)').matches?100:4300);break}
+     const seg=360/M.WHEEL.length,wh=document.getElementById('wh');wh.style.transform='rotate('+(360*7-(k*seg+seg/2))+'deg)';
+     document.querySelector('[data-a=spin]').disabled=true;beep(440,.1);{let d=45,el=0;const tick=()=>{if(el>4700)return;beep(1500,.015);d*=1.075;el+=d;setTimeout(tick,d)};tick()}
+     setTimeout(()=>{const e=document.getElementById('wres');if(e)e.textContent=(pz.kind==='boost'?'Booster x2 (5 Spiele)':pz.label+' '+pz.sub)+' + '+bonus+' Münzen';beep(880,.3);confetti();if(m.length)toast(m[0]);ctx.spin=false},matchMedia('(prefers-reduced-motion:reduce)').matches?100:5100);break}
    case'start':begin(ctx.sess.id);break;
    case'go':ctx.run&&ctx.run();break;
    case'cont':nextTurn();break;
