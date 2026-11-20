@@ -1,6 +1,6 @@
 # Grizzlys Arcade
 
-Die offizielle Spiele-App von **Unihockey am Greifensee Grizzlys**: 50 Minispiele für 1 bis 4 Spieler an einem iPhone. Keine Werbung, keine Anmeldung, kein Internet nötig.
+Die offizielle Spiele-App von **Unihockey am Greifensee Grizzlys**: 50 Minispiele in der iPhone-App (60 in der Web-App) für 1 bis 4 Spieler an einem iPhone. Keine Werbung, keine Anmeldung, kein Internet nötig.
 
 ## Ordner
 - `app/` – Xcode-Projekt (SwiftUI + SpriteKit, iPhone, Hochformat). `app/GrizzlysArcade.xcodeproj` in Xcode öffnen, Team wählen, starten.
