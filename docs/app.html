@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Arcade">
 <link rel="icon" href="img/icon1024.png">
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Figtree:wght@600;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=Figtree:wght@600;800;900&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0d0d17;--panel:#1c1c2b;--or:#ff8a00;--blue:#40ccff;--green:#40ff73;--pink:#ff4db3;--yel:#ffd61a;--red:#ff4d4d;--tx:#fff;--mut:rgba(255,255,255,.62);--line:rgba(255,255,255,.14)}
 *{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
@@ -188,6 +188,24 @@ button.card:active{transform:scale(.98)}
 @media(prefers-reduced-motion:reduce){.body>*{animation:none}}
 
 @media(min-width:900px){body{display:grid;place-items:center}#app{height:min(900px,96vh);width:min(440px,100%);margin:0;border-radius:40px;border:1px solid rgba(255,255,255,.12);background:rgba(9,9,13,.72);box-shadow:0 50px 120px -30px rgba(0,0,0,.9),0 0 0 10px rgba(255,255,255,.03);overflow:hidden}}
+
+/* ===== Luxus ===== */
+:root{--bg:#0a0807;--line:rgba(232,201,138,.18);--tx:#f3ece0;--mut:rgba(243,236,224,.6);--disp:"Instrument Serif",Georgia,serif;--gold:linear-gradient(120deg,#f6e3b4,#d9ac5c 50%,#9c6f2a)}
+body::before{background:radial-gradient(70vw 55vw at 85% -10%,rgba(217,172,92,.2),transparent 60%),radial-gradient(60vw 45vw at -10% 105%,rgba(255,106,0,.08),transparent 60%)!important}
+.bar h2,.t1,.t2,.h,.lab,.mini{font-family:var(--disp)!important;font-weight:400!important}
+.bar h2{font-size:34px;font-style:italic;letter-spacing:-.02em}
+.t1{font-size:64px!important;line-height:.9;background:var(--gold)!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important;font-style:italic;letter-spacing:-.03em!important}
+.t2{font-size:14px!important;letter-spacing:.5em!important;color:rgba(232,201,138,.7)!important}
+.btn{background:var(--gold)!important;color:#1a1006!important;font-family:var(--disp)!important;font-weight:400!important;font-size:24px!important;letter-spacing:0;box-shadow:0 12px 34px -12px rgba(217,172,92,.7)!important}
+.btn.blue,.btn.green{background:var(--gold)!important;color:#1a1006!important}
+.btn.alt{background:rgba(232,201,138,.07)!important;color:var(--tx)!important;box-shadow:inset 0 0 0 1px var(--line)!important}
+.btn.red{background:rgba(255,77,77,.85)!important;color:#fff!important}
+.card,button.card,.strip,.feat,.mini{border-color:var(--line)!important}
+button.card:hover,.tile:hover,.feat:hover{border-color:rgba(217,172,92,.7)!important}
+.coinp{border-color:rgba(217,172,92,.5);background:rgba(217,172,92,.1)}
+.lv{border-color:rgba(217,172,92,.45);background:rgba(217,172,92,.08)}
+.ib{border-color:var(--line)}
+#app{border-color:rgba(232,201,138,.25)!important}
 </style>
 </head>
 <body>
