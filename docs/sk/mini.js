@@ -38,7 +38,15 @@ class Seat{
   if(edge==='bottom'){this.rotation=0;this.w=zone.w;this.h=zone.h}else if(edge==='top'){this.rotation=Math.PI;this.w=zone.w;this.h=zone.h}else if(edge==='left'){this.rotation=-Math.PI/2;this.w=zone.h;this.h=zone.w}else{this.rotation=Math.PI/2;this.w=zone.h;this.h=zone.w}
   this.size={width:this.w,height:this.h};
   this.node=new Node();this.node.x=zone.x+zone.w/2;this.node.y=zone.y+zone.h/2;this.node.rot=this.rotation;
-  this.field=new Crop(this.w,this.h);this.node.add(this.field)}
+  this.field=new Crop(this.w,this.h);this.node.add(this.field);
+  {const W=Math.ceil(this.w),H=Math.ceil(this.h),ice=new Sprite(Gfx.texture('ice'+W+'x'+H,W,H,1.5,c=>{
+    const g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,'#0e2336');g.addColorStop(.5,'#16344d');g.addColorStop(1,'#0b1d2e');c.fillStyle=g;c.fillRect(0,0,W,H);
+    const r=c.createRadialGradient(W/2,H*.42,0,W/2,H*.42,Math.max(W,H)*.7);r.addColorStop(0,'rgba(190,230,255,.28)');r.addColorStop(1,'rgba(190,230,255,0)');c.fillStyle=r;c.fillRect(0,0,W,H);
+    c.lineCap='round';let s=W*131+H*7;const rn=()=>(s=(s*16807)%2147483647)/2147483647;
+    for(let i=0;i<46;i++){const x=rn()*W,y=rn()*H,l=20+rn()*90,a=(rn()-.5)*1.2;c.strokeStyle='rgba(220,240,255,'+(.04+rn()*.07)+')';c.lineWidth=.6+rn()*.8;c.beginPath();c.moveTo(x,y);c.quadraticCurveTo(x+Math.cos(a)*l*.5,y+Math.sin(a)*l*.5+rn()*8,x+Math.cos(a)*l,y+Math.sin(a)*l);c.stroke()}
+    c.strokeStyle='rgba(255,90,60,.16)';c.lineWidth=3;c.beginPath();c.moveTo(0,H*.5);c.lineTo(W,H*.5);c.stroke();
+    c.strokeStyle='rgba(80,150,255,.14)';c.lineWidth=2.5;[.2,.8].forEach(k=>{c.beginPath();c.moveTo(0,H*k);c.lineTo(W,H*k);c.stroke()});
+    c.strokeStyle='rgba(255,90,60,.12)';c.lineWidth=2;c.beginPath();c.arc(W/2,H*.5,Math.min(W,H)*.16,0,7);c.stroke()}),W,H);ice.z=-900;this.field.add(ice)}}
  get center(){return{x:this.zone.x+this.zone.w/2,y:this.zone.y+this.zone.h/2}}
  local(p){const dx=p.x-(this.zone.x+this.zone.w/2),dy=p.y-(this.zone.y+this.zone.h/2),c=Math.cos(-this.rotation),s=Math.sin(-this.rotation);return{x:dx*c-dy*s,y:dx*s+dy*c}}
  toScene(l){const c=Math.cos(this.rotation),s=Math.sin(this.rotation);return{x:this.zone.x+this.zone.w/2+l.x*c-l.y*s,y:this.zone.y+this.zone.h/2+l.x*s+l.y*c}}
