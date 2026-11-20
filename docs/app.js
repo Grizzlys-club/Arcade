@@ -67,7 +67,7 @@ const canvas2=document.createElement('canvas');canvas2.setAttribute('aria-label'
 const activeCards=()=>[0,1,2,3].filter(i=>S.slots[i]!=='off');
 const seatsOf=()=>activeCards().map(c=>({card:c,cpu:S.slots[c]==='cpu',name:S.slots[c]==='cpu'?CPUN[c]:((S.names[c]||'').trim()||'Spieler '+(c+1)),skin:S.skinIds[c]}));
 const nSeats=()=>activeCards().length,nHum=()=>activeCards().filter(c=>S.slots[c]==='human').length;
-const compatible=(id,n)=>isNew(id)?(n>=2&&n<=(id==='tugwar'?2:4)):(G[id]&&(!G[id].versus||n===2));
+const compatible=(id,n)=>isNew(id)?(n>=2&&n<=4):(G[id]&&(!G[id].versus||n===2));
 const gamesFor=n=>ALL.map(a=>a[0]).filter(id=>playable(id)&&compatible(id,n));
 const featured=()=>{const p=gamesFor(nSeats());return p[M.doy()%p.length]};
 const accOf=id=>M.ACC[id]||'#ff8a00';
@@ -147,7 +147,7 @@ intro(){const id=ctx.sess.id,g=GI(id),sd=ctx.sess.seats,c=accOf(id),t=ctx.tour,n
  return `<div class="bar"><button class="ib" data-a="back" aria-label="Zurück" style="width:auto;border-radius:99px;padding:0 14px;font-size:15px;height:40px">‹ ZURÜCK</button></div><div class="body">
  <div class="card" style="--c:${c};padding:6px;overflow:hidden"><img src="img/games/${id}.jpg" alt="Spielbild ${g.name}" style="width:100%;border-radius:12px;display:block;aspect-ratio:16/10;object-fit:cover;object-position:top"><div style="text-align:center;padding:10px 4px 6px"><b style="font-size:26px;text-transform:uppercase;letter-spacing:.02em">${g.name}</b></div></div>
  <div class="lab" style="text-align:center;color:${c}">${TAG[id]==='Sport'?'Unihockey':'Party'} · ${g.sub.replace('Sekunden','Sek.').toUpperCase()} · ${id==='tugwar'?'2':'2-4'} Spieler</div>
- <div class="card" style="--c:${c}"><div class="lab" style="color:#e0b45f"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="vertical-align:-2px"><path d="M12 2l2.2 7.3L22 12l-7.8 2.7L12 22l-2.2-7.3L2 12l7.8-2.7z"/></svg> So geht's</div><p style="font-size:17px;margin-top:6px;font-weight:700">${g.help}</p>${isNew(id)&&lay==='zones'&&sd.filter(x=>!x.cpu).length>=2?`<div class="chips" style="margin-top:10px"><button class="chip" aria-pressed="${S.playMode!=='sim'}" data-a="pm" data-v="turns">Abwechselnd</button><button class="chip" aria-pressed="${S.playMode==='sim'}" data-a="pm" data-v="sim">Gleichzeitig</button></div><p class="mut" style="margin-top:8px">${S.playMode==='sim'?'Alle spielen gleichzeitig, jeder auf seinem Teil des Bildschirms.':'Einer nach dem anderen, 3 Runden, ganzer Bildschirm. Die Punkte zählen zusammen.'}</p>`:isNew(id)?'<p class="mut" style="margin-top:8px">'+hint+'</p>':g.versus?'<p class="mut" style="margin-top:8px">'+(sd.every(s=>!s.cpu)?esc(sd[0].name)+' spielt unten, '+esc(sd[1].name)+' oben.':'Du spielst unten, die CPU oben.')+'</p>':sd.length>1?'<p class="mut" style="margin-top:8px">Jeder spielt für sich, der Reihe nach. Gib das Handy weiter, wenn du fertig bist.</p>':''}</div>
+ <div class="card" style="--c:${c}"><div class="lab" style="color:#e0b45f"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="vertical-align:-2px"><path d="M12 2l2.2 7.3L22 12l-7.8 2.7L12 22l-2.2-7.3L2 12l7.8-2.7z"/></svg> So geht's</div><p style="font-size:17px;margin-top:6px;font-weight:700">${g.help}</p>${isNew(id)&&lay==='arena'&&id!=='tugwar'&&sd.filter(x=>!x.cpu).length>=3?`<div class="chips" style="margin-top:10px"><button class="chip" aria-pressed="${S.playMode!=='sim'}" data-a="pm" data-v="turns">Duelle nacheinander</button><button class="chip" aria-pressed="${S.playMode==='sim'}" data-a="pm" data-v="sim">Alle gleichzeitig</button></div><p class="mut" style="margin-top:8px">${S.playMode==='sim'?'Alle spielen zusammen auf einem Feld.':'Jeder gegen jeden, zwei spielen auf dem ganzen Bildschirm, dann kommt das nächste Duell. Siege zählen 3 Punkte.'}</p>`:id==='tugwar'&&sd.filter(x=>!x.cpu).length>=3?'<p class="mut" style="margin-top:8px">Jeder gegen jeden, ein Duell nach dem anderen. Siege zählen 3 Punkte.</p>':isNew(id)&&lay==='zones'&&sd.filter(x=>!x.cpu).length>=2?`<div class="chips" style="margin-top:10px"><button class="chip" aria-pressed="${S.playMode!=='sim'}" data-a="pm" data-v="turns">Abwechselnd</button><button class="chip" aria-pressed="${S.playMode==='sim'}" data-a="pm" data-v="sim">Gleichzeitig</button></div><p class="mut" style="margin-top:8px">${S.playMode==='sim'?'Alle spielen gleichzeitig, jeder auf seinem Teil des Bildschirms.':'Einer nach dem anderen, 3 Runden, ganzer Bildschirm. Die Punkte zählen zusammen.'}</p>`:isNew(id)?'<p class="mut" style="margin-top:8px">'+hint+'</p>':g.versus?'<p class="mut" style="margin-top:8px">'+(sd.every(s=>!s.cpu)?esc(sd[0].name)+' spielt unten, '+esc(sd[1].name)+' oben.':'Du spielst unten, die CPU oben.')+'</p>':sd.length>1?'<p class="mut" style="margin-top:8px">Jeder spielt für sich, der Reihe nach. Gib das Handy weiter, wenn du fertig bist.</p>':''}</div>
  <div class="strip" style="cursor:default">${sd.map(s=>`<div class="p">${bimg(s.skin,40,true)}<span style="color:${SEAT[s.card]}">${esc(s.name)}</span>${s.cpu?'<span class="mut" style="font-size:9px">CPU</span>':''}</div>`).join('')}</div></div>
  <div class="foot"><button class="btn" data-a="start"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="vertical-align:-2px"><path d="M7 4l13 8-13 8z"/></svg> Los geht's</button></div>`},
 
@@ -247,6 +247,15 @@ function begin(id,fromReplace){
   if(isNew(id)){startNew();return}
   nextTurn()}
 const seqOn=(id,seats)=>layoutOf(id)==='zones'&&seats.filter(x=>!x.cpu).length>=2&&S.playMode!=='sim';
+const duelOn=(id,seats)=>seats.filter(x=>!x.cpu).length>=3&&(id==='tugwar'||(layoutOf(id)==='arena'&&S.playMode!=='sim'));
+function duelStep(){const s=ctx.sess,q=ctx.duel,hum=q.hum;
+  if(q.t>=q.pairs.length){Sfx.music('menu');finish({scores:s.seats.map(x=>{const i=hum.indexOf(x);return i>=0?q.pts[i]:0}),stats:{},neu:true});return}
+  const [i,j]=q.pairs[q.t],A=hum[i],B=hum[j];
+  setOv(`<p>Duell ${q.t+1} von ${q.pairs.length} · Handy weitergeben</p><div style="display:flex;gap:18px;align-items:center;justify-content:center">${bimg(A.skin,70,true)}<h2 style="margin:0">gegen</h2>${bimg(B.skin,70,false)}</div><h2 style="font-size:28px"><span style="color:${SEAT[A.card]}">${esc(A.name)}</span> · <span style="color:${SEAT[B.card]}">${esc(B.name)}</span></h2>${q.last?`<p>${esc(q.last)}</p>`:''}<p>${esc(RULES[s.id]||'')}</p><button class="btn" data-a="duelgo">Los</button>`)}
+function duelRun(){const s=ctx.sess,q=ctx.duel,[i,j]=q.pairs[q.t],A=q.hum[i],B=q.hum[j];setOv('');
+  Sfx.music('game');AR.play(s.id,{seats:[Object.assign({},A,{cpu:false}),Object.assign({},B,{cpu:false})],difficulty:S.diff},r=>{Sfx.music('menu');const sa=(r.scores&&r.scores[0])||0,sb=(r.scores&&r.scores[1])||0;
+    if(sa>sb){q.pts[i]+=3;q.last=A.name+' hat gewonnen'}else if(sb>sa){q.pts[j]+=3;q.last=B.name+' hat gewonnen'}else{q.pts[i]+=1;q.pts[j]+=1;q.last='Unentschieden'}
+    q.t++;duelStep()},()=>{pause()})}
 function seqStep(){const s=ctx.sess,q=ctx.seq,hum=q.hum;
   if(q.t>=hum.length*q.R){Sfx.music('menu');finish({scores:s.seats.map(x=>{const i=hum.indexOf(x);return i>=0?q.totals[i]:0}),stats:q.stats,neu:true});return}
   const me=hum[q.t%hum.length],rd=Math.floor(q.t/hum.length)+1,last=q.t>0?q.last:null;
@@ -256,6 +265,10 @@ function seqRun(){const s=ctx.sess,q=ctx.seq,hum=q.hum,me=hum[q.t%hum.length],ix
     for(const k in (r.stats||{}))if(typeof r.stats[k]==='number')q.stats[k]=(q.stats[k]||0)+r.stats[k];
     q.last=me.name+': '+v+' Punkte';q.t++;seqStep()},()=>{pause()})}
 function startNew(){const s=ctx.sess;ctx.ov='';setOv('');fit();
+  if(duelOn(s.id,s.seats)){const hum=s.seats.filter(x=>!x.cpu),pairs=[];for(let i=0;i<hum.length;i++)for(let j=i+1;j<hum.length;j++)pairs.push([i,j]);
+    if(hum.length===4)pairs.splice(0,6,[0,1],[2,3],[0,2],[1,3],[0,3],[1,2]);
+    ctx.duel={t:0,pairs,hum,pts:hum.map(()=>0),last:null};duelStep();return}
+  if(s.id==='tugwar'&&s.seats.length>2){s.seats=s.seats.slice(0,2)}
   if(seqOn(s.id,s.seats)){const hum=s.seats.filter(x=>!x.cpu);ctx.seq={t:0,R:3,hum,totals:hum.map(()=>0),stats:{},last:null};seqStep();return}
   Sfx.music('game');
   AR.play(s.id,{seats:s.seats,difficulty:S.diff},r=>{Sfx.music('menu');finish({scores:r.scores,stats:r.stats,neu:true})},()=>{pause()})}
@@ -345,6 +358,7 @@ $app.addEventListener('click',e=>{
      setTimeout(()=>{const e=document.getElementById('wres');if(e)e.textContent=(pz.kind==='boost'?'Booster x2 (5 Spiele)':pz.label+' '+pz.sub)+' + '+bonus+' Münzen';beep(880,.3);confetti();if(m.length)toast(m[0]);ctx.spin=false},matchMedia('(prefers-reduced-motion:reduce)').matches?100:5100);break}
    case'start':begin(ctx.sess.id);break;
    case'seqgo':seqRun();break;
+   case'duelgo':duelRun();break;
    case'pm':S.playMode=d.v;save();render('intro');break;
    case'go':countdown(()=>ctx.run&&ctx.run());break;
    case'cont':nextTurn();break;
