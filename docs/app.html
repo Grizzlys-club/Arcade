@@ -4,7 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Grizzlys Arcade – Web-App</title>
-<meta name="theme-color" content="#0b1524">
+<meta name="theme-color" content="#09090d">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="img/icon192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Arcade">
 <link rel="icon" href="img/icon1024.png">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Figtree:wght@600;800;900&display=swap" rel="stylesheet">
 <style>
@@ -180,6 +186,8 @@ button.card:active{transform:scale(.98)}
 @keyframes rise{from{opacity:0;transform:translateY(14px)}}
 .body>*{animation:rise .5s cubic-bezier(.2,.8,.2,1) both}.body>*:nth-child(2){animation-delay:.05s}.body>*:nth-child(3){animation-delay:.1s}.body>*:nth-child(4){animation-delay:.15s}.body>*:nth-child(5){animation-delay:.2s}.body>*:nth-child(n+6){animation-delay:.25s}
 @media(prefers-reduced-motion:reduce){.body>*{animation:none}}
+
+@media(min-width:900px){body{display:grid;place-items:center}#app{height:min(900px,96vh);width:min(440px,100%);margin:0;border-radius:40px;border:1px solid rgba(255,255,255,.12);background:rgba(9,9,13,.72);box-shadow:0 50px 120px -30px rgba(0,0,0,.9),0 0 0 10px rgba(255,255,255,.03);overflow:hidden}}
 </style>
 </head>
 <body>
@@ -245,5 +253,11 @@ button.card:active{transform:scale(.98)}
 <script src="games/whack.js"></script>
 <script src="games/zigzag.js"></script>
 <script src="app.js"></script>
+<script>
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+(()=>{let wl=null;const lock=async()=>{try{if(navigator.wakeLock&&document.visibilityState==='visible'&&!wl){wl=await navigator.wakeLock.request('screen');wl.addEventListener('release',()=>{wl=null})}}catch(e){}};
+addEventListener('pointerdown',lock,{passive:true});document.addEventListener('visibilitychange',lock);
+addEventListener('keydown',e=>{if((e.key==='f'||e.key==='F')&&!/INPUT|TEXTAREA/.test((e.target||{}).tagName||'')){try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen()}catch(_){}}});})();
+</script>
 </body>
 </html>
