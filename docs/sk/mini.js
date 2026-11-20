@@ -116,13 +116,13 @@ class MiniScene extends Node{
   if(this.layout==='arena'){[0,Math.PI].forEach((rot,i)=>{if(i===1&&this.n<2)return;const l=label(text,size,color);l.x=this.arena.x+this.arena.w/2;l.y=this.arena.y+this.arena.h/2+(i===0?-40:40);l.rot=rot;l.z=700;l.setScale(.3);this.hud.add(l);l.run(A.sequence([A.scaleTo(1,.15),A.wait(duration),A.fadeOut(.2),A.remove()]))})}
   else this.seats.forEach(s=>s.banner(text,color,size,duration))}
  finishGame(scores,delay){if(this.finished)return;this.finished=true;this.phase='over';delay=delay==null?1:delay;const sc=scores||this.seats.map(s=>s.score),r={scores:sc,stats:this.stats},best=Math.max(...sc);
-  this.seats.forEach((s,i)=>{if(sc[i]===best)s.banner('SIEG!','#ffff00',40,1)});Sfx.play('horn');
+  this.seats.forEach((s,i)=>{if(sc[i]===best){s.banner('SIEG!','#ffd98a',52,1.1);s.flash('#ffd98a',.35);s.burst({x:0,y:0},'#ffd98a',40,260);s.burst({x:0,y:0},'#fff',24,160)}});Sfx.play('horn');
   this.run(A.sequence([A.wait(delay+.6),A.run(()=>{this.onFinish&&this.onFinish(r)})]))}
  /* Takt: update -> Aktionen */
  tick(dt){if(this.userPaused||!this.built)return;
-  if(this.phase==='countdown'){this.countdownTime-=dt;const c=Math.ceil(this.countdownTime);if(c!==this.lastCount){this.lastCount=c;if(c>=1&&c<=3){this.bannerAll(String(c),'#fff',70,.5);Sfx.play('beep')}}
-   if(this.countdownTime<=0){this.bannerAll('LOS!',Theme.orange,60,.4);Sfx.play('go');this.phase='playing';this.gameStarted()}}
-  else if(this.phase==='playing'){this.elapsed+=dt;this.gameUpdate(dt);if(this.duration>0&&this.phase==='playing'){const left=Math.max(0,this.duration-this.elapsed);if(this.timeBar){this.timeBar.w=this.timeBarWidth*(left/this.duration);if(left<5)this.timeBar.color='rgb(255,0,0)'}if(left<=0)this.timeUp()}}
+  if(this.phase==='countdown'){this.countdownTime-=dt;const c=Math.ceil(this.countdownTime);if(c!==this.lastCount){this.lastCount=c;if(c>=1&&c<=3){this.bannerAll(String(c),'#f6e3b4',84,.6);this.flashAll('#d9ac5c',.12);Sfx.play('beep')}}
+   if(this.countdownTime<=0){this.bannerAll('LOS!','#ffd98a',72,.6);this.flashAll('#ffd98a',.3);this.seats.forEach(q=>q.burst({x:0,y:0},'#ffd98a',22,200));Sfx.play('go');this.phase='playing';this.gameStarted()}}
+  else if(this.phase==='playing'){this.elapsed+=dt;this.gameUpdate(dt);if(this.duration>0&&this.phase==='playing'){const left=Math.max(0,this.duration-this.elapsed);if(this.timeBar){this.timeBar.w=this.timeBarWidth*(left/this.duration);if(left<5)this.timeBar.color='rgb(255,0,0)'}const sc=Math.ceil(left);if(sc!==this.lastSec){this.lastSec=sc;if(sc>=1&&sc<=5&&this.duration>=15){Sfx.play('tick');if(sc<=3){this.bannerAll(String(sc),'rgba(255,217,138,.55)',64,.55);this.flashAll('#ff3b3b',.07)}}}if(left<=0)this.timeUp()}}
   this.step(dt)}
  seatFor(p){if(!this.seats.length)return null;if(this.layout==='turns')return this.seats[Math.min(this.activeSeatIndex,this.seats.length-1)];
   for(const s of this.seats){const z=s.zone;if(p.x>=z.x&&p.x<=z.x+z.w&&p.y>=z.y&&p.y<=z.y+z.h)return s}
