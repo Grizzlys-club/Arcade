@@ -44,14 +44,18 @@ class Seat{
  toScene(l){const c=Math.cos(this.rotation),s=Math.sin(this.rotation);return{x:this.zone.x+this.zone.w/2+l.x*c-l.y*s,y:this.zone.y+this.zone.h/2+l.x*s+l.y*c}}
  dirToScene(v){const c=Math.cos(this.rotation),s=Math.sin(this.rotation);return{dx:v.dx*c-v.dy*s,dy:v.dx*s+v.dy*c}}
  contains(p){return Math.abs(p.x)<=this.w/2&&Math.abs(p.y)<=this.h/2}
- floatText(text,at,color,size){const l=label(text,size||22,color||'#fff');l.x=at.x;l.y=at.y;l.z=300;this.node.add(l);
-  l.run(A.sequence([A.group([A.moveBy(0,40,.7),A.sequence([A.wait(.35),A.fadeOut(.35)])]),A.remove()]))}
- burst(at,color,count,speed){count=count==null?10:count;speed=speed==null?120:speed;for(let i=0;i<count;i++){const s=new Sprite(Gfx.dot(),7,7);s.color=color;s.cbf=1;s.blend='add';s.x=at.x;s.y=at.y;s.z=250;this.field.add(s);const a=Math.random()*Math.PI*2,d=(.4+Math.random()*.6)*speed;
-  s.run(A.sequence([A.group([A.moveBy(Math.cos(a)*d,Math.sin(a)*d,.5),A.fadeOut(.5),A.scaleTo(.2,.5)]),A.remove()]))}}
+ floatText(text,at,color,size){size=(size||22)*1.12;const l=label(text,size,color||'#fff');l.x=at.x;l.y=at.y;l.z=300;l.setScale(.2);this.node.add(l);
+  const g=new Sprite(Gfx.glow(),size*3.2,size*2,null);g.color=color||'#fff';g.cbf=1;g.blend='add';g.alpha=.55;g.z=-1;l.add(g);
+  l.run(A.sequence([A.scaleTo(1.45,.09),A.scaleTo(1,.1),A.group([A.moveBy(0,46,.7),A.sequence([A.wait(.4),A.fadeOut(.35)])]),A.remove()]))}
+ burst(at,color,count,speed){count=count==null?10:count;speed=speed==null?120:speed;count=Math.min(40,Math.ceil(count*1.7));
+  const ring=new Sprite(Gfx.circle(20,'rgba(0,0,0,0)',color),40,40);ring.x=at.x;ring.y=at.y;ring.z=249;ring.blend='add';this.field.add(ring);ring.setScale(.2);ring.run(A.sequence([A.group([A.scaleTo(1+speed/90,.35),A.fadeOut(.35)]),A.remove()]));
+  const gl=new Sprite(Gfx.glow(),speed*.9,speed*.9);gl.color=color;gl.cbf=1;gl.blend='add';gl.x=at.x;gl.y=at.y;gl.z=248;gl.alpha=.8;this.field.add(gl);gl.run(A.sequence([A.group([A.fadeOut(.3),A.scaleTo(1.6,.3)]),A.remove()]));
+  for(let i=0;i<count;i++){const spark=i%3===0,s=new Sprite(Gfx.dot(),spark?3:7,spark?14:7);s.color=i%5===0?'#fff':color;s.cbf=1;s.blend='add';s.x=at.x;s.y=at.y;s.z=250;this.field.add(s);const a=Math.random()*Math.PI*2,d=(.4+Math.random()*.8)*speed;
+   if(spark)s.rot=a-Math.PI/2;const t=.45+Math.random()*.35;s.run(A.sequence([A.group([A.moveBy(Math.cos(a)*d,Math.sin(a)*d-(spark?0:20),t),A.fadeOut(t),A.scaleTo(.2,t)]),A.remove()]))}}
  banner(text,color,size,duration){size=size==null?44:size;duration=duration==null?.8:duration;const l=label(text,Math.min(size,this.w*.16+14),color||this.color);l.z=700;l.setScale(.3);this.node.add(l);
   l.run(A.sequence([A.scaleTo(1,.15),A.wait(duration),A.group([A.fadeOut(.2),A.scaleTo(1.3,.2)]),A.remove()]))}
  flash(color,alpha,duration){const f=new Sprite(null,this.w,this.h,color);f.alpha=alpha==null?.45:alpha;f.z=600;this.node.add(f);f.run(A.sequence([A.fadeOut(duration==null?.35:duration),A.remove()]))}
- shake(amt){amt=amt==null?5:amt;this.field.removeAction('shake');this.field.x=0;this.field.y=0;const acts=[];for(let i=0;i<5;i++)acts.push(A.moveTo((Math.random()*2-1)*amt,(Math.random()*2-1)*amt,.03));acts.push(A.moveTo(0,0,.03));this.field.run(A.sequence(acts),'shake')}
+ shake(amt){amt=amt==null?5:amt;this.field.removeAction('shake');this.field.x=0;this.field.y=0;const acts=[];amt*=1.4;for(let i=0;i<9;i++)acts.push(A.moveTo((Math.random()*2-1)*amt*(1-i/10),(Math.random()*2-1)*amt*(1-i/10),.03));acts.push(A.moveTo(0,0,.03));this.field.run(A.sequence(acts),'shake')}
  knockOut(text){if(!this.alive)return;this.alive=false;const dim=new Sprite(null,this.w,this.h,white(0,.55));dim.z=500;this.node.add(dim);const l=label(text||'RAUS',Math.min(40,this.w*.18),white(1,.9));l.z=501;this.node.add(l)}
 }
 
