@@ -23,7 +23,7 @@ class ArrowsGame extends MiniScene{
  answer(s,dir){const st=this.states[s.index],off=VEC[dir],pos={x:st.arrow.x,y:st.arrow.y};
   if(dir===st.dir){st.streak++;const bonus=st.streak%8===0;this.addScore(s,bonus?2:1);this.addStat('hits',1,s);s.burst(pos,'#fff',6,150);
    s.floatText(bonus?'+2 SERIE!':'+1',{x:pos.x+off.dx*30,y:pos.y+st.arrowSize*.55},bonus?'#ff0':Theme.green,bonus?24:20);
-   st.streakLabel.text=st.streak>=4?'🔥 '+st.streak+'er Serie':'';if(!s.isCPU){Sfx.play(bonus?'coin':'tap');Haptic.tap()}this.nextArrow(s)}
+   st.streakLabel.text=st.streak>=4?st.streak+'er Serie':'';if(!s.isCPU){Sfx.play(bonus?'coin':'tap');Haptic.tap()}this.nextArrow(s)}
   else{st.streak=0;st.streakLabel.text='';this.setScore(s,Math.max(0,s.score-1));s.flash('#f00',.35);s.shake(6);s.floatText('−1',{x:pos.x,y:pos.y+st.arrowSize*.55},'#f33',22);
    st.arrow.run(A.sequence([A.moveBy(10,0,.03),A.moveBy(-20,0,.05),A.moveBy(10,0,.03)]));if(!s.isCPU){Sfx.play('wrong');Haptic.bad()}if(s.isCPU)st.cpuTimer=.4+(1-s.skill)*.4}}
  began(seat,at,id){const st=this.states[seat.index];st.start=at;st.touch=id}

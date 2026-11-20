@@ -26,7 +26,7 @@ class ColorsGame extends MiniScene{
   if(yes===item.match){st.streak++;let pts=1;if(st.streak%5===0)pts++;this.addScore(s,pts);this.addStat('hits',1,s);
    st.card.run(A.sequence([A.colorize('#0f0',.5,.05),A.custom(.2,(n,t)=>{n.cbf=.5*(1-t/.2)})]));
    s.floatText(pts>1?'+2 SERIE!':'+1',{x:0,y:st.word.y+30},pts>1?'#ff0':Theme.green,pts>1?24:20);
-   st.streakLabel.text=st.streak>=3?'🔥 '+st.streak+'er Serie':'';
+   st.streakLabel.text=st.streak>=3?st.streak+'er Serie':'';
    if(!s.isCPU){Sfx.play(pts>1?'coin':'right');Haptic.tap()}this.nextItem(s)}
   else{st.streak=0;st.streakLabel.text='';this.setScore(s,Math.max(0,s.score-1));st.lock=.55;s.flash('#f00',.35);s.shake(4);
    s.floatText('−1',{x:0,y:st.word.y+30},'#f33',22);if(!s.isCPU){Sfx.play('wrong');Haptic.bad()}

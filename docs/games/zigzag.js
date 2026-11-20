@@ -6,7 +6,7 @@ class ZigzagGame extends MiniScene{
   for(const s of this.seats){const g={rand:this.newRand(),items:[],nextY:260,wy:0,x:0,dir:1,world:new Node(),trailT:0,cpuAt:-1,cpuLock:0};this.baseY=-s.h/2+90;s.field.add(g.world);
    for(const side of[-1,1]){const w=new Sprite(Gfx.rect(5,s.h,s.color,2),5,s.h);w.x=side*(s.w/2-4);w.y=0;w.z=20;const gl=new Sprite(Gfx.glow(),40,s.h*1.2);gl.color=s.color;gl.cbf=1;gl.blend='add';gl.alpha=.55;w.add(gl);s.field.add(w)}
    const bh=Math.min(46,s.w*.2);g.bear=this.makeBear(s,bh,true);g.bear.z=30;g.bear.startBob(2,.2);g.bear.x=0;g.bear.y=this.baseY;s.field.add(g.bear);this.st.push(g);
-   const hint=label('TIPPEN = WENDEN ⚡',Math.min(17,s.w*.08),'#fff');hint.z=60;s.field.add(hint);hint.run(A.sequence([A.wait(4.4),A.fadeOut(.4),A.remove()]))}
+   const hint=label('TIPPEN = WENDEN',Math.min(17,s.w*.08),'#fff');hint.z=60;s.field.add(hint);hint.run(A.sequence([A.wait(4.4),A.fadeOut(.4),A.remove()]))}
   for(const s of this.seats)this.fill(s)}
  fill(s){const g=this.st[s.index],hw=this.limit(s)-8;
   while(g.nextY<g.wy+s.h+120){const y=g.nextY,r=g.rand;

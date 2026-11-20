@@ -6,7 +6,7 @@ const alpha=(c,a)=>c.replace(/[\d.]+\)$/,a+')');
 class QuizGame extends MiniScene{
  setupGame(){this.duration=0;const r=this.newRand();this.picked=r.shuffled(POOL.map((_,i)=>i)).slice(0,COUNT);this.orders=this.picked.map(()=>r.shuffled([0,1,2,3]));this.qIndex=-1;this.qTime=0;this.revealing=false;this.uis=[];
   for(const s of this.seats){const ui={seat:s,root:new Node(),buttons:[],answered:null,answerTime:0,cpuAt:0,cpuCorrect:false};ui.root.z=5;s.field.add(ui.root);this.uis.push(ui);
-   const d=Math.min(s.w,s.h)*.5,logo=new Sprite(Gfx.logo,d,d);logo.alpha=.06;s.field.add(logo);ui.root.add(label("🧠 Gleich geht's los…",s.w>300?20:14,white(1,.8)))}}
+   const d=Math.min(s.w,s.h)*.5,logo=new Sprite(Gfx.logo,d,d);logo.alpha=.06;s.field.add(logo);ui.root.add(label("Gleich geht's los…",s.w>300?20:14,white(1,.8)))}}
  gameStarted(){this.nextQuestion()}
  nextQuestion(){this.qIndex++;if(this.qIndex>=this.picked.length){this.finishGame();return}this.qTime=0;this.revealing=false;const q=POOL[this.picked[this.qIndex]],order=this.orders[this.qIndex];
   for(const ui of this.uis){this.buildQ(ui,q,order);ui.answered=null;if(ui.seat.isCPU){ui.cpuAt=(1.2+Math.random()*5.3)*(1.25-ui.seat.skill*.6);ui.cpuCorrect=Math.random()<.3+.6*ui.seat.skill}}Sfx.play('tick')}

@@ -19,7 +19,7 @@ const holeTex=s=>Gfx.texture('slide_hole_'+s,s,s,2,c=>{c.fillStyle='rgb(5,10,31)
 class SlideGame extends MiniScene{
  setupGame(){this.duration=40;const wide=(this.seats[0]?this.seats[0].w:200)>260;this.gridN=wide?6:5;this.st=[];
   for(const s of this.seats){const g={rand:this.newRand(),levelNo:0,board:new Node(),pos:0,moving:false,swipe:null,cpuAt:0,path:[]};g.cell=Math.floor(Math.min((s.w-14)/this.gridN,(s.h-78)/this.gridN));const bw=g.cell*this.gridN;g.ox=-bw/2;g.oy=-s.h/2+30;this.st.push(g);this.newLevel(s,false);
-   const hint=label('WISCHEN ❄️',Math.min(18,s.w*.085),'#fff');hint.y=-s.h/2+14;hint.z=60;s.field.add(hint);hint.run(A.sequence([A.wait(4.4),A.fadeOut(.4),A.remove()]))}}
+   const hint=label('WISCHEN',Math.min(18,s.w*.085),'#fff');hint.y=-s.h/2+14;hint.z=60;s.field.add(hint);hint.run(A.sequence([A.wait(4.4),A.fadeOut(.4),A.remove()]))}}
  center(g,i){const n=g.level.n;return{x:g.ox+g.cell*(i%n+.5),y:g.oy+g.cell*(Math.floor(i/n)+.5)}}
  feet(g,i){const c=this.center(g,i);return{x:c.x,y:c.y-g.cell*.38}}
  newLevel(s,animate){const g=this.st[s.index];g.board.removeFromParent();g.board=new Node();s.field.add(g.board);g.level=makeLevel(g.rand,this.gridN,g.levelNo);g.levelNo++;const lv=g.level,c=g.cell;

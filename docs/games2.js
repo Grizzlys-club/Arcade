@@ -77,7 +77,7 @@ reg('quiz',{best:'hoch',unit:' Punkte',cpuScore:s=>{let t=0;for(let i=0;i<6;i++)
   return g}});
 
 reg('duel',{versus:true,maxPlayers:2,
- init(o,end){const names=['Schläger','Ball','Handschuh'],ico=['🏒','⚽','🧤'];
+ init(o,end){const names=['Schläger','Ball','Handschuh'],ico=['S','B','H'];
   const g={r:0,w:[0,0],pick:[-1,-1],rev:0,msg:'',cpuT:rnd(.6,1.6)};
   const beats=(a,b)=>(a===0&&b===1)||(a===1&&b===2)||(a===2&&b===0);
   const bx=k=>({x:30+k*100,w:92});

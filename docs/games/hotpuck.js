@@ -18,7 +18,7 @@ class HotPuckGame extends MiniScene{
   this.puckGlow=new Sprite(Gfx.glow(),90,90);this.puckGlow.color=rgba(1,.45,.05);this.puckGlow.cbf=1;this.puckGlow.blend='add';puck.add(this.puckGlow);
   this.flame=new Sprite(Gfx.glow(),50,70);this.flame.color=rgba(1,.8,.2);this.flame.cbf=1;this.flame.blend='add';this.flame.alpha=.6;this.flame.y=14;puck.add(this.flame);
   this.puckCore=new Sprite(Gfx.circle(18,white(.08),rgba(1,.5,.1)),36,36);this.puckCore.z=1;puck.add(this.puckCore);
-  const fire=label('🔥',18);fire.z=2;puck.add(fire);puck.x=ar.x+ar.w/2;puck.y=ar.y+ar.h/2;puck.z=50;this.world.add(puck);
+  const fire=label('✦',18,rgba(1,.55,.1));fire.z=2;puck.add(fire);puck.x=ar.x+ar.w/2;puck.y=ar.y+ar.h/2;puck.z=50;this.world.add(puck);
   puck.run(A.forever(A.sequence([A.rotateBy(.15,.05),A.rotateBy(-.15,.05)])))}
  gameStarted(){this.newRound()}
  holdPoint(s){return s.toScene({x:0,y:s.h/2+46})}
@@ -46,7 +46,7 @@ class HotPuckGame extends MiniScene{
   const p={x:this.puck.x,y:this.puck.y};
   for(let i=0;i<44;i++){const d=new Sprite(Gfx.dot(),10,10);d.color=i%2===0?rgba(1,.6,.1):'#ff0';d.cbf=1;d.blend='add';d.x=p.x;d.y=p.y;d.z=60;this.world.add(d);const a=Math.random()*6.28,r=60+Math.random()*150;d.run(A.sequence([A.group([A.moveBy(Math.cos(a)*r,Math.sin(a)*r,.6),A.fadeOut(.6),A.scaleTo(.3,.6)]),A.remove()]))}
   const ring=new Sprite(Gfx.circle(30,'rgba(0,0,0,0)','#ff0'),60,60);ring.blend='add';ring.x=p.x;ring.y=p.y;ring.z=60;this.world.add(ring);ring.run(A.sequence([A.group([A.scaleTo(6,.5),A.fadeOut(.5)]),A.remove()]));
-  const boom=label('💥',70);boom.x=p.x;boom.y=p.y;boom.z=70;this.world.add(boom);boom.run(A.sequence([A.scaleTo(1.7,.3),A.fadeOut(.3),A.remove()]));
+  const boom=label('✸',70,rgba(1,.6,.1));boom.x=p.x;boom.y=p.y;boom.z=70;this.world.add(boom);boom.run(A.sequence([A.scaleTo(1.7,.3),A.fadeOut(.3),A.remove()]));
   this.puck.alpha=0;s.flash('#f80',.6);s.banner('BUMM!','#f80',30,.6);
   if(h.lives<=0){h.outOrder=this.outCount++;s.knockOut('RAUS')}
   this.holder=-1;this.updateHolderUI();

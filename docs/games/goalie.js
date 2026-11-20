@@ -17,7 +17,7 @@ class GoalieGame extends MiniScene{
    o.nextShotX=o.rand.range(-w*.3,w*.3)}}
  began(seat,at){const o=this.st[seat.index];o.targetX=at.x;if(o.hint){o.hint.run(A.sequence([A.fadeOut(.3),A.remove()]));o.hint=null}}
  moved(seat,at){this.st[seat.index].targetX=at.x}
- gameUpdate(dtIn){if(this.hadHumans&&!this.humansAlive&&!this.ff){this.ff=true;this.bannerAll('⏩','#fff',40,.6)}const dt=this.ff?dtIn*3:dtIn;
+ gameUpdate(dtIn){if(this.hadHumans&&!this.humansAlive&&!this.ff){this.ff=true;this.bannerAll('»»','#fff',40,.6)}const dt=this.ff?dtIn*3:dtIn;
   for(const s of this.seats){const o=this.st[s.index];
    if(!s.alive){for(const sh of o.shots){if(!sh.done){sh.done=true;sh.node.removeFromParent();sh.glow.removeFromParent()}}o.shots=[];continue}
    o.spawnTimer-=dt;if(o.spawnTimer<=0){this.spawn(s,o);o.spawnTimer=Math.max(.5,1.55-this.elapsed*.017)*o.rand.range(.85,1.15)}

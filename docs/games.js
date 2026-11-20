@@ -104,7 +104,7 @@ G.whack={name:'Puck-Jagd',sub:'30 Sekunden',img:'whack',help:'Tippe die Pucks, b
 
 G.memory={name:'Bären-Memory',sub:'Paare finden',img:'memory',help:'Finde alle Paare mit möglichst wenig Zügen.',best:'tief',unit:' Züge',tag:'Party',
  cpuScore:s=>Math.round(26-s*20+rnd(-2,2)),
- init(o,end){const sy=['🐻','🏒','🥅','🧊','🔥','⭐','🏆','⚡'];const a=[...sy,...sy].sort(()=>Math.random()-.5);
+ init(o,end){const sy=['★','◆','▲','●','✚','■','♦','✱'];const a=[...sy,...sy].sort(()=>Math.random()-.5);
   const g={cards:a.map((s,i)=>({s,i,up:false,ok:false})),open:[],moves:0,lock:0};
   const cw=74,ch=92,gx=(W-4*cw)/5,gy=(H-130-4*ch)/5,pr=i=>({x:gx+(i%4)*(cw+gx),y:110+gy+Math.floor(i/4)*(ch+gy)});
   g.down=p=>{if(g.lock>0)return;for(const k of g.cards){const q=pr(k.i);if(!k.up&&!k.ok&&p.x>q.x&&p.x<q.x+cw&&p.y>q.y&&p.y<q.y+ch){k.up=true;g.open.push(k);if(g.open.length===2){g.moves++;if(g.open[0].s===g.open[1].s){g.open.forEach(x=>x.ok=true);g.open=[];if(g.cards.every(x=>x.ok))end({score:g.moves,title:'Alle Paare!',sub:g.moves+' Züge'})}else g.lock=.8}return}}};

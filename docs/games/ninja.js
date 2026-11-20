@@ -9,7 +9,7 @@ class NinjaGame extends MiniScene{
   for(const s of this.seats){const g=this.st[s.index];
    for(let i=0;i<5;i++){const line=new Sprite(null,s.w,2,s.color.replace(/[\d.]+\)$/,'.06)'));line.y=-s.h/2+(i+1)*s.h/6;line.z=-5;s.field.add(line)}
    for(let i=0;i<14;i++){const d=new Sprite(Gfx.glow(),22,22);d.color=s.color;d.cbf=.6;d.blend='add';d.z=50;d.alpha=0;d.setScale(1-i*.05);s.field.add(d);g.trailDots.push(d)}
-   const hint=label('WISCHEN! ⚔️',Math.min(20,s.w*.09),'#fff');hint.z=60;s.field.add(hint);hint.run(A.sequence([A.wait(4.5),A.fadeOut(.4),A.remove()]));
+   const hint=label('WISCHEN!',Math.min(20,s.w*.09),'#fff');hint.z=60;s.field.add(hint);hint.run(A.sequence([A.wait(4.5),A.fadeOut(.4),A.remove()]));
    const warn=label('Rote Karten meiden!',Math.min(13,s.w*.065),rgba(1,.4,.4));warn.y=-26;warn.z=60;s.field.add(warn);warn.run(A.sequence([A.wait(4.5),A.fadeOut(.4),A.remove()]))}}
  gravity(s){return s.h*1.55}
  spawn(s){const g=this.st[s.index],r=g.rand,count=r.chance(.3)?(r.chance(.4)?3:2):1;

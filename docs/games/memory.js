@@ -1,6 +1,6 @@
 (()=>{
 const {Node,Sprite,Label,A,Gfx,Theme,rgba,white,label}=SK;
-const ICONS=['🐻','🏒','🥅','🏆','🧤','LOGO'];
+const ICONS=['★','◆','▲','●','✚','LOGO'];
 const alpha=(c,a)=>c.replace(/[\d.]+\)$/,a+')');
 class MemoryGame extends MiniScene{
  setupGame(){this.duration=60;const r=this.newRand(),layout=r.shuffled([0,0,1,1,2,2,3,3,4,4,5,5]);this.states=[];this.finishOrder=[];

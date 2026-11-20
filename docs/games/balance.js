@@ -19,7 +19,7 @@ class BalanceGame extends MiniScene{
  place(st){const p=this.pivot(st.seat),c=Math.cos(st.theta),sn=Math.sin(st.theta),off=BALLR+BEAMT/2;st.ball.x=p.x+c*st.s-sn*off;st.ball.y=p.y+sn*st.s+c*off;st.ball.rot=-st.s/BALLR;st.beam.rot=st.theta}
  gameUpdate(dt){const t=this.elapsed;
   for(const st of this.states){const s=st.seat;if(!s.alive)continue;st.gustTimer-=dt;
-   if(st.gustTimer<=0){st.gustTimer=st.rand.range(1.3,2.6);st.gustLeft=.8;st.gust=st.rand.range(-1,1)*(45+t*4.5);st.wind.text=st.gust<0?'💨 ◀︎◀︎':'▶︎▶︎ 💨';st.wind.alpha=1;st.wind.run(A.sequence([A.wait(.6),A.fadeOut(.3)]))}
+   if(st.gustTimer<=0){st.gustTimer=st.rand.range(1.3,2.6);st.gustLeft=.8;st.gust=st.rand.range(-1,1)*(45+t*4.5);st.wind.text=st.gust<0?'WIND ◀◀':'▶▶ WIND';st.wind.alpha=1;st.wind.run(A.sequence([A.wait(.6),A.fadeOut(.3)]))}
    let g=0;if(st.gustLeft>0){st.gustLeft-=dt;g=st.gust}
    if(s.isCPU)this.cpuThink(st,dt,g);else{const xs=Object.values(st.touchX);if(xs.length)st.target=Math.max(-1,Math.min(1,-xs[0]/(s.w*.35)))*MAXTILT;else st.target=0}
    const step=2*dt;st.theta+=Math.max(-step,Math.min(step,st.target-st.theta));

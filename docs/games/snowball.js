@@ -11,7 +11,7 @@ class SnowballGame extends MiniScene{
   for(const s of this.seats){const g={targets:[],balls:[],next:0,cooldown:0,cpuPlan:[]};
    g.aim=new Sprite(Gfx.circle(14,'rgba(0,0,0,0)',s.color),28,28);g.aim.z=80;g.aim.alpha=0;s.field.add(g.aim);
    const bank=new Sprite(Gfx.pill(s.w,26,white(1,.18),white(1,.4),12,false),s.w,26);bank.y=-s.h/2+8;bank.z=3;s.field.add(bank);this.st.push(g);
-   const hint=label('ZIEHEN & LOSLASSEN ❄️',Math.min(16,s.w*.075),'#fff');hint.y=-s.h/2+60;hint.z=60;s.field.add(hint);hint.run(A.sequence([A.wait(4.4),A.fadeOut(.4),A.remove()]))}}
+   const hint=label('ZIEHEN & LOSLASSEN',Math.min(16,s.w*.075),'#fff');hint.y=-s.h/2+60;hint.z=60;s.field.add(hint);hint.run(A.sequence([A.wait(4.4),A.fadeOut(.4),A.remove()]))}}
  origin(s){return{x:0,y:-s.h/2+26}}
  spawn(s,e){const g=this.st[s.index],node=new Node(),ts=this.tsize;let rad=ts*.55;
   if(e.friend){const b=this.makeBear(s,ts*.95,e.vx>0);b.y=-ts*.45;b.startRun();node.add(b);const heart=label('♥',ts*.4,Theme.pink);heart.y=ts*.62;node.add(heart);rad=ts*.5}

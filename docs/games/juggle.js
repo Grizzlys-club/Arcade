@@ -30,7 +30,7 @@ class JuggleGame extends MiniScene{
   if(o.chain%10===0){s.floatText(o.chain+'!',{x:o.pos.x,y:o.pos.y+30},'#ff0',26);Sfx.play('coin');s.flash('#fff',.18)}else Sfx.play('bounce');
   if(!s.isCPU)Haptic.tap('medium');
   if(o.hint){o.hint.run(A.sequence([A.fadeOut(.2),A.remove()]));o.hint=null}}
- gameUpdate(dtIn){if(this.hadHumans&&!this.humansAlive&&!this.ff&&this.aliveSeats.length>0){this.ff=true;this.bannerAll('⏩','#fff',40,.6)}
+ gameUpdate(dtIn){if(this.hadHumans&&!this.humansAlive&&!this.ff&&this.aliveSeats.length>0){this.ff=true;this.bannerAll('»»','#fff',40,.6)}
   const dt=this.ff?dtIn*3:dtIn;
   for(const s of this.seats){if(!s.alive)continue;const o=this.st[s.index];if(!o.falling)continue;o.cooldown-=dt;const g=this.gravity(s,o);
    o.vel.y-=g*dt;o.pos.x+=o.vel.x*dt;o.pos.y+=o.vel.y*dt;o.vel.x*=(1-.4*dt);

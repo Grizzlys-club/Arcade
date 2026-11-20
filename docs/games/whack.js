@@ -13,7 +13,7 @@ class WhackGame extends MiniScene{
   this.st=[];
   for(const s of this.seats){const g={holes:[],moles:{},nextEvent:0},top=s.h/2-40,bottom=-s.h/2+16;g.cw=s.w/this.cols;g.ch=(top-bottom)/this.rows;
    for(let row=0;row<this.rows;row++)for(let c=0;c<this.cols;c++){const x=-s.w/2+g.cw*(c+.5),y=bottom+g.ch*(row+.3);g.holes.push({x,y});const hw=Math.min(g.cw*.82,84),hole=new Sprite(holeTex(),hw,hw*.42);hole.x=x;hole.y=y;hole.z=1;s.field.add(hole)}
-   this.st.push(g);const hint=label('TIPP DIE PUCKS! 🔨',Math.min(18,s.w*.085),'#fff');hint.z=60;s.field.add(hint);hint.run(A.sequence([A.wait(4.4),A.fadeOut(.4),A.remove()]))}}
+   this.st.push(g);const hint=label('TIPP DIE PUCKS!',Math.min(18,s.w*.085),'#fff');hint.z=60;s.field.add(hint);hint.run(A.sequence([A.wait(4.4),A.fadeOut(.4),A.remove()]))}}
  pop(s,e){const g=this.st[s.index];const old=g.moles[e.hole];if(old){old.alive=false;old.node.removeFromParent()}
   const hw=Math.min(g.cw*.72,70),node=new Sprite(moleTex(e.kind),hw,hw*54/70);node.ay=.15;const base=g.holes[e.hole];node.x=base.x;node.y=base.y;node.z=2;node.sy=.1;s.field.add(node);node.run(A.scaleYTo(1,.09));
   if(e.kind==='gold'){const glow=new Sprite(Gfx.glow(),hw*1.6,hw*1.6);glow.color='#ff0';glow.cbf=1;glow.blend='add';glow.alpha=.5;glow.y=hw*.3;glow.z=-1;node.add(glow)}

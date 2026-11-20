@@ -1,6 +1,6 @@
 (()=>{
 const {Node,Sprite,A,Gfx,Theme,rgba,white,label}=SK;
-const ICONS=['🏒','⚪️','🧤'],NAMES=['SCHLÄGER','BALL','HANDSCHUH'],TOTAL=7,CHOOSE=3,REVEAL=2.4;
+const ICONS=['S','B','H'],NAMES=['SCHLÄGER','BALL','HANDSCHUH'],TOTAL=7,CHOOSE=3,REVEAL=2.4;
 const hit=(b,p,d)=>Math.abs(p.x-b.x)<=b.w/2+d&&Math.abs(p.y-b.y)<=b.h/2+d;
 const alpha=(c,a)=>c.replace(/[\d.]+\)$/,a+')');
 class DuelGame extends MiniScene{
@@ -37,7 +37,7 @@ class DuelGame extends MiniScene{
   for(const s of this.seats){for(const b of this.buttons[s.index])b.alpha=.12;const rn=this.revealNodes[s.index];rn.children.slice().forEach(c=>c.removeFromParent());
    const cw=Math.min(80,(s.w-20)/n-6),total=n*(cw+6)-6;
    this.seats.forEach((o,k)=>{const card=new Sprite(Gfx.pill(cw,cw*1.25,alpha(o.color,.85),'#fff',12),cw,cw*1.25);card.x=-total/2+cw/2+k*(cw+6);card.y=10;
-    const icon=label(this.picks[k]>=0?ICONS[this.picks[k]]:'❓',cw*.45);icon.y=cw*.08;card.add(icon);
+    const icon=label(this.picks[k]>=0?ICONS[this.picks[k]]:'?',cw*.45);icon.y=cw*.08;card.add(icon);
     const nm=label(o.index===s.index?'DU':o.name.slice(0,6).toUpperCase(),Math.min(11,cw*.15),'#000');nm.y=-cw*.42;card.add(nm);card.sx=.01;rn.add(card);card.run(A.sequence([A.wait(k*.08),A.scaleXTo(1,.18)]));
     if(o.index===s.index){const ring=new Sprite(Gfx.pill(cw+8,cw*1.25+8,'rgba(0,0,0,0)','#ff0',14),cw+8,cw*1.25+8);ring.x=card.x;ring.y=card.y;ring.z=-1;rn.add(ring)}});
    const g=gained[s.index],res=label(g>0?'+'+g:(this.picks[s.index]<0?'ZU LANGSAM':'0'),g>0?34:20,g>0?'#ff0':white(1,.7));res.y=-cw*.8-14;res.setScale(.2);rn.add(res);res.run(A.sequence([A.wait(.4),A.scaleTo(1,.15)]));

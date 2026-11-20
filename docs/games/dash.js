@@ -10,7 +10,7 @@ class DashGame extends MiniScene{
    const perLane=Math.floor((s.h+80)/40)+1;g.stripeSpan=perLane*40;
    for(const lx of[-lw/2,lw/2])for(let k=0;k<perLane;k++){const y=-s.h/2-20+k*40,st2=new Sprite(null,3,18,white(1,.25));st2.x=lx;st2.y=y;st2.z=-5;s.field.add(st2);g.stripes.push(st2)}
    g.bearY=-s.h/2+34;const bh=Math.min(52,s.w*.24),bear=this.makeBear(s,bh);bear.x=0;bear.y=g.bearY;bear.z=20;s.field.add(bear);bear.startRun(.11);g.bear=bear;
-   for(let i=0;i<3;i++){const h=label('❤️',13);h.x=-s.w/2+18+i*17;h.y=s.h/2-36;h.z=30;s.node.add(h);g.hearts.push(h)}
+   for(let i=0;i<3;i++){const h=label('♥',13,'#ff4d6a');h.x=-s.w/2+18+i*17;h.y=s.h/2-36;h.z=30;s.node.add(h);g.hearts.push(h)}
    const hint=label('◀ TIPPEN ▶',Math.min(20,s.w*.1),'#fff');hint.y=-s.h/2+100;hint.z=40;s.field.add(hint);hint.run(A.sequence([A.wait(4.6),A.fadeOut(.4),A.remove()]))}}
  spawnRow(s){const g=this.st[s.index],r=g.rand,blocked=r.chance(.35)?2:1;let lanes=r.shuffled([0,1,2]);const blockLanes=lanes.slice(0,blocked);lanes=lanes.slice(blocked);const y=s.h/2+30;
   for(const l of blockLanes){const roll=r.double(),kind=roll<.45?'cone':(roll<.8?'hurdle':'goal'),lw=g.laneX[2];let node;

@@ -16,7 +16,7 @@ const esc=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 
 /* Speicher */
 const KEY='ga.web.v2';
-const defS=()=>({xp:0,played:0,wins:0,diff:2,names:['Spieler 1','Spieler 2','Spieler 3','Spieler 4'],slots:['human','cpu','off','off'],rec:{},coins:0,totalCoins:0,unlocked:['classic','orange','ice','pink'],skinIds:['orange','classic','ice','pink'],ach:[],daily:{date:'',games:0,wins:0,goals:0,balls:0,quiz:0,kinds:[],claimed:[]},streak:0,lastLogin:'',lastWheel:'',items:[],titleId:'rookie',cheerId:'classic',coinBoost:0,xpBoost:0,goals:0,balls:0,quiz:0,hits:0,bestReact:0,tWon:0,tPlayed:0,kinds:[],sound:true,music:true,haptics:true});
+const defS=()=>({sceneId:'gold',frameId:'gold',xp:0,played:0,wins:0,diff:2,names:['Spieler 1','Spieler 2','Spieler 3','Spieler 4'],slots:['human','cpu','off','off'],rec:{},coins:0,totalCoins:0,unlocked:['classic','orange','ice','pink'],skinIds:['orange','classic','ice','pink'],ach:[],daily:{date:'',games:0,wins:0,goals:0,balls:0,quiz:0,kinds:[],claimed:[]},streak:0,lastLogin:'',lastWheel:'',items:[],titleId:'rookie',cheerId:'classic',coinBoost:0,xpBoost:0,goals:0,balls:0,quiz:0,hits:0,bestReact:0,tWon:0,tPlayed:0,kinds:[],sound:true,music:true,haptics:true});
 let S=defS();
 try{const j=JSON.parse(localStorage.getItem(KEY)||localStorage.getItem('ga.web.v1')||'null');if(j)S=Object.assign(S,j)}catch(e){}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
@@ -25,6 +25,8 @@ function rollDaily(){const t=M.key();if(S.daily.date!==t)S.daily={date:t,games:0
 rollDaily();
 const lvl=()=>M.levelInfo(S.xp);
 const skinOf=id=>M.SKINS.find(k=>k.id===id)||M.SKINS[0];
+const sceneOf=()=>M.SCENES.find(c=>c.id===S.sceneId)||M.SCENES[0],frameOf=()=>M.FRAMES.find(c=>c.id===S.frameId)||M.FRAMES[0];
+function applyTheme(){const sc=sceneOf(),fr=frameOf(),r=document.documentElement.style;r.setProperty('--sc1',sc.c1);r.setProperty('--sc2',sc.c2);r.setProperty('--sem',sc.ember);r.setProperty('--fra',fr.a);r.setProperty('--frb',fr.b);document.documentElement.dataset.fr=fr.id}
 const cheerOf=()=>M.CHEERS.find(c=>c.id===S.cheerId)||M.CHEERS[0];
 const titleOf=()=>M.TITLES.find(t=>t.id===S.titleId)||M.TITLES[0];
 function addCoins(n){S.coins+=n;S.totalCoins+=n}
@@ -71,11 +73,16 @@ const featured=()=>{const p=gamesFor(nSeats());return p[M.doy()%p.length]};
 const accOf=id=>M.ACC[id]||'#ff8a00';
 
 /* Verlauf */
-function push(name){history.pushState({s:name},'','#'+name);render(name)}
-function replace(name){history.replaceState({s:name},'','#'+name);render(name)}
-history.replaceState({s:'guard'},'','#');history.pushState({s:'hub'},'','#hub');
+ctx.idx=1;
+function push(name){ctx.idx++;history.pushState({s:name,i:ctx.idx},'','#'+name);render(name)}
+function replace(name){history.replaceState({s:name,i:ctx.idx},'','#'+name);render(name)}
+function goHub(then){ctx.inGame=false;ctx.tour=null;const n=ctx.idx-1;if(n<=0){ctx.idx=1;replace('hub');then&&then();return}ctx.silent=true;ctx.pending=then||null;history.go(-n)}
+history.replaceState({s:'guard',i:0},'','#');history.pushState({s:'hub',i:1},'','#hub');
 window.addEventListener('popstate',e=>{
-  const s=e.state&&e.state.s;
+  const s=e.state&&e.state.s;ctx.idx=(e.state&&e.state.i)||1;
+  if(ctx.fromGame&&(s==='intro'||s==='tour'&&!ctx.tour)){ctx.fromGame=false;goHub();return}
+  if(s==='hub')ctx.fromGame=false;
+  if(ctx.silent){ctx.silent=false;ctx.idx=1;ctx.inGame=false;const p=ctx.pending;ctx.pending=null;render('hub');p&&p();return}
   if(s==='guard'){history.pushState({s:'hub'},'','#hub');if(ctx.inGame)pause();else render('hub');return}
   if(ctx.inGame){history.pushState({s:'game'},'','#game');pause();return}
   if(!s||!SCREENS[s]||s==='game'||(s==='result'&&!ctx.res)){render('hub');return}
@@ -88,6 +95,10 @@ const coin=(c)=>`<span class="coin${c||''}"></span>`;
 const coinPill=()=>`<span class="coinp">${coin()}${S.coins}</span>`;
 const bar=(title,back=true,right='')=>`<div class="bar">${back?'<button class="ib" data-a="back" aria-label="Zurück">‹</button>':''}<h2>${title}</h2>${right}</div>`;
 const bimg=(id,h,flip)=>{const u=M.bearURL(skinOf(id),h);return u?`<img class="bear" src="${u}" height="${Math.round(h*1.18)}" alt="" style="${flip?'transform:scaleX(-1)':''}">`:`<div style="height:${h}px"></div>`};
+const _s=(p,w=1.7)=>`<svg class="gi" viewBox="0 0 24 24" fill="none" stroke="url(#gg)" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+const GI_={medal:_s('<circle cx="12" cy="14" r="6"/><path d="M8.5 3l3.5 6 3.5-6M12 11.5v5"/>'),goal:_s('<path d="M3 19V7h18v12M3 7l3 12M21 7l-3 12M9 7v12M15 7v12"/>'),flame:_s('<path d="M12 22c4 0 7-2.8 7-6.8 0-3-1.8-5-3.2-6.6-.4 2-1.5 3-2.6 3.4C13.7 8 12.2 5 9.5 2 9.5 6 5 8.5 5 15.2 5 19.2 8 22 12 22z"/>'),trophy:_s('<path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3M12 14v4M8 21h8"/>'),crown:_s('<path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z"/>'),brain:_s('<path d="M9 4a3 3 0 0 0-3 3 3 3 0 0 0-2 5 3 3 0 0 0 2 5 3 3 0 0 0 6 1V4a3 3 0 0 0-3 0zM15 4a3 3 0 0 1 3 3 3 3 0 0 1 2 5 3 3 0 0 1-2 5 3 3 0 0 1-6 1"/>'),glove:_s('<path d="M7 21v-6l-3-4 2-2 2 2V5a1.5 1.5 0 0 1 3 0v5l1-5a1.5 1.5 0 0 1 3 .5L15 11l2-1a1.5 1.5 0 0 1 2 2l-3 9z"/>'),target:_s('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2"/>'),bolt:_s('<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>'),pad:_s('<rect x="3" y="7" width="18" height="11" rx="5"/><path d="M8 10v5M5.5 12.5h5"/><circle cx="16" cy="11.5" r=".8"/><circle cx="18" cy="14" r=".8"/>'),star:_s('<path d="M12 3l2.7 5.8 6.3.7-4.7 4.3 1.3 6.2L12 16.8 6.4 20l1.3-6.2L3 9.5l6.3-.7z"/>'),shirt:_s('<path d="M8 3L3 6l2 4 3-1v12h8V9l3 1 2-4-5-3a4 4 0 0 1-8 0z"/>'),coin:_s('<circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.5h4a1.7 1.7 0 0 1 0 3.4h-3a1.7 1.7 0 0 0 0 3.4h4.5"/>'),users:_s('<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-4 3-6 6.5-6s6.5 2 6.5 6M16 4.5a3.5 3.5 0 0 1 0 7M18 14.5c2.2.6 3.5 2.4 3.5 5.5"/>'),sound:_s('<path d="M4 9v6h4l5 4V5L8 9zM16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/>'),music:_s('<path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/>'),vib:_s('<rect x="8" y="3" width="8" height="18" rx="2"/><path d="M4 8v8M20 8v8M2 10.5v3M22 10.5v3"/>'),shield:_s('<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/>'),gear:_s('<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1L7 17M17 7l2.1-2.1"/>'),pen:_s('<path d="M4 20l1-4L16 5l3 3L8 19zM14 7l3 3"/>')};
+const EM2={'🥇':'medal','🥅':'goal','🔥':'flame','🏆':'trophy','👑':'crown','🧠':'brain','🧤':'glove','🎯':'target','⚡️':'bolt','⚡':'bolt','🎮':'pad','🌟':'star','🎖️':'medal','🎖':'medal','👕':'shirt','💰':'coin','🔊':'sound','♪':'music','📳':'vib','👥':'users','🛡':'shield','⚙':'gear','✎':'pen'};
+const eico=e=>GI_[EM2[e]]||GI_.star;
 const IC={shop:'<svg viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6z"/><path d="M9 8a3 3 0 016 0"/></svg>',stats:'<svg viewBox="0 0 24 24"><path d="M5 20V11M12 20V4M19 20v-7"/></svg>',ach:'<svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="5"/><path d="M8.5 13.5L7 21l5-3 5 3-1.5-7.5"/></svg>',gift:'<svg viewBox="0 0 24 24"><rect x="3" y="9" width="18" height="12" rx="2"/><path d="M12 9v12M3 13h18M12 9C9 9 8 4 11 4c2 0 1 5 1 5zm0 0c3 0 4-5 1-5-2 0-1 5-1 5z"/></svg>',user:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>',cpu:'<svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/></svg>',x:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>'};
 const GICO='<svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M7 8h10a4 4 0 014 4v3a2 2 0 01-3.5 1.3L15 14H9l-2.5 2.3A2 2 0 013 15v-3a4 4 0 014-4zm1 2v1H7v1h1v1h1v-1h1v-1H9v-1zm8 .5a1 1 0 100 2 1 1 0 000-2z"/></svg>';
 const TRO='<svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M7 3h10v4a5 5 0 01-4 4.9V15h3v2h-8v-2h3v-3.1A5 5 0 017 7zM5 4h2v3H5a1 1 0 000 0zm12 0h2v2a3 3 0 01-2 2.8z"/></svg>';
@@ -98,12 +109,12 @@ const SCREENS={
 hub(){const L=lvl(),p=Math.round(L.into/L.need*100),tasks=M.todays(),done=tasks.filter(t=>S.daily.claimed.includes(t.id)).length,f=featured(),ss=seatsOf();
  const next=tasks.find(t=>!S.daily.claimed.includes(t.id));
  return `<div class="body" style="gap:12px;padding-top:max(12px,env(safe-area-inset-top))">
- <div class="row" style="align-items:center"><button class="ib" data-a="settings" aria-label="Einstellungen" style="font-size:20px">⚙</button>
+ <div class="row" style="align-items:center"><button class="ib" data-a="settings" aria-label="Einstellungen" style="font-size:20px">${GI_.gear}</button>
  <div class="lv"><span class="n">${L.level}</span><div><small>${M.rank(L.level)}</small><div class="xp"><i style="width:${p}%"></i></div></div></div>
- <span class="pill" style="border-color:rgba(255,138,0,.5)">🔥 ${S.streak}</span><span style="flex:1"></span>${coinPill()}</div>
+ <span class="pill" style="border-color:rgba(255,138,0,.5)">${GI_.flame} ${S.streak}</span><span style="flex:1"></span>${coinPill()}</div>
  <img class="logo" src="img/logo.png" alt="Logo Unihockey am Greifensee Grizzlys">
  <div><div class="t1">GRIZZLYS</div><div class="t2">ARCADE</div></div>
- <button class="strip" data-a="setup" aria-label="Spieler ändern">${ss.map(s=>`<div class="p">${bimg(s.skin,40,true)}<span style="color:${SEAT[s.card]}">${esc(s.name)}</span></div>`).join('')}<div class="p" style="color:var(--or)"><div style="font-size:20px">👥</div><span>ÄNDERN</span></div></button>
+ <button class="strip" data-a="setup" aria-label="Spieler ändern">${ss.map(s=>`<div class="p">${bimg(s.skin,40,true)}<span style="color:${SEAT[s.card]}">${esc(s.name)}</span></div>`).join('')}<div class="p" style="color:var(--or)"><div style="font-size:20px">${GI_.users}</div><span>ÄNDERN</span></div></button>
  <button class="feat" style="--c:rgba(255,138,0,.6)" data-g="${f}" data-ok="1"><img src="img/games/${f}.jpg" alt=""><div style="min-width:0"><small>Spiel des Tages</small><b>${NAME[f]}</b></div><span class="go">▶</span></button>
  <button class="btn" data-a="tour" style="min-height:62px">${TRO} Turnier</button>
  <div class="row"><button class="btn blue" data-a="picker" style="flex:1;min-height:54px;font-size:17px;white-space:nowrap;padding:0 8px">${ALL.length} Spiele</button><button class="btn green" data-a="random" style="flex:1;min-height:54px;font-size:17px;padding:0 8px"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.12em"><rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="9" cy="9" r="1" fill="currentColor"/><circle cx="15" cy="15" r="1" fill="currentColor"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg> Zufall</button></div>
@@ -154,7 +165,7 @@ tsetup(){const ss=seatsOf(),n=ss.length,r=ctx.rounds,tb=n===2?'Sieg 3 · Niederl
  <p style="text-align:center;font-weight:700;color:rgba(255,255,255,.85)">Jede Runde lost die Glücksmaschine ein zufälliges Spiel aus. Wer am Ende die meisten Punkte hat, steht ganz oben auf dem Podest.</p>
  <div class="card" style="--c:rgba(255,138,0,.6)"><div class="lab">Wie viele Runden?</div><div class="chips" style="margin:10px 0 8px">${[3,5,7,10,15].map(x=>`<button class="chip" style="--cc:#ff8a00" data-r="${x}" aria-pressed="${r===x}">${x}</button>`).join('')}</div><span class="mut" style="font-size:12px">ca. ${r+Math.floor(r/2)}–${r*2} Minuten</span></div>
  <div class="card" style="--c:rgba(64,204,255,.6)"><div class="lab">Punkte pro Spiel</div><p style="margin-top:6px;font-weight:700">${tb}</p><p style="color:var(--yel);font-weight:900;margin-top:6px">Das Finale zählt doppelt!</p></div>
- <button class="strip" data-a="setup">${ss.map(s=>`<div class="p">${bimg(s.skin,36,true)}<span style="color:${SEAT[s.card]}">${esc(s.name)}</span></div>`).join('')}<span style="color:var(--or);font-size:22px">✎</span></button></div>
+ <button class="strip" data-a="setup">${ss.map(s=>`<div class="p">${bimg(s.skin,36,true)}<span style="color:${SEAT[s.card]}">${esc(s.name)}</span></div>`).join('')}<span style="color:var(--or);font-size:22px">${GI_.pen}</span></button></div>
  <div class="foot"><button class="btn" data-a="tourgo" ${n<2?'disabled':''}><svg viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor" style="vertical-align:-.1em"><path d="M12 2l2.2 7.3L22 12l-7.8 2.7L12 22l-2.2-7.3L2 12l7.8-2.7z"/></svg> Turnier starten</button></div>`},
 
 tour(){const t=ctx.tour,fin=t.round===t.rounds-1,ord=t.seats.map((_,i)=>i).sort((a,b)=>t.points[b]-t.points[a]);
@@ -171,8 +182,10 @@ podium(){const t=ctx.tour,ord=t.seats.map((_,i)=>i).sort((a,b)=>t.points[b]-t.po
  return `<div class="body" style="justify-content:center"><div style="text-align:center"><div class="lab" style="color:var(--or);letter-spacing:.3em">Siegerehrung</div><div style="font-size:60px;margin-top:6px;color:#e0b45f;filter:drop-shadow(0 0 18px rgba(224,180,95,.5))"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.12em"><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3M12 14v4M8 21h8M9 18h6"/></svg></div><div class="big" style="font-size:44px">${esc(t.seats[ord[0]].name)}</div></div>
  <div class="pod">${pod}</div>${rest}<button class="btn" data-a="tour">Neues Turnier</button><button class="btn alt sm" data-a="home">Hauptmenü</button></div>`},
 
-shop(){const tabs=[['skins','Skins','#ff4db3'],['titles','Titel','#ff8a00'],['cheers','Jubel','#ff8a00'],['boosts','Booster','#ff8a00']],own=id=>S.unlocked.includes(id);let b='';
+shop(){const tabs=[['skins','Skins','#ff4db3'],['scenes','Szenen','#ff8a00'],['frames','Rahmen','#ff8a00'],['titles','Titel','#ff8a00'],['cheers','Jubel','#ff8a00'],['boosts','Booster','#ff8a00']],own=id=>S.unlocked.includes(id);let b='';
  if(ctx.tab==='skins')b=`<div class="grid2">${M.SKINS.map(k=>{const o=own(k.id),eq=[0,1,2,3].filter(c=>S.skinIds[c]===k.id&&S.slots[c]!=='off');return `<div class="sk${eq.length?' on':''}">${bimg(k.id,86,false)}<b>${k.name}</b><span class="mut" style="font-size:11px">Trikot Nr. ${k.num}</span>${o?`<div class="n">${[0,1,2,3].map(c=>`<button data-eq="${k.id}:${c}" aria-pressed="${S.skinIds[c]===k.id}" style="--c:${SEAT[c]}" aria-label="Für Spieler ${c+1}">${c+1}</button>`).join('')}</div>`:`<button class="price" data-buy="${k.id}" ${S.coins<k.price?'disabled':''}>${k.price} ${coin(' s')}</button>`}</div>`}).join('')}</div>`;
+ if(ctx.tab==='scenes')b=`<div class="grid2">${M.SCENES.map(t=>{const o=t.price===0||S.items.includes('s_'+t.id),on=S.sceneId===t.id;return `<div class="sk scn${on?' on':''}"><div class="swatch" style="--c1:${t.c1};--c2:${t.c2}"><i></i><i></i><i></i></div><b>${t.name}</b><span class="mut" style="font-size:11px">${t.detail}</span>${o?`<button class="price" data-eqs="${t.id}" style="color:var(--gold)">${on?'Aktiv':'Wählen'}</button>`:`<button class="price" data-buys="${t.id}" data-price="${t.price}" ${S.coins<t.price?'disabled':''}>${t.price} ${coin(' s')}</button>`}</div>`}).join('')}</div>`;
+ if(ctx.tab==='frames')b=`<div class="grid2">${M.FRAMES.map(t=>{const o=t.price===0||S.items.includes('f_'+t.id),on=S.frameId===t.id;return `<div class="sk${on?' on':''}"><div class="fpv" data-f="${t.id}" style="--a:${t.a};--b:${t.b}"></div><b>${t.name}</b><span class="mut" style="font-size:11px">${t.detail}</span>${o?`<button class="price" data-eqf="${t.id}" style="color:var(--gold)">${on?'Aktiv':'Wählen'}</button>`:`<button class="price" data-buyf="${t.id}" data-price="${t.price}" ${S.coins<t.price?'disabled':''}>${t.price} ${coin(' s')}</button>`}</div>`}).join('')}</div>`;
  if(ctx.tab==='titles')b=M.TITLES.map(t=>{const o=t.price===0||S.items.includes(t.id),on=S.titleId===t.id;return `<div class="it${on?' on':''}"><div class="i"><b>${t.name}</b><span class="mut">${t.detail}</span></div>${o?`<button class="btn sm${on?' alt':''}" data-eqt="${t.id}">${on?'Aktiv':'Wählen'}</button>`:`<button class="btn sm" data-buyi="${t.id}" ${S.coins<t.price?'disabled':''}>${t.price} ${coin(' s')}</button>`}</div>`}).join('');
  if(ctx.tab==='cheers')b=M.CHEERS.map(t=>{const o=t.price===0||S.items.includes('c_'+t.id),on=S.cheerId===t.id;return `<div class="it${on?' on':''}"><div class="i"><b>${t.name}</b><span class="mut">${t.detail}</span><div style="display:flex;gap:4px;margin-top:5px">${t.pal.map(c=>`<i style="width:14px;height:14px;border-radius:50%;background:${c}"></i>`).join('')}</div></div>${o?`<button class="btn sm${on?' alt':''}" data-eqc="${t.id}">${on?'Aktiv':'Wählen'}</button>`:`<button class="btn sm" data-buyi="c_${t.id}" data-price="${t.price}" ${S.coins<t.price?'disabled':''}>${t.price} ${coin(' s')}</button>`}</div>`}).join('');
  if(ctx.tab==='boosts')b=`<p class="mut">Aktiv: ${S.coinBoost} Spiele Münz-Booster · ${S.xpBoost} Spiele XP-Booster</p>`+M.BOOSTS.map(t=>`<div class="it"><div class="i"><b>${t.name}</b><span class="mut">${t.detail}</span></div><button class="btn sm" data-boost="${t.id}" ${S.coins<t.price?'disabled':''}>${t.price} ${coin(' s')}</button></div>`).join('');
@@ -185,11 +198,11 @@ stats(){const st=[['<svg viewBox="0 0 24 24" width="26" height="26" fill="none" 
 ach(){const tasks=M.todays();
  return bar('ERFOLGE',true,coinPill())+`<div class="body"><div class="card" style="--c:rgba(255,138,0,.6)"><div class="lab" style="color:var(--or)">Heute</div>${tasks.map(t=>{const p=Math.min(t.prog(S.daily),t.goal);return `<div style="margin-top:12px"><div class="row" style="justify-content:space-between"><b>${t.title}</b><span class="rew">${S.daily.claimed.includes(t.id)?'✓ ':''}+${t.reward} ${coin(' s')}</span></div><div class="pb" style="margin:6px 0 3px"><i style="width:${p/t.goal*100}%"></i></div><span class="mut" style="font-size:11px">${p}/${t.goal}</span></div>`}).join('')}<p class="mut" style="margin-top:10px;font-size:12px">Jeden Tag gibt es neue Aufgaben.</p></div>
  <div class="lab" style="text-align:center">${S.ach.length} / ${M.ACH.length} Erfolge</div>
- ${M.ACH.map(a=>{const d=S.ach.includes(a.id);return `<div class="it${d?' on':' lock'}"><span class="ic">${a.icon}</span><div class="i"><b>${a.title}</b><span class="mut">${a.detail}</span></div><span class="rew">+${a.reward} ${coin(' s')}</span></div>`}).join('')}</div>`},
+ ${M.ACH.map(a=>{const d=S.ach.includes(a.id);return `<div class="it${d?' on':' lock'}"><span class="ic">${eico(a.icon)}</span><div class="i"><b>${a.title}</b><span class="mut">${a.detail}</span></div><span class="rew">+${a.reward} ${coin(' s')}</span></div>`}).join('')}</div>`},
 
-settings(){const tg=(k,l,i)=>`<div class="trow"><span style="width:24px;text-align:center">${i}</span><span style="flex:1">${l}</span><button class="tg" role="switch" aria-checked="${S[k]}" aria-label="${l}" data-tg="${k}"></button></div>`;
- return bar('EINSTELLUNGEN',true)+`<div class="body"><div class="card" style="--c:rgba(255,138,0,.5)">${tg('sound','Soundeffekte','🔊')}${tg('music','Musik','♪')}${tg('haptics','Vibration','📳')}</div>
- <button class="lrow" data-a="setup">👥 Spieler, Namen & CPU-Stärke<span>›</span></button><a class="lrow" href="datenschutz.html" style="text-decoration:none;color:#fff">🛡 Datenschutz<span>›</span></a><a class="lrow" href="impressum.html" style="text-decoration:none;color:#fff;border-color:var(--line)">Impressum<span>›</span></a>
+settings(){const tg=(k,l,i)=>`<div class="trow"><span style="width:24px;display:flex;justify-content:center">${GI_[i]||i}</span><span style="flex:1">${l}</span><button class="tg" role="switch" aria-checked="${S[k]}" aria-label="${l}" data-tg="${k}"></button></div>`;
+ return bar('EINSTELLUNGEN',true)+`<div class="body"><div class="card" style="--c:rgba(255,138,0,.5)">${tg('sound','Soundeffekte','sound')}${tg('music','Musik','music')}${tg('haptics','Vibration','vib')}</div>
+ <button class="lrow" data-a="setup">${GI_.users} Spieler, Namen & CPU-Stärke<span>›</span></button><a class="lrow" href="datenschutz.html" style="text-decoration:none;color:#fff">${GI_.shield} Datenschutz<span>›</span></a><a class="lrow" href="impressum.html" style="text-decoration:none;color:#fff;border-color:var(--line)">Impressum<span>›</span></a>
  <div class="card" style="--c:var(--line);text-align:center"><img src="img/logo.png" alt="" style="width:70px;height:70px;border-radius:50%"><div style="font-weight:900;font-size:19px;margin-top:6px">Grizzlys Arcade</div><p class="mut" style="margin-top:4px">Die offizielle Spiele-App von Unihockey am Greifensee Grizzlys.</p><p class="mut" style="font-size:11px;margin-top:8px">Browser-Version · Keine Werbung · Keine Echtgeld-Käufe · Kein Tracking</p></div>
  <p class="mut" style="text-align:center;font-size:12px">Münzen, Skins, Erfolge, Rekorde und Namen liegen nur in deinem Browser. Sie sind nicht mit der iPhone-App verbunden.</p>
  <button class="btn red" data-a="reset">${ctx.confirmReset?'Wirklich alles löschen?':'Fortschritt zurücksetzen'}</button><a class="lnk" href="index.html">Zur Webseite</a></div>`},
@@ -200,7 +213,7 @@ wheel(){const W=M.WHEEL,n=W.length,seg=360/n,can=canWheel()&&!ctx.spin,bonus=Mat
   return `<path d="M${C} ${C}L${x1} ${y1}A${R} ${R} 0 0 1 ${x2} ${y2}Z" fill="${fill}" stroke="rgba(232,201,138,.55)" stroke-width="1.4"/><g transform="translate(${lx} ${ly}) rotate(${k*seg+seg/2})"><text text-anchor="middle" y="4" font-family="Instrument Serif,Georgia,serif" font-size="${p.label.length>2?30:36}" fill="${tc}">${p.label}</text><text text-anchor="middle" y="24" font-family="Inter,sans-serif" font-size="10" font-weight="600" letter-spacing="1.5" fill="${top?'#3a2308':'rgba(243,236,224,.6)'}">${p.sub.toUpperCase()}</text></g>`}).join('');
  const studs=Array.from({length:24},(_,k)=>{const [x,y]=pol(190,k*15);return `<circle class="stud" style="animation-delay:${(k%2)*.5}s" cx="${x}" cy="${y}" r="3.2"/>`}).join('');
  return SCREENS.hub()+`<div class="ovl"><div class="row" style="align-items:center"><h2 style="font-size:36px;flex:1;font-style:italic;background:linear-gradient(120deg,#f6e3b4,#d9ac5c 50%,#9c6f2a);-webkit-background-clip:text;background-clip:text;color:transparent">Glücksrad</h2><button class="ib" data-a="back" aria-label="Schliessen">✕</button></div>
- <p style="text-align:center;font-weight:600;color:var(--mut)">🔥 Tages-Streak ${S.streak} · Bonus +${bonus} Münzen</p>
+ <p style="text-align:center;font-weight:600;color:var(--mut)">${GI_.flame} Tages-Streak ${S.streak} · Bonus +${bonus} Münzen</p>
  <div class="wheel"><div class="pt"></div><div class="w" id="wh"><svg viewBox="0 0 400 400" width="100%" height="100%"><defs><linearGradient id="gld" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6e3b4"/><stop offset=".5" stop-color="#d9ac5c"/><stop offset="1" stop-color="#9c6f2a"/></linearGradient><radialGradient id="rim" cx=".5" cy=".5" r=".5"><stop offset=".9" stop-color="#9c6f2a"/><stop offset=".96" stop-color="#f6e3b4"/><stop offset="1" stop-color="#7a5320"/></radialGradient></defs><circle cx="200" cy="200" r="199" fill="url(#rim)"/><circle cx="200" cy="200" r="180" fill="#0a0807"/>${paths}<circle cx="200" cy="200" r="${R}" fill="none" stroke="url(#gld)" stroke-width="3"/>${studs}</svg></div><div class="hubi"></div></div>
  <div id="wres" class="big" style="font-size:34px;text-align:center;min-height:42px"></div>
  <button class="btn" data-a="spin" ${can?'':'disabled'} style="margin-top:auto">${canWheel()?'Drehen':'Morgen wieder'}</button></div>`}
@@ -274,7 +287,7 @@ function finish(o){
   msgs.push(...addXP(gain),...checkAch(),...checkDaily());save();
   if(ctx.tour)ctx.tour.points=ctx.tour.points.map((p,i)=>p+pts[i]);
   ctx.res={seats:s.seats,order,pos,scores,pts,gain,coins,rec,winnerHuman,tie,msgs};beep(winnerHuman?660:330,.25);buzz(30);if(winnerHuman)setTimeout(confetti,300);
-  ctx.inGame=false;replace('result');
+  ctx.inGame=false;ctx.fromGame=true;replace('result');
 }
 function pause(){if(!ctx.inGame)return;if(isNew(ctx.sess.id)){AR.pause();ctx.prevOv='';setOv(`<h2>Pause</h2><p>${esc(RULES[ctx.sess.id]||'')}</p><button class="btn" data-a="resume">▶ Weiter</button><button class="btn alt" data-a="restart">Neu starten</button><button class="btn red" data-a="quit">${ctx.tour?'Turnier abbrechen':'Zur Spielwahl'}</button>`);return}R.pause();ctx.prevOv=ctx.ov;setOv('<h2>Pause</h2><button class="btn" data-a="resume">Weiterspielen</button><button class="btn alt" data-a="quit">Spiel beenden</button>')}
 
@@ -292,9 +305,12 @@ $app.addEventListener('click',e=>{
   if(d.buy){const k=skinOf(d.buy);if(S.coins>=k.price&&!S.unlocked.includes(k.id)){S.coins-=k.price;S.unlocked.push(k.id);const m=checkAch();save();toast(m[0]||k.name+' gekauft')}render('shop');return}
   if(d.eq){const[k,c]=d.eq.split(':');S.skinIds[+c]=k;save();render('shop');return}
   if(d.buyi){const it=M.TITLES.find(x=>x.id===d.buyi),price=it?it.price:+d.price;if(S.coins>=price&&!S.items.includes(d.buyi)){S.coins-=price;S.items.push(d.buyi);if(it)S.titleId=it.id;else S.cheerId=d.buyi.slice(2);save();toast('Gekauft')}render('shop');return}
+  if(d.buys||d.buyf){const isS=!!d.buys,id=d.buys||d.buyf,k=(isS?'s_':'f_')+id,price=+d.price;if(S.coins>=price&&!S.items.includes(k)){S.coins-=price;S.items.push(k);if(isS)S.sceneId=id;else S.frameId=id;save();applyTheme();toast('Gekauft')}render('shop');return}
+  if(d.eqs){S.sceneId=d.eqs;save();applyTheme();render('shop');return}
+  if(d.eqf){S.frameId=d.eqf;save();applyTheme();render('shop');return}
   if(d.eqt){S.titleId=d.eqt;save();render('shop');return}
   if(d.eqc){S.cheerId=d.eqc;save();render('shop');return}
-  if(d.boost){const b=M.BOOSTS.find(x=>x.id===d.boost);if(S.coins>=b.price){S.coins-=b.price;if(b.id==='coin2')S.coinBoost+=10;else S.xpBoost+=10;save();toast('Booster aktiv')}render('shop');return}
+  if(d.boost){const b=M.BOOSTS.find(x=>x.id===d.boost);if(S.coins>=b.price){S.coins-=b.price;if(b.kind==='coin')S.coinBoost+=b.games;else S.xpBoost+=b.games;save();toast('Booster aktiv')}render('shop');return}
   if(d.g){if(d.ok!=='1'){toast(G[d.g]?'Duell-Spiele gehen nur zu zweit.':'Dieses Spiel gibt es in der App.');return}
     ctx.tour=null;ctx.sess={id:d.g,seats:seatsOf()};push('intro');return}
   switch(d.a){
@@ -302,7 +318,7 @@ $app.addEventListener('click',e=>{
    case'setup':push('setup');break;
    case'tour':ctx.mode='tour';ctx.tour=null;if(location.hash==='#podium')replace('tsetup');else push('tsetup');break;
    case'picker':ctx.tour=null;push('picker');break;
-   case'picker2':ctx.tour=null;replace('picker');break;
+   case'picker2':goHub(()=>push('picker'));break;
    case'stats':push('stats');break;
    case'shop':push('shop');break;
    case'ach':push('ach');break;
@@ -320,11 +336,11 @@ $app.addEventListener('click',e=>{
    case'cont':nextTurn();break;
    case'again':begin(ctx.sess.id,true);break;
    case'share':shareRes();break;
-   case'home':ctx.tour=null;replace('hub');break;
+   case'home':goHub();break;
    case'pause':pause();break;
    case'resume':setOv(ctx.prevOv||'');if(isNew(ctx.sess.id))AR.resume();else R.resume();break;
    case'restart':begin(ctx.sess.id,true);break;
-   case'quit':ctx.inGame=false;R.stop();AR.stop();ctx.ov='';ctx.tour=null;history.back();break;
+   case'quit':ctx.inGame=false;R.stop();AR.stop();ctx.ov='';goHub();break;
    case'tourgo':{const seats=seatsOf();ctx.tour={round:0,rounds:ctx.rounds,seats,points:seats.map(()=>0),last:null,next:null};pickRound();push('tour');break}
    case'tourplay':ctx.sess={id:ctx.tour.next,seats:ctx.tour.seats};begin(ctx.tour.next);break;
    case'next':{const tr=ctx.tour;tr.round++;if(tr.round>=tr.rounds){S.tPlayed++;const ord=tr.seats.map((_,i)=>i).sort((a,b)=>tr.points[b]-tr.points[a]);if(!tr.seats[ord[0]].cpu&&(ord.length<2||tr.points[ord[0]]>tr.points[ord[1]])){S.tWon++;confetti()}const m=checkAch();save();if(m.length)toast(m[0]);replace('podium')}else{pickRound();replace('tour')}break}
@@ -333,5 +349,5 @@ $app.addEventListener('click',e=>{
 $app.addEventListener('input',e=>{const i=e.target.dataset.name;if(i!=null){S.names[+i]=e.target.value;save()}});
 function pickRound(){const t=ctx.tour,pool=gamesFor(t.seats.length).filter(id=>id!==t.last);t.next=pool[Math.floor(Math.random()*pool.length)];t.last=t.next}
 window.__app={ctx,S:()=>S,render};
-render('hub');
+applyTheme();render('hub');
 })();

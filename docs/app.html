@@ -53,7 +53,7 @@ button.card{all:unset;box-sizing:border-box;display:block;cursor:pointer;backgro
 .lv .n{width:26px;height:26px;border-radius:50%;background:var(--or);color:#1a1000;display:grid;place-items:center;font-weight:900;font-size:14px}
 .lv small{display:block;font-weight:900;font-size:10px;letter-spacing:.08em;text-transform:uppercase;line-height:1.1}
 .lv .xp{width:62px;height:4px;border-radius:9px;background:rgba(255,255,255,.18);overflow:hidden;margin-top:3px}.lv .xp i{display:block;height:100%;background:var(--or)}
-.logo{width:min(190px,46vw);aspect-ratio:1;margin:0 auto;display:block;border-radius:50%;filter:drop-shadow(0 0 26px rgba(255,138,0,.65))}
+.logo{image-rendering:high-quality;width:min(200px,46vw);aspect-ratio:1;margin:0 auto;display:block;border-radius:50%;filter:drop-shadow(0 0 26px rgba(255,138,0,.65))}
 .t1{text-align:center;font-weight:900;font-size:42px;line-height:1;color:var(--or);letter-spacing:.02em;text-shadow:0 0 22px rgba(255,138,0,.6)}
 .t2{text-align:center;font-weight:900;font-size:16px;letter-spacing:.5em;margin-top:6px;padding-left:.5em}
 .strip{display:flex;align-items:center;gap:6px;padding:10px 12px;border-radius:18px;border:2px solid rgba(255,255,255,.25);background:rgba(28,28,43,.8);cursor:pointer;width:100%}
@@ -254,8 +254,7 @@ button.card:hover,.tile:hover,.feat:hover{border-color:rgba(217,172,92,.7)!impor
 .embers{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
 .embers i{position:absolute;bottom:-10px;width:var(--sz);height:var(--sz);border-radius:50%;background:radial-gradient(circle,#ffd9a0,#ff6a00);box-shadow:0 0 8px 2px rgba(255,106,0,.7);opacity:0;animation:ember var(--d) var(--dl) linear infinite}
 @keyframes ember{0%{opacity:0;transform:translate(0,0)}10%{opacity:.9}100%{opacity:0;transform:translate(var(--dx),-105vh)}}
-.logo{animation:breathe 5s ease-in-out infinite}@keyframes breathe{50%{transform:scale(1.025)}}
-@media(prefers-reduced-motion:reduce){.embers,.logo{animation:none}.embers{display:none}}
+@media(prefers-reduced-motion:reduce){.embers{animation:none}.embers{display:none}}
 .cd{position:absolute;inset:0;display:grid;place-items:center;background:rgba(10,8,7,.82);backdrop-filter:blur(6px);z-index:30;pointer-events:none}
 .cd b{font-family:"Instrument Serif",serif;font-weight:400;font-size:190px;line-height:1;background:linear-gradient(180deg,#f6e3b4,#d9ac5c 55%,#9c6f2a);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 40px rgba(217,172,92,.5));animation:cdIn .65s cubic-bezier(.2,.9,.3,1) both}
 .cd b.go{font-size:110px;letter-spacing:.04em;animation:cdGo .42s cubic-bezier(.2,1.3,.3,1) both}
@@ -263,6 +262,24 @@ button.card:hover,.tile:hover,.feat:hover{border-color:rgba(217,172,92,.7)!impor
 @keyframes cdGo{from{opacity:0;transform:scale(.5)}to{opacity:1;transform:scale(1)}}
 .lab+.card .lab,.card .lab{font-family:Inter,system-ui,sans-serif}
 .card b[style*="text-transform:uppercase"]{font-family:"Instrument Serif",serif!important;font-weight:400!important;font-size:34px!important;letter-spacing:.03em!important;background:linear-gradient(180deg,#f6e3b4,#d9ac5c);-webkit-background-clip:text;background-clip:text;color:transparent}
+.gi{width:1.15em;height:1.15em;vertical-align:-.2em;display:inline-block;flex:none}
+.ib .gi{width:22px;height:22px;vertical-align:middle}
+.p .gi{width:26px;height:26px}.trow .gi{width:22px;height:22px}.it .ic .gi{width:28px;height:28px}.lrow .gi{width:20px;height:20px;margin-right:8px;vertical-align:-4px}.pill .gi{width:15px;height:15px;vertical-align:-2px}
+.body>*,.body>.card{flex-shrink:0!important}
+.body{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+@media(max-height:700px){.logo{width:min(150px,38vw)!important}.hub-title,.ttl{font-size:clamp(40px,12vw,56px)!important}}
+body::before{background:radial-gradient(70vw 55vw at 85% -10%,rgba(var(--sc1,217,172,92),.22),transparent 60%),radial-gradient(60vw 45vw at -10% 105%,rgba(var(--sc2,255,106,0),.14),transparent 60%)!important}
+.embers i{background:radial-gradient(circle,#fff,var(--sem,#ff6a00))!important;box-shadow:0 0 8px 2px var(--sem,#ff6a00)!important}
+.frame{border:2.5px solid var(--fra,#d9ac5c)!important;box-shadow:0 0 28px -4px var(--fra,#d9ac5c),inset 0 0 0 1px var(--frb,#f6e3b4)!important}
+[data-fr=rainbow] .frame{border-color:transparent!important;background:linear-gradient(#0d1a2b,#0d1a2b) padding-box,conic-gradient(from var(--ang,0deg),#ff4d6a,#ffd24d,#4dff9a,#4dd2ff,#b44dff,#ff4d6a) border-box!important;animation:rb 5s linear infinite}
+@property --ang{syntax:'<angle>';inherits:false;initial-value:0deg}@keyframes rb{to{--ang:360deg}}
+[data-fr=neon] .frame{box-shadow:0 0 22px -2px #ff3df0,0 0 22px -2px #3df0ff,inset 0 0 0 1px #3df0ff!important}
+[data-fr=fire] .frame{animation:fl 1.6s ease-in-out infinite alternate}@keyframes fl{to{box-shadow:0 0 44px 2px var(--fra),inset 0 0 0 1px var(--frb)}}
+.swatch{position:relative;width:100%;aspect-ratio:16/10;border-radius:12px;overflow:hidden;background:#0a0807;border:1px solid rgba(255,255,255,.1);background-image:radial-gradient(90% 70% at 85% 0,rgba(var(--c1),.55),transparent 65%),radial-gradient(80% 60% at 0 100%,rgba(var(--c2),.45),transparent 65%)}
+.swatch i{position:absolute;bottom:6px;width:4px;height:4px;border-radius:50%;background:rgb(var(--c1));box-shadow:0 0 6px rgb(var(--c1))}.swatch i:nth-child(1){left:22%}.swatch i:nth-child(2){left:50%;bottom:14px}.swatch i:nth-child(3){left:76%}
+.fpv{width:100%;aspect-ratio:16/10;border-radius:14px;border:2.5px solid var(--a);box-shadow:0 0 18px -4px var(--a),inset 0 0 0 1px var(--b);background:#0a0807}
+.fpv[data-f=rainbow]{border-color:transparent;background:linear-gradient(#0a0807,#0a0807) padding-box,conic-gradient(#ff4d6a,#ffd24d,#4dff9a,#4dd2ff,#b44dff,#ff4d6a) border-box}
+.chips{overflow-x:auto;flex-wrap:nowrap!important;scrollbar-width:none;-webkit-overflow-scrolling:touch}.chips::-webkit-scrollbar{display:none}.chips>*{flex:none}
 </style>
 </head>
 <body><svg width="0" height="0" style="position:absolute"><defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6e3b4"/><stop offset=".5" stop-color="#d9ac5c"/><stop offset="1" stop-color="#9c6f2a"/></linearGradient></defs></svg>

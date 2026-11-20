@@ -20,7 +20,7 @@ class DartsGame extends MiniScene{
    for(const[f,t]of[[.81,'5'],[.46,'10'],[.21,'25']]){const l=label(t,Math.max(8,b.R*.11),white(1,.55));l.x=b.center.x+b.R*f;l.y=b.center.y-3;l.z=3;s.field.add(l)}
    const cg=new Sprite(Gfx.glow(),46,46);cg.blend='add';cg.alpha=.55;cg.z=80;s.field.add(cg);b.crossGlow=cg;const cr=new Sprite(crossTex(),34,34);cr.z=81;s.field.add(cr);b.cross=cr;
    const gap=Math.min(20,(s.w-40)/N);for(let i=0;i<N;i++){const p=new Sprite(pipTex(),8,17);p.color=s.color;p.cbf=1;p.x=(i-(N-1)/2)*gap;p.y=-s.h/2+16;p.z=5;s.field.add(p);b.pips.push(p)}
-   const hint=label(s.isCPU?'CPU':'TIPP = WERFEN 🎯',Math.min(16,s.w*.08),'#fff');hint.y=-s.h/2+40;hint.z=60;s.field.add(hint);hint.run(A.sequence([A.wait(4.4),A.fadeOut(.4),A.remove()]));b.hint=hint;
+   const hint=label(s.isCPU?'CPU':'TIPP = WERFEN',Math.min(16,s.w*.08),'#fff');hint.y=-s.h/2+40;hint.z=60;s.field.add(hint);hint.run(A.sequence([A.wait(4.4),A.fadeOut(.4),A.remove()]));b.hint=hint;
    this.boards.push(b);this.updateCross(s,b)}
   this.setActiveSeat(0)}
  speedMult(b){return 1+.22*b.thrown}

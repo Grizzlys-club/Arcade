@@ -34,7 +34,7 @@ class CompareGame extends MiniScene{
  choose(s,i){const st=this.states[s.index];if(!st.active||st.lock>0)return;const right=st.vals[0]>st.vals[1]?0:1;
   if(i===right){st.streak++;const pts=st.streak>0&&st.streak%4===0?2:1;this.addScore(s,pts);this.addStat('hits',1,s);st.count++;st.active=false;
    const b=st.btns[i];s.burst({x:b.x,y:b.y},'#fff',8,140);s.floatText(pts>1?'+2 SERIE!':'+1',{x:b.x,y:b.y+36},pts>1?'#ff0':Theme.green,pts>1?24:20);
-   st.streakLabel.text=st.streak>=3?'🔥 '+st.streak+'er Serie':'';if(!s.isCPU){Sfx.play(pts>1?'coin':'right');Haptic.tap()}this.nextQuestion(s)}
+   st.streakLabel.text=st.streak>=3?st.streak+'er Serie':'';if(!s.isCPU){Sfx.play(pts>1?'coin':'right');Haptic.tap()}this.nextQuestion(s)}
   else this.miss(s,false)}
  began(seat,at){const st=this.states[seat.index];for(let i=0;i<2;i++)if(hit(st.btns[i],at,4,6)){this.choose(seat,i);return}}
 }

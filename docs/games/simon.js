@@ -1,6 +1,6 @@
 (()=>{
 const {Node,Sprite,A,Gfx,Theme,rgba,white,label}=SK;
-const COLS=[rgba(1,.25,.3),rgba(.2,.6,1),rgba(.2,.95,.45),rgba(1,.85,.15)],ICONS=['🏒','🥅','🏆','🧤'],SOUNDS=['beep','pop','kick','bounce'];
+const COLS=[rgba(1,.25,.3),rgba(.2,.6,1),rgba(.2,.95,.45),rgba(1,.85,.15)],ICONS=['▲','●','■','◆'],SOUNDS=['beep','pop','kick','bounce'];
 const alpha=(c,a)=>c.replace(/[\d.]+\)$/,a+')');
 class SimonGame extends MiniScene{
  setupGame(){this.rand=this.newRand();this.hasHumans=this.seats.some(s=>!s.isCPU);this.states=[];this.sequence=[];this.stp='pause';this.timer=0;this.showIndex=0;this.showLit=false;this.inputLeft=0;this.round=0;

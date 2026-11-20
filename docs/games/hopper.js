@@ -11,7 +11,7 @@ class HopperGame extends MiniScene{
  addPlat(st,x,y,kind,width,amp,phase){const s=st.seat,pw=width||this.platW(s);let fill,border;
   if(kind==='normal'){fill=s.color;border='#fff'}else if(kind==='moving'){fill=rgba(.3,.85,1);border='#fff'}else{fill=rgba(.45,.3,.2);border=rgba(.8,.55,.3)}
   const node=new Sprite(Gfx.pill(pw,14,fill,border,7),pw,14);node.x=x;node.y=y-7;st.cam.add(node);
-  if(kind==='breaking'){const crack=label('⚡︎',10,white(0,.6));crack.z=1;node.add(crack)}else{const glow=new Sprite(Gfx.glow(),pw*1.4,26);glow.color=fill;glow.cbf=1;glow.blend='add';glow.alpha=.35;glow.z=-1;node.add(glow)}
+  if(kind==='breaking'){const crack=label('✕',10,white(0,.6));crack.z=1;node.add(crack)}else{const glow=new Sprite(Gfx.glow(),pw*1.4,26);glow.color=fill;glow.cbf=1;glow.blend='add';glow.alpha=.35;glow.z=-1;node.add(glow)}
   st.plats.push({node,x,baseX:x,y,kind,amp:amp||0,phase:phase||0,broken:false})}
  generate(st){const s=st.seat,pw=this.platW(s),half=s.w/2-pw/2-6;
   while(st.lastY<st.camY+s.h){const hardness=Math.min(1,Math.max(0,st.lastY)/4000),gap=st.rand.range(42,62+40*hardness);st.lastY+=gap;const x=st.rand.range(-half,half),r=st.rand.double();
