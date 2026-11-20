@@ -206,6 +206,11 @@ button.card:hover,.tile:hover,.feat:hover{border-color:rgba(217,172,92,.7)!impor
 .lv{border-color:rgba(217,172,92,.45);background:rgba(217,172,92,.08)}
 .ib{border-color:var(--line)}
 #app{border-color:rgba(232,201,138,.25)!important}
+
+@keyframes rk{from{opacity:0;transform:translateX(-24px) scale(.97)}}
+.rank{animation:rk .55s cubic-bezier(.2,.9,.2,1) both}.rank:nth-child(2){animation-delay:.12s}.rank:nth-child(3){animation-delay:.24s}.rank:nth-child(4){animation-delay:.36s}
+.rank.win{border:1px solid rgba(232,201,138,.6)!important;background:linear-gradient(90deg,rgba(217,172,92,.2),rgba(217,172,92,.04))!important;box-shadow:0 0 40px -10px rgba(217,172,92,.6)}
+.big{font-family:var(--disp,serif)!important;font-style:italic;font-weight:400!important;font-size:46px!important;line-height:1;background:linear-gradient(120deg,#f6e3b4,#d9ac5c 50%,#9c6f2a);-webkit-background-clip:text;background-clip:text;color:transparent;animation:rk .7s cubic-bezier(.2,.9,.2,1) both}
 </style>
 </head>
 <body>

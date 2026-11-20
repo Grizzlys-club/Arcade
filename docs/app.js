@@ -39,6 +39,21 @@ function beep(f,d,t,v){if(!S.sound)return;try{const a=ac(),o=a.createOscillator(
 const buzz=n=>{if(S.haptics&&navigator.vibrate)try{navigator.vibrate(n||12)}catch(e){}};
 let mus=null;const PENT=[261.6,329.6,392,523.3,392,329.6,440,349.2];let mi=0;
 function music(){if(mus){clearInterval(mus);mus=null}if(!S.music)return;mus=setInterval(()=>{if(document.hidden||!AC)return;try{const a=AC,o=a.createOscillator(),g=a.createGain();o.type='triangle';o.frequency.value=PENT[mi++%PENT.length];g.gain.value=.018;o.connect(g);g.connect(a.destination);o.start();g.gain.exponentialRampToValueAtTime(.0001,a.currentTime+.32);o.stop(a.currentTime+.32)}catch(e){}},360)}
+async function shareRes(){const r=ctx.res;if(!r)return;const W=1080,H=1350,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
+ let g=x.createLinearGradient(0,0,W,H);g.addColorStop(0,'#17110a');g.addColorStop(1,'#07050a');x.fillStyle=g;x.fillRect(0,0,W,H);
+ g=x.createRadialGradient(W*.85,0,0,W*.85,0,W);g.addColorStop(0,'rgba(217,172,92,.35)');g.addColorStop(1,'rgba(217,172,92,0)');x.fillStyle=g;x.fillRect(0,0,W,H);
+ x.strokeStyle='rgba(232,201,138,.5)';x.lineWidth=3;x.strokeRect(40,40,W-80,H-80);
+ const gold=x.createLinearGradient(0,0,W,0);gold.addColorStop(0,'#f6e3b4');gold.addColorStop(.5,'#d9ac5c');gold.addColorStop(1,'#9c6f2a');
+ x.textAlign='center';x.fillStyle=gold;x.font='italic 120px "Instrument Serif",Georgia,serif';x.fillText('Grizzlys Arcade',W/2,210);
+ x.fillStyle='rgba(243,236,224,.6)';x.font='500 34px Inter,sans-serif';x.fillText((NAME[ctx.sess.id]||'').toUpperCase(),W/2,290);
+ x.fillStyle='#f3ece0';x.font='96px "Instrument Serif",Georgia,serif';x.fillText(r.tie?'Unentschieden':r.seats[r.order[0]].name+' gewinnt',W/2,470);
+ r.order.slice(0,4).forEach((si,k)=>{const y=600+k*140,s=r.seats[si],sc=r.scores[si];x.fillStyle=k===0?'rgba(217,172,92,.18)':'rgba(255,255,255,.05)';x.beginPath();x.roundRect(110,y-70,W-220,110,28);x.fill();if(k===0){x.strokeStyle='rgba(232,201,138,.7)';x.lineWidth=2;x.stroke()}
+  x.textAlign='left';x.fillStyle=k===0?'#d9ac5c':'rgba(243,236,224,.5)';x.font='italic 64px "Instrument Serif",Georgia,serif';x.fillText(String(r.pos[k]),150,y+4);x.fillStyle='#f3ece0';x.font='600 44px Inter,sans-serif';x.fillText(String(s.name).slice(0,14),240,y+4);
+  x.textAlign='right';x.fillStyle=k===0?'#f6e3b4':'#f3ece0';x.font='600 44px Inter,sans-serif';x.fillText(sc==null?(k===0?'Sieg':''):sc+' '+unitOf(ctx.sess.id),W-150,y+4)});
+ x.textAlign='center';x.fillStyle='rgba(243,236,224,.55)';x.font='500 32px Inter,sans-serif';x.fillText('Spiel mit auf grizzlys-club.github.io/Arcade',W/2,H-110);
+ const blob=await new Promise(res=>c.toBlob(res,'image/png'));if(!blob)return;const f=new File([blob],'grizzlys-arcade.png',{type:'image/png'});
+ try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:'Grizzlys Arcade',text:'Spiel mit! https://grizzlys-club.github.io/Arcade/'});return}}catch(e){if(e&&e.name==='AbortError')return}
+ const u=URL.createObjectURL(blob),l=document.createElement('a');l.href=u;l.download='grizzlys-arcade.png';document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),4000)}
 function confetti(){if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;const pal=cheerOf().pal;for(let i=0;i<46;i++){const e=document.createElement('i');e.className='cf';e.style.left=Math.random()*100+'vw';e.style.background=pal[i%pal.length];e.style.animationDelay=Math.random()*.6+'s';document.body.appendChild(e);setTimeout(()=>e.remove(),3400)}}
 const STAT={goals:['penalty','powershot','hoops','puckgolf'],balls:['ballrain','goalie','juggle'],hits:['darts','snowball','whack','sorter','ninja']};
 
@@ -132,7 +147,7 @@ result(){const r=ctx.res,t=ctx.tour,fin=t&&t.round===t.rounds-1;
  const rows=r.order.map((si,k)=>{const s=r.seats[si],sc=r.scores[si];return `<div class="rank${k===0?' win':''}"><span class="p">${r.pos[k]}</span>${bimg(s.skin,34,true)}<span class="nm" style="color:${SEAT[s.card]}">${esc(s.name)}</span><span class="sc">${sc==null?(k===0?'Sieg':''):sc+' '+unitOf(ctx.sess.id)}${t?'<br>+'+r.pts[si]+' Pkt':''}</span></div>`}).join('');
  return `<div class="body" style="justify-content:center"><div style="text-align:center"><div class="lab">${NAME[ctx.sess.id]}</div><div class="big" style="margin-top:6px">${r.tie?'Unentschieden':esc(r.seats[r.order[0]].name)+' gewinnt'}</div>${r.gain?`<div class="mut" style="margin-top:10px">+${r.coins} ${coin(' s')} · +${r.gain} XP${r.rec?' · Neuer Rekord!':''}</div>`:''}${(r.msgs||[]).map(m=>`<div class="pill" style="margin-top:6px">${esc(m)}</div>`).join('<br>')}</div>
  <div style="display:grid;gap:10px">${rows}</div>
- ${t?`<button class="btn" data-a="next">${fin?'Zur Siegerehrung':'Nächste Runde'}</button>`:`<button class="btn" data-a="again">↻ Nochmal</button><button class="btn blue sm" data-a="picker2">Anderes Spiel</button><button class="btn alt sm" data-a="home">Hauptmenü</button>`}</div>`},
+ ${t?`<button class="btn" data-a="next">${fin?'Zur Siegerehrung':'Nächste Runde'}</button>`:`<button class="btn" data-a="again">↻ Nochmal</button><button class="btn blue sm" data-a="picker2">Anderes Spiel</button><button class="btn alt sm" data-a="share">↗ Ergebnis teilen</button><button class="btn alt sm" data-a="home">Hauptmenü</button>`}</div>`},
 
 tsetup(){const ss=seatsOf(),n=ss.length,r=ctx.rounds,tb=n===2?'Sieg 3 · Niederlage 0 · Unentschieden je 1':n===3?'Platz 1: 4 · Platz 2: 2 · Platz 3: 0 Punkte':'Platz 1: 5 · Platz 2: 3 · Platz 3: 1 · Platz 4: 0 Punkte';
  return bar('TURNIER',true,coinPill())+`<div class="body"><div style="text-align:center;color:#ffd61a;filter:drop-shadow(0 0 16px rgba(255,214,26,.5))"><svg viewBox="0 0 24 24" width="84" height="84" fill="currentColor"><path d="M7 3h10v4a5 5 0 01-4 4.9V15h3v2h-8v-2h3v-3.1A5 5 0 017 7zM5 4h2v3H5a1 1 0 000 0zm12 0h2v2a3 3 0 01-2 2.8z"/></svg></div>
@@ -296,6 +311,7 @@ $app.addEventListener('click',e=>{
    case'go':ctx.run&&ctx.run();break;
    case'cont':nextTurn();break;
    case'again':begin(ctx.sess.id,true);break;
+   case'share':shareRes();break;
    case'home':ctx.tour=null;replace('hub');break;
    case'pause':pause();break;
    case'resume':setOv(ctx.prevOv||'');if(isNew(ctx.sess.id))AR.resume();else R.resume();break;
