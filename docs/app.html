@@ -280,6 +280,14 @@ body::before{background:radial-gradient(70vw 55vw at 85% -10%,rgba(var(--sc1,217
 .fpv{width:100%;aspect-ratio:16/10;border-radius:14px;border:2.5px solid var(--a);box-shadow:0 0 18px -4px var(--a),inset 0 0 0 1px var(--b);background:#0a0807}
 .fpv[data-f=rainbow]{border-color:transparent;background:linear-gradient(#0a0807,#0a0807) padding-box,conic-gradient(#ff4d6a,#ffd24d,#4dff9a,#4dd2ff,#b44dff,#ff4d6a) border-box}
 .chips{overflow-x:auto;flex-wrap:nowrap!important;scrollbar-width:none;-webkit-overflow-scrolling:touch}.chips::-webkit-scrollbar{display:none}.chips>*{flex:none}
+.frame::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:20;border-radius:inherit;
+background:radial-gradient(120% 90% at 50% 50%,transparent 58%,rgba(0,0,0,.42) 100%),
+linear-gradient(115deg,transparent 30%,rgba(255,255,255,.07) 42%,transparent 54%),
+radial-gradient(60% 30% at 50% -4%,rgba(255,244,214,.20),transparent 70%),
+radial-gradient(50% 25% at 50% 104%,rgba(255,106,0,.18),transparent 70%);mix-blend-mode:screen;animation:sheen 7s ease-in-out infinite}
+.frame::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:19;opacity:.5;background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.018) 0 1px,transparent 1px 3px)}
+@keyframes sheen{0%,100%{background-position:0 0,-40% 0,0 0,0 0}50%{background-position:0 0,140% 0,0 0,0 0}}
+@media(prefers-reduced-motion:reduce){.frame::after{animation:none}}
 </style>
 </head>
 <body><svg width="0" height="0" style="position:absolute"><defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6e3b4"/><stop offset=".5" stop-color="#d9ac5c"/><stop offset="1" stop-color="#9c6f2a"/></linearGradient></defs></svg>
