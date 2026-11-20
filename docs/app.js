@@ -213,6 +213,7 @@ function render(name){
   $app.innerHTML=SCREENS[name]();
   $app.classList.toggle('enter',prev!==name&&name!=='game');
   if(name==='game'){const nw=isNew(ctx.sess.id);ctx.ratio=nw?390/844:9/16;document.getElementById('frame').appendChild(nw?canvas2:canvas);const ov=document.createElement('div');ov.className='ov';ov.id='ov';ov.hidden=true;document.getElementById('frame').appendChild(ov);if(ctx.ov)setOv(ctx.ov);fit()}
+  if(name==='hub'&&!$app.querySelector('.embers')){const e=document.createElement('div');e.className='embers';e.setAttribute('aria-hidden','true');for(let i=0;i<16;i++){const s=document.createElement('i');s.style.cssText='left:'+(Math.random()*100)+'%;--d:'+(6+Math.random()*8)+'s;--dl:'+(-Math.random()*12)+'s;--sz:'+(2+Math.random()*3)+'px;--dx:'+((Math.random()-.5)*60)+'px';e.appendChild(s)}$app.prepend(e)}
   const b=$app.querySelector('.body');if(b)b.scrollTop=0;
 }
 M.onbear=()=>{if(ctx.cur!=='game')render(ctx.cur)};
