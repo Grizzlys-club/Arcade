@@ -110,7 +110,11 @@ class Sprite extends Node{constructor(tex,w,h,color){super();this.texture=tex||n
   else if(this.color){c.fillStyle=this.color;c.fillRect(-this.ax*w,-this.ay*h,w,h)}
   if(this._b==='add')c.globalCompositeOperation='source-over'}}
 class Label extends Node{constructor(text,size,color,bold){super();this.text=text;this.size=size||17;this.color=color||'#fff';this.bold=bold!==false;this.ha='center';this.va='center'}
- self(c){if(this.text==null||this.text==='')return;c.save();c.scale(1,-1);c.font=`${this.bold?900:700} ${this.size}px ${FONT}`;c.fillStyle=this.color;c.textAlign=this.ha;c.textBaseline=this.va==='center'?'middle':this.va==='top'?'top':this.va==='bottom'?'bottom':'alphabetic';c.fillText(String(this.text),0,this.va==='center'?this.size*.04:0);c.restore()}}
+ wrap(c){c.font=`${this.bold?900:700} ${this.size}px ${FONT}`;const words=String(this.text).split(' '),lines=[];let cur='';for(const w of words){const t=cur?cur+' '+w:w;if(cur&&c.measureText(t).width>this.maxW){lines.push(cur);cur=w}else cur=t}if(cur)lines.push(cur);return lines}
+ get textH(){if(!this.maxW||!this.text)return this.size;const c=document.createElement('canvas').getContext('2d');return this.wrap(c).length*this.size*1.2}
+ self(c){if(this.text==null||this.text==='')return;c.save();c.scale(1,-1);c.font=`${this.bold?900:700} ${this.size}px ${FONT}`;c.fillStyle=this.color;c.textAlign=this.ha;
+  if(this.maxW){const lines=this.wrap(c),lh=this.size*1.2,tot=lines.length*lh;c.textBaseline='middle';let y0=this.va==='top'?lh/2:this.va==='bottom'?-tot+lh/2:-tot/2+lh/2;lines.forEach((l,i)=>c.fillText(l,0,y0+i*lh));c.restore();return}
+  c.textBaseline=this.va==='center'?'middle':this.va==='top'?'top':this.va==='bottom'?'bottom':'alphabetic';c.fillText(String(this.text),0,this.va==='center'?this.size*.04:0);c.restore()}}
 class Shape extends Node{constructor(){super();this.fill=null;this.stroke=null;this.lw=1;this.path=null;this.glow=0;this.cap='butt'}
  static rect(w,h,r){const s=new Shape();s.path=c=>{rr(c,-w/2,-h/2,w,h,r||0)};return s}
  static ellipse(w,h){const s=new Shape();s.path=c=>{c.beginPath();c.ellipse(0,0,w/2,h/2,0,0,7)};return s}
