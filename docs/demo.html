@@ -1,0 +1,12 @@
+<!doctype html><html lang="de"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Grizzlys Arcade Demo</title>
+<style>html,body{margin:0;height:100%;background:#07090f;overflow:hidden;touch-action:none;overscroll-behavior:none}canvas{display:block;width:100vw;height:100vh;height:100dvh}</style>
+<body><canvas id="c"></canvas>
+<script src="rules.js"></script><script src="meta.js"></script><script src="sk/sk.js"></script><script src="sk/sfx.js"></script><script src="sk/mini.js"></script>
+<script>(function(){var g=new URLSearchParams(location.search).get("g")||"airhockey";document.write('<script src="games/a_kit.js"><\/script><script src="games/'+g+'.js"><\/script>')})()</script>
+<script>
+const q=new URLSearchParams(location.search),g=q.get('g')||'airhockey';
+Arcade.mount(document.getElementById('c'));
+function go(){Arcade.play(g,{seats:[{name:'Du',cpu:false,skin:'orange'},{name:'Tatze',cpu:true,skin:'ice'}],difficulty:1},()=>setTimeout(go,2200))}
+go();
+</script></html>
