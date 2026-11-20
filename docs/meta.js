@@ -33,7 +33,7 @@ const ASP=918/777,BC={};
 function isDark(c){return(parseInt(c.slice(1,3),16)*.3+parseInt(c.slice(3,5),16)*.6+parseInt(c.slice(5,7),16)*.1)/255<.45}
 function tint(img,w,h,color){const k=document.createElement('canvas');k.width=w;k.height=h;const x=k.getContext('2d');x.drawImage(img,0,0,w,h);x.globalCompositeOperation='source-in';x.fillStyle=color;x.fillRect(0,0,w,h);return k}
 function bearCanvas(sk,h){const key=sk.id+'|'+Math.round(h)+'|'+(sk.num||''),hit=BC[key];if(hit)return hit;if(BI.ok<2)return null;
- const sc=2,w=h*ASP,PW=Math.ceil(w*1.14),PH=Math.ceil(h*1.18),cv=document.createElement('canvas');cv.width=PW*sc;cv.height=PH*sc;const c=cv.getContext('2d');c.scale(sc,sc);
+ const sc=3,w=h*ASP,PW=Math.ceil(w*1.14),PH=Math.ceil(h*1.18),cv=document.createElement('canvas');cv.width=PW*sc;cv.height=PH*sc;const c=cv.getContext('2d');c.scale(sc,sc);
  const cx=PW/2,fy=PH-h*.04,dark=isDark(sk.color);
  c.drawImage(tint(BI.body,Math.round(w*1.07*sc),Math.round(h*1.07*sc),dark?'#fff':'#1a1a1a'),cx-w*1.07/2,fy-h*1.07+h*.03*1.07,w*1.07,h*1.07);
  c.drawImage(tint(BI.body,Math.round(w*sc),Math.round(h*sc),sk.color),cx-w/2,fy-h,w,h);

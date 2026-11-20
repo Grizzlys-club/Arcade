@@ -7,7 +7,7 @@ const rnd=(a,b)=>a+Math.random()*(b-a);
 function text(t,x,y,s,col,al){c.font=`900 ${s}px "Avenir Next",Avenir,Figtree,Archivo,Impact,sans-serif`;c.fillStyle=col||'#fff';c.textAlign=al||'center';c.textBaseline='middle';c.fillText(t,x,y)}
 function circle(x,y,r,col,glow){c.save();if(glow){c.shadowColor=col;c.shadowBlur=glow}c.fillStyle=col;c.beginPath();c.arc(x,y,r,0,7);c.fill();c.restore()}
 const LOGO=new Image();LOGO.src='img/logo.png';let BK=null;
-function makeBK(){const k=document.createElement('canvas');k.width=W*2;k.height=H*2;const x=k.getContext('2d');x.scale(2,2);
+function makeBK(){const k=document.createElement('canvas');k.width=W*3;k.height=H*3;const x=k.getContext('2d');x.scale(3,3);
  const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#10223a');g.addColorStop(1,'#080d18');x.fillStyle=g;x.fillRect(0,0,W,H);
  x.strokeStyle='rgba(64,204,255,.07)';x.lineWidth=1;x.beginPath();for(let i=0;i<=W;i+=30){x.moveTo(i,0);x.lineTo(i,H)}for(let j=0;j<=H;j+=30){x.moveTo(0,j);x.lineTo(W,j)}x.stroke();
  if(LOGO.complete&&LOGO.naturalWidth){x.globalAlpha=.07;x.drawImage(LOGO,W/2-150,H/2-150,300,300);x.globalAlpha=1}
@@ -127,7 +127,7 @@ G.tugwar={name:'Tauziehen',sub:'Schnell tippen',img:'tugwar',help:'Tippe so schn
 
 /* Runner */
 const Runner={cur:null,running:false,paused:false,last:0,
- mount(canvas){cv=canvas;c=cv.getContext('2d');
+ mount(canvas){cv=canvas;const K=Math.min(3,Math.max(2,Math.ceil(window.devicePixelRatio||1)));cv.width=W*K;cv.height=H*K;c=cv.getContext('2d');c.setTransform(K,0,0,K,0,0);
   const pos=e=>{const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height,id:e.pointerId}};
   ['down','move','up'].forEach(n=>cv.addEventListener('pointer'+n,e=>{if(!this.cur||!this.running||this.paused)return;e.preventDefault();if(n==='down'&&cv.setPointerCapture)try{cv.setPointerCapture(e.pointerId)}catch(_){}if(this.cur[n])this.cur[n](pos(e))}));
   const loop=t=>{const dt=Math.min(.033,(t-this.last)/1000||0);this.last=t;if(this.cur){if(this.running&&!this.paused)this.cur.update(dt);this.cur.draw()}requestAnimationFrame(loop)};requestAnimationFrame(loop)},
