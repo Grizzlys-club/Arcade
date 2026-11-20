@@ -136,9 +136,9 @@ intro(){const id=ctx.sess.id,g=GI(id),sd=ctx.sess.seats,c=accOf(id),t=ctx.tour,n
  return `<div class="bar"><button class="ib" data-a="back" aria-label="Zurück" style="width:auto;border-radius:99px;padding:0 14px;font-size:15px;height:40px">‹ ZURÜCK</button></div><div class="body">
  <div class="card" style="--c:${c};padding:6px;overflow:hidden"><img src="img/games/${id}.jpg" alt="Spielbild ${g.name}" style="width:100%;border-radius:12px;display:block;aspect-ratio:16/10;object-fit:cover;object-position:top"><div style="text-align:center;padding:10px 4px 6px"><b style="font-size:26px;text-transform:uppercase;letter-spacing:.02em">${g.name}</b></div></div>
  <div class="lab" style="text-align:center;color:${c}">${TAG[id]==='Sport'?'Unihockey':'Party'} · ${g.sub.replace('Sekunden','Sek.').toUpperCase()} · ${id==='tugwar'?'2':'2-4'} Spieler</div>
- <div class="card" style="--c:${c}"><div class="lab" style="color:var(--yel)">💡 So geht's</div><p style="font-size:17px;margin-top:6px;font-weight:700">${g.help}</p>${isNew(id)?'<p class="mut" style="margin-top:8px">'+hint+'</p>':g.versus?'<p class="mut" style="margin-top:8px">'+(sd.every(s=>!s.cpu)?esc(sd[0].name)+' spielt unten, '+esc(sd[1].name)+' oben.':'Du spielst unten, die CPU oben.')+'</p>':sd.length>1?'<p class="mut" style="margin-top:8px">Jeder spielt für sich, der Reihe nach. Gib das Handy weiter, wenn du fertig bist.</p>':''}</div>
+ <div class="card" style="--c:${c}"><div class="lab" style="color:#e0b45f"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="vertical-align:-2px"><path d="M12 2l2.2 7.3L22 12l-7.8 2.7L12 22l-2.2-7.3L2 12l7.8-2.7z"/></svg> So geht's</div><p style="font-size:17px;margin-top:6px;font-weight:700">${g.help}</p>${isNew(id)?'<p class="mut" style="margin-top:8px">'+hint+'</p>':g.versus?'<p class="mut" style="margin-top:8px">'+(sd.every(s=>!s.cpu)?esc(sd[0].name)+' spielt unten, '+esc(sd[1].name)+' oben.':'Du spielst unten, die CPU oben.')+'</p>':sd.length>1?'<p class="mut" style="margin-top:8px">Jeder spielt für sich, der Reihe nach. Gib das Handy weiter, wenn du fertig bist.</p>':''}</div>
  <div class="strip" style="cursor:default">${sd.map(s=>`<div class="p">${bimg(s.skin,40,true)}<span style="color:${SEAT[s.card]}">${esc(s.name)}</span>${s.cpu?'<span class="mut" style="font-size:9px">CPU</span>':''}</div>`).join('')}</div></div>
- <div class="foot"><button class="btn" data-a="start">▶ Los geht's</button></div>`},
+ <div class="foot"><button class="btn" data-a="start"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="vertical-align:-2px"><path d="M7 4l13 8-13 8z"/></svg> Los geht's</button></div>`},
 
 game(){const g=GI(ctx.sess.id);
  return `<div class="bar" style="padding-bottom:6px"><button class="ib" data-a="pause" aria-label="Pause" style="font-size:15px">❚❚</button><h2 style="font-size:20px">${g.name}</h2></div><div class="stage"><div class="frame" id="frame"></div></div>`},
@@ -223,6 +223,8 @@ window.addEventListener('resize',fit);
 function setOv(html){ctx.ov=html;const ov=document.getElementById('ov');if(!ov)return;ov.innerHTML=html;ov.hidden=!html}
 
 /* ---------- Spielablauf ---------- */
+function countdown(cb){const f=document.getElementById('frame');if(!f){cb();return}let n=3;const o=document.createElement('div');o.className='cd';f.appendChild(o);setOv('');
+ const step=()=>{if(!document.body.contains(o)){return}if(n>0){o.innerHTML='<b key="'+n+'">'+n+'</b>';try{Sfx.play('beep');Haptic&&Haptic.tap&&Haptic.tap()}catch(e){}n--;setTimeout(step,650)}else{o.innerHTML='<b class="go">LOS!</b>';try{Sfx.play('go')}catch(e){}setTimeout(()=>{o.remove();cb()},420)}};step()}
 function begin(id,fromReplace){
   ctx.sess={id,seats:ctx.tour?ctx.tour.seats:seatsOf(),scores:[],turn:0};
   ctx.inGame=true;ctx.ov='';
@@ -314,7 +316,7 @@ $app.addEventListener('click',e=>{
      document.querySelector('[data-a=spin]').disabled=true;beep(440,.1);{let d=45,el=0;const tick=()=>{if(el>4700)return;beep(1500,.015);d*=1.075;el+=d;setTimeout(tick,d)};tick()}
      setTimeout(()=>{const e=document.getElementById('wres');if(e)e.textContent=(pz.kind==='boost'?'Booster x2 (5 Spiele)':pz.label+' '+pz.sub)+' + '+bonus+' Münzen';beep(880,.3);confetti();if(m.length)toast(m[0]);ctx.spin=false},matchMedia('(prefers-reduced-motion:reduce)').matches?100:5100);break}
    case'start':begin(ctx.sess.id);break;
-   case'go':ctx.run&&ctx.run();break;
+   case'go':countdown(()=>ctx.run&&ctx.run());break;
    case'cont':nextTurn();break;
    case'again':begin(ctx.sess.id,true);break;
    case'share':shareRes();break;
