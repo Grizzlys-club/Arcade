@@ -170,6 +170,9 @@ h1 span:nth-child(2){font-style:italic;padding-left:.6em}
 footer{border-color:var(--line)}
 #spot{position:fixed;inset:0;pointer-events:none;z-index:2;background:radial-gradient(420px circle at var(--mx,50%) var(--my,30%),rgba(232,201,138,.07),transparent 60%)}
 @media(prefers-reduced-motion:reduce){#spot{display:none}}
+
+html,body{overflow-x:clip}.hero{overflow-x:clip}
+@media(max-width:600px){.stage{height:auto!important;min-height:0!important;margin-bottom:10px!important;display:flex;flex-direction:column;align-items:center;gap:16px}.ph.a,.ph.c,.glow{display:none}.ph.b.live{position:relative;left:auto;top:auto;transform:none;width:min(290px,76vw)}.picker{position:static;order:3}.badge{top:-12px}.hero{padding-top:110px}}
 </style>
 </head>
 <body>
