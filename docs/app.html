@@ -238,9 +238,10 @@ button.card:hover,.tile:hover,.feat:hover{border-color:rgba(217,172,92,.7)!impor
 @keyframes enterIn{from{opacity:0;transform:translateY(16px) scale(.985);filter:blur(4px)}}
 @media(prefers-reduced-motion:reduce){.enter .body>*{animation:none}}
 .btn:active,.tile:active,.strip:active{transform:scale(.97);transition:transform .08s}
+.stat b{font-family:"Instrument Serif",serif;font-weight:400;font-size:28px;background:linear-gradient(180deg,#f6e3b4,#c99a4a);-webkit-background-clip:text;background-clip:text;color:transparent}.stat .ic{display:flex;justify-content:center;margin-bottom:2px}
 </style>
 </head>
-<body>
+<body><svg width="0" height="0" style="position:absolute"><defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6e3b4"/><stop offset=".5" stop-color="#d9ac5c"/><stop offset="1" stop-color="#9c6f2a"/></linearGradient></defs></svg>
 <div id="app" aria-live="polite"></div>
 <script src="rules.js"></script>
 <script src="meta.js"></script>
