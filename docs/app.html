@@ -232,6 +232,12 @@ button.card:hover,.tile:hover,.feat:hover{border-color:rgba(217,172,92,.7)!impor
 .chip{border-radius:99px!important;border:1px solid rgba(232,201,138,.25)!important;background:transparent!important;font-weight:600!important;font-size:12px!important;letter-spacing:.12em}
 .chip[aria-pressed=true]{background:linear-gradient(120deg,#f6e3b4,#d9ac5c 50%,#9c6f2a)!important;border-color:transparent!important;color:#1a1006!important;box-shadow:0 8px 24px -10px rgba(217,172,92,.8)!important}
 .rank .p{font-family:"Instrument Serif",Georgia,serif;font-style:italic;font-size:30px;color:#d9ac5c}
+
+.enter .body>*{animation:enterIn .55s cubic-bezier(.2,.8,.2,1) both}
+.enter .body>*:nth-child(2){animation-delay:.05s}.enter .body>*:nth-child(3){animation-delay:.1s}.enter .body>*:nth-child(4){animation-delay:.15s}.enter .body>*:nth-child(5){animation-delay:.2s}.enter .body>*:nth-child(6){animation-delay:.25s}.enter .body>*:nth-child(n+7){animation-delay:.3s}
+@keyframes enterIn{from{opacity:0;transform:translateY(16px) scale(.985);filter:blur(4px)}}
+@media(prefers-reduced-motion:reduce){.enter .body>*{animation:none}}
+.btn:active,.tile:active,.strip:active{transform:scale(.97);transition:transform .08s}
 </style>
 </head>
 <body>

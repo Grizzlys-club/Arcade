@@ -106,9 +106,9 @@ hub(){const L=lvl(),p=Math.round(L.into/L.need*100),tasks=M.todays(),done=tasks.
  <button class="strip" data-a="setup" aria-label="Spieler ändern">${ss.map(s=>`<div class="p">${bimg(s.skin,40,true)}<span style="color:${SEAT[s.card]}">${esc(s.name)}</span></div>`).join('')}<div class="p" style="color:var(--or)"><div style="font-size:20px">👥</div><span>ÄNDERN</span></div></button>
  <button class="feat" style="--c:rgba(255,138,0,.6)" data-g="${f}" data-ok="1"><img src="img/games/${f}.jpg" alt=""><div style="min-width:0"><small>Spiel des Tages</small><b>${NAME[f]}</b></div><span class="go">▶</span></button>
  <button class="btn" data-a="tour" style="min-height:62px">${TRO} Turnier</button>
- <div class="row"><button class="btn blue" data-a="picker" style="flex:1;min-height:54px;font-size:17px;white-space:nowrap;padding:0 8px">${ALL.length} Spiele</button><button class="btn green" data-a="random" style="flex:1;min-height:54px;font-size:17px;padding:0 8px">🎲 Zufall</button></div>
+ <div class="row"><button class="btn blue" data-a="picker" style="flex:1;min-height:54px;font-size:17px;white-space:nowrap;padding:0 8px">${ALL.length} Spiele</button><button class="btn green" data-a="random" style="flex:1;min-height:54px;font-size:17px;padding:0 8px"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.12em"><rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="9" cy="9" r="1" fill="currentColor"/><circle cx="15" cy="15" r="1" fill="currentColor"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg> Zufall</button></div>
  <div class="row"><button class="mini" style="--c:#ff4db3" data-a="shop">${IC.shop}Shop</button><button class="mini" style="--c:#40ccff" data-a="stats">${IC.stats}Stats</button><button class="mini" style="--c:#ffd61a" data-a="ach">${IC.ach}Erfolge</button><button class="mini" style="--c:#40ff73" data-a="wheel">${IC.gift}Bonus${canWheel()?'<i class="dot"></i>':''}</button></div>
- <button class="strip" style="border-radius:14px;padding:11px 14px;font-weight:800;justify-content:space-between" data-a="ach"><span class="mut" style="font-weight:800">▣ Tagesaufgaben ${done}/${tasks.length}</span><span style="color:var(--or);font-weight:900;font-size:13px">${next?next.title:'Alles geschafft'}</span></button>
+ <button class="strip" style="border-radius:14px;padding:11px 14px;font-weight:800;justify-content:space-between" data-a="ach"><span class="mut" style="font-weight:800"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="vertical-align:-.12em"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg> Tagesaufgaben ${done}/${tasks.length}</span><span style="color:var(--or);font-weight:900;font-size:13px">${next?next.title:'Alles geschafft'}</span></button>
  </div>`},
 
 setup(){const ss=activeCards();
@@ -155,7 +155,7 @@ tsetup(){const ss=seatsOf(),n=ss.length,r=ctx.rounds,tb=n===2?'Sieg 3 · Niederl
  <div class="card" style="--c:rgba(255,138,0,.6)"><div class="lab">Wie viele Runden?</div><div class="chips" style="margin:10px 0 8px">${[3,5,7,10,15].map(x=>`<button class="chip" style="--cc:#ff8a00" data-r="${x}" aria-pressed="${r===x}">${x}</button>`).join('')}</div><span class="mut" style="font-size:12px">ca. ${r+Math.floor(r/2)}–${r*2} Minuten</span></div>
  <div class="card" style="--c:rgba(64,204,255,.6)"><div class="lab">Punkte pro Spiel</div><p style="margin-top:6px;font-weight:700">${tb}</p><p style="color:var(--yel);font-weight:900;margin-top:6px">Das Finale zählt doppelt!</p></div>
  <button class="strip" data-a="setup">${ss.map(s=>`<div class="p">${bimg(s.skin,36,true)}<span style="color:${SEAT[s.card]}">${esc(s.name)}</span></div>`).join('')}<span style="color:var(--or);font-size:22px">✎</span></button></div>
- <div class="foot"><button class="btn" data-a="tourgo" ${n<2?'disabled':''}>✦ Turnier starten</button></div>`},
+ <div class="foot"><button class="btn" data-a="tourgo" ${n<2?'disabled':''}><svg viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor" style="vertical-align:-.1em"><path d="M12 2l2.2 7.3L22 12l-7.8 2.7L12 22l-2.2-7.3L2 12l7.8-2.7z"/></svg> Turnier starten</button></div>`},
 
 tour(){const t=ctx.tour,fin=t.round===t.rounds-1,ord=t.seats.map((_,i)=>i).sort((a,b)=>t.points[b]-t.points[a]);
  return bar('Runde '+(t.round+1)+' / '+t.rounds,true)+`<div class="body">
@@ -168,7 +168,7 @@ podium(){const t=ctx.tour,ord=t.seats.map((_,i)=>i).sort((a,b)=>t.points[b]-t.po
  const top=ord.slice(0,3),h=[140,180,110];const visual=top.length===1?[0]:top.length===2?[1,0]:[1,0,2];
  const pod=visual.map(k=>`<div class="${k===0?'w':''}" style="height:${h[k]||90}px">${bimg(t.seats[top[k]].skin,k===0?52:42,true)}<b>${k+1}</b>${esc(t.seats[top[k]].name)}<span class="mut">${t.points[top[k]]} Pkt</span></div>`).join('');
  const rest=ord.slice(3).map(i=>`<div class="rank"><span class="p">4.</span><span class="nm">${esc(t.seats[i].name)}</span><span class="sc">${t.points[i]} Pkt</span></div>`).join('');
- return `<div class="body" style="justify-content:center"><div style="text-align:center"><div class="lab" style="color:var(--or);letter-spacing:.3em">Siegerehrung</div><div style="font-size:60px;margin-top:6px">🏆</div><div class="big" style="font-size:44px">${esc(t.seats[ord[0]].name)}</div></div>
+ return `<div class="body" style="justify-content:center"><div style="text-align:center"><div class="lab" style="color:var(--or);letter-spacing:.3em">Siegerehrung</div><div style="font-size:60px;margin-top:6px;color:#e0b45f;filter:drop-shadow(0 0 18px rgba(224,180,95,.5))"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.12em"><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3M12 14v4M8 21h8M9 18h6"/></svg></div><div class="big" style="font-size:44px">${esc(t.seats[ord[0]].name)}</div></div>
  <div class="pod">${pod}</div>${rest}<button class="btn" data-a="tour">Neues Turnier</button><button class="btn alt sm" data-a="home">Hauptmenü</button></div>`},
 
 shop(){const tabs=[['skins','Skins','#ff4db3'],['titles','Titel','#ff8a00'],['cheers','Jubel','#ff8a00'],['boosts','Booster','#ff8a00']],own=id=>S.unlocked.includes(id);let b='';
@@ -209,7 +209,9 @@ wheel(){const W=M.WHEEL,n=W.length,seg=360/n,can=canWheel()&&!ctx.spin,bonus=Mat
 function render(name){
   ctx.cur=name;
   if(name!=='game'){ctx.inGame=false;R.stop();AR.stop()}
+  const prev=ctx.lastScr;ctx.lastScr=name;
   $app.innerHTML=SCREENS[name]();
+  $app.classList.toggle('enter',prev!==name&&name!=='game');
   if(name==='game'){const nw=isNew(ctx.sess.id);ctx.ratio=nw?390/844:9/16;document.getElementById('frame').appendChild(nw?canvas2:canvas);const ov=document.createElement('div');ov.className='ov';ov.id='ov';ov.hidden=true;document.getElementById('frame').appendChild(ov);if(ctx.ov)setOv(ctx.ov);fit()}
   const b=$app.querySelector('.body');if(b)b.scrollTop=0;
 }
