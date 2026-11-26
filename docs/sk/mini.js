@@ -63,7 +63,7 @@ class Seat{
  banner(text,color,size,duration){size=size==null?44:size;duration=duration==null?.8:duration;const l=label(text,Math.min(size,this.w*.16+14),color||this.color);l.z=700;l.setScale(.3);this.node.add(l);
   l.run(A.sequence([A.scaleTo(1,.15),A.wait(duration),A.group([A.fadeOut(.2),A.scaleTo(1.3,.2)]),A.remove()]))}
  flash(color,alpha,duration){const f=new Sprite(null,this.w,this.h,color);f.alpha=alpha==null?.45:alpha;f.z=600;this.node.add(f);f.run(A.sequence([A.fadeOut(duration==null?.35:duration),A.remove()]))}
- shake(amt){amt=amt==null?5:amt;this.field.removeAction('shake');this.field.x=0;this.field.y=0;const acts=[];amt*=1.4;for(let i=0;i<9;i++)acts.push(A.moveTo((Math.random()*2-1)*amt*(1-i/10),(Math.random()*2-1)*amt*(1-i/10),.03));acts.push(A.moveTo(0,0,.03));this.field.run(A.sequence(acts),'shake')}
+ shake(amt){amt=amt==null?5:amt;if(amt>=6&&this.scene){this.scene.hitStop(Math.min(.08,.02+amt*.006));Juice.haptic('medium')}this.field.removeAction('shake');this.field.x=0;this.field.y=0;const acts=[];amt*=1.4;for(let i=0;i<9;i++)acts.push(A.moveTo((Math.random()*2-1)*amt*(1-i/10),(Math.random()*2-1)*amt*(1-i/10),.03));acts.push(A.moveTo(0,0,.03));this.field.run(A.sequence(acts),'shake')}
  knockOut(text){if(!this.alive)return;this.alive=false;const dim=new Sprite(null,this.w,this.h,white(0,.55));dim.z=500;this.node.add(dim);const l=label(text||'RAUS',Math.min(40,this.w*.18),white(1,.9));l.z=501;this.node.add(l)}
 }
 
@@ -71,7 +71,7 @@ class Seat{
 class MiniScene extends Node{
  static get layout(){return 'zones'}
  static get stripThickness(){return 96}
- constructor(){super();this.seats=[];this.difficulty=1;this.duration=0;this.elapsed=0;this.stats={};this.sharedSeed=Math.floor(Math.random()*2147483646)+1;this.onFinish=null;this.onPause=null;this.phase='countdown';this.userPaused=false;this.activeSeatIndex=0;this.turnLabels=[];this.useCountdown=true;this.finished=false;this.arena={x:0,y:0,w:SW,h:SH};this.bandY=SH/2;this.world=new Node();this.hud=new Node();this.timeBar=null;this.timeBarWidth=0;this.touchOwner={};this.countdownTime=3.2;this.lastCount=99;this.built=false;this.activeBursts=0}
+ constructor(){super();this.seats=[];this.difficulty=1;this.duration=0;this.elapsed=0;this.stats={};this.sharedSeed=Math.floor(Math.random()*2147483646)+1;this.onFinish=null;this.onPause=null;this.phase='countdown';this.userPaused=false;this.activeSeatIndex=0;this.turnLabels=[];this.useCountdown=true;this.finished=false;this.arena={x:0,y:0,w:SW,h:SH};this.bandY=SH/2;this.world=new Node();this.hud=new Node();this.timeBar=null;this.timeBarWidth=0;this.touchOwner={};this.countdownTime=3.2;this.lastCount=99;this.built=false;this.activeBursts=0;this.hitStopT=0;this.timeScale=1;this.slowT=0;this.leader=-1;this.leadAt=-9;this.pulseSec=-1}
  get layout(){return this.constructor.layout}
  get n(){return this.seats.length}
  configure(players,difficulty){this.difficulty=difficulty;const lay=this.layout,count=Math.max(1,Math.min(4,players.length)),placed=[],usableBottom=bottomInset,usableTop=SH-topInset;
@@ -104,6 +104,15 @@ class MiniScene extends Node{
  setActiveSeat(i){if(!this.seats.length)return;this.activeSeatIndex=Math.max(0,Math.min(this.seats.length-1,i));this.seats.forEach(s=>s.node.hidden=s.index!==this.activeSeatIndex);this.refreshTurnBoard();
   if(this.seats.length>1&&this.phase==='playing'){const s=this.seats[this.activeSeatIndex];s.banner(s.name.toUpperCase()+' IST DRAN',s.color,26,.9)}}
  refreshTurnBoard(){this.turnLabels.forEach((l,i)=>{if(i>=this.seats.length)return;const s=this.seats[i];l.text=s.name.slice(0,7).toUpperCase()+' '+s.score;l.alpha=i===this.activeSeatIndex?1:.5})}
+ /* Juice: Hit-Stop, Kamera-Wackeln, Zeitlupe */
+ hitStop(t){this.hitStopT=Math.max(this.hitStopT,t)}
+ camShake(amt){amt=amt==null?6:amt;const w=this.world;w.removeAction('cam');w.x=0;w.y=0;const acts=[];for(let i=0;i<8;i++){const k=1-i/8;acts.push(A.moveTo((Math.random()*2-1)*amt*k,(Math.random()*2-1)*amt*k,.028))}acts.push(A.moveTo(0,0,.03));w.run(A.sequence(acts),'cam')}
+ slowMo(scale,dur){this.timeScale=scale;this.slowT=dur}
+ juiceScore(seat,v,old){if(this.phase!=='playing'||v<=old)return;const t=this.elapsed;
+  if(t-(seat._lg||-9)>.12){seat._st=(t-(seat._lg||-9)<1.4)?(seat._st||0)+1:1;seat._lg=t;const st=seat._st,txt={3:'SERIE ×3',5:'ON FIRE ×5',8:'UNAUFHALTBAR ×8',12:'LEGENDE ×12'}[st];
+   if(txt&&this.layout!=='turns'||txt&&this.n===1){seat.floatText(txt,{x:0,y:-seat.h*.18},st>=5?'#ff8a00':'#ffd98a',st>=8?26:20);Juice.haptic(st>=5?'heavy':'medium');if(st>=5)seat.flash(st>=8?'#ff8a00':'#ffd98a',.12,.25)}}
+  if(this.n<2||this.layout==='turns'||this.elapsed<1.5)return;const sc=this.seats.map(s=>s.score),best=Math.max(...sc);if(sc.filter(x=>x===best).length>1)return;const li=sc.indexOf(best);
+  if(li!==this.leader&&t-this.leadAt>1.6){const first=this.leader<0;this.leader=li;this.leadAt=t;if(!first){const s=this.seats[li];s.floatText('FÜHRUNG!',{x:0,y:s.h*.12},'#ffd98a',22);Juice.haptic('light')}}else if(li!==this.leader&&this.leader<0)this.leader=li}
  label(t,s,c){return label(t,s,c)}
  button(text,w,h,color,textColor,fontSize){const b=new Sprite(Gfx.pill(w,h,color,white(1,.6),Math.min(16,h/2)),w,h),l=label(text,fontSize||18,textColor||'#fff');l.z=1;b.add(l);return b}
  newRand(){return new Rand(this.sharedSeed)}
@@ -112,7 +121,7 @@ class MiniScene extends Node{
   for(let i=0;i<count;i++){const d=new Sprite(Gfx.dot(),6,6);d.color=i%3===0?'#fff':color;d.cbf=1;d.blend='add';d.x=at.x;d.y=at.y;d.z=450;this.add(d);const a=i/count*2*Math.PI+(Math.random()*.6-.3),dist=power*(.6+Math.random()*.6);
    d.run(A.sequence([A.group([A.moveBy(Math.cos(a)*dist,Math.sin(a)*dist,.4),A.fadeOut(.4),A.scaleTo(.2,.4)]),A.remove()]))}
   this.run(A.sequence([A.wait(.45),A.run(()=>{this.activeBursts--})]))}
- setScore(seat,v){const gained=v>seat.score;seat.score=v;if(this.layout==='turns')this.refreshTurnBoard();
+ setScore(seat,v){const gained=v>seat.score,old=seat.score;seat.score=v;this.juiceScore(seat,v,old);if(this.layout==='turns')this.refreshTurnBoard();
   if(gained&&seat.scoreLabel&&seat.scoreLabel.parent){const p=seat.scoreLabel.parent.convert(seat.scoreLabel.x,seat.scoreLabel.y,this);this.burst(p,seat.color)}
   if(seat.scoreLabel){seat.scoreLabel.text=String(v);seat.scoreLabel.removeAllActions();seat.scoreLabel.run(A.sequence([A.scaleTo(1.35,.07),A.scaleTo(1,.1)]))}}
  addScore(seat,v){this.setScore(seat,seat.score+v)}
@@ -123,14 +132,18 @@ class MiniScene extends Node{
  bannerAll(text,color,size,duration){color=color||Theme.orange;size=size==null?44:size;duration=duration==null?.8:duration;
   if(this.layout==='arena'){[0,Math.PI].forEach((rot,i)=>{if(i===1&&this.n<2)return;const l=label(text,size,color);l.x=this.arena.x+this.arena.w/2;l.y=this.arena.y+this.arena.h/2+(i===0?-40:40);l.rot=rot;l.z=700;l.setScale(.3);this.hud.add(l);l.run(A.sequence([A.scaleTo(1,.15),A.wait(duration),A.fadeOut(.2),A.remove()]))})}
   else this.seats.forEach(s=>s.banner(text,color,size,duration))}
- finishGame(scores,delay){if(this.finished)return;this.finished=true;this.phase='over';delay=delay==null?1:delay;const sc=scores||this.seats.map(s=>s.score),r={scores:sc,stats:this.stats},best=Math.max(...sc);
+ finishGame(scores,delay){if(this.finished)return;this.finished=true;this.phase='over';delay=delay==null?1:delay;const sc=scores||this.seats.map(s=>s.score),r={scores:sc,stats:this.stats},best=Math.max(...sc);this.slowMo(.35,.9);this.hitStop(.12);this.camShake(9);Juice.haptic('heavy');
+  const srt=sc.slice().sort((a,b)=>b-a);if(this.n>=2&&srt[0]>0&&srt[0]!==srt[1]&&srt[0]-srt[1]<=Math.max(1,Math.abs(srt[0])*.05))this.run(A.sequence([A.wait(.5),A.run(()=>this.bannerAll('FOTOFINISH!','#ff8a00',30,.9))]));
   this.seats.forEach((s,i)=>{if(sc[i]===best){s.banner('SIEG!','#ffd98a',52,1.1);s.flash('#ffd98a',.35);s.burst({x:0,y:0},'#ffd98a',40,260);s.burst({x:0,y:0},'#fff',24,160)}});Sfx.play('horn');
   this.run(A.sequence([A.wait(delay+.6),A.run(()=>{this.onFinish&&this.onFinish(r)})]))}
  /* Takt: update -> Aktionen */
  tick(dt){if(this.userPaused||!this.built)return;
+  if(this.hitStopT>0){this.hitStopT-=dt;this.world.step(0);return}
+  if(this.slowT>0){this.slowT-=dt;if(this.slowT<=0)this.timeScale=1;dt*=this.timeScale}
   if(this.phase==='countdown'){this.countdownTime-=dt;const c=Math.ceil(this.countdownTime);if(c!==this.lastCount){this.lastCount=c;if(c>=1&&c<=3){this.bannerAll(String(c),'#f6e3b4',84,.6);this.flashAll('#d9ac5c',.12);Sfx.play('beep')}}
    if(this.countdownTime<=0){this.bannerAll('LOS!','#ffd98a',72,.6);this.flashAll('#ffd98a',.3);this.seats.forEach(q=>q.burst({x:0,y:0},'#ffd98a',22,200));Sfx.play('go');this.phase='playing';this.gameStarted()}}
-  else if(this.phase==='playing'){this.elapsed+=dt;this.gameUpdate(dt);if(this.duration>0&&this.phase==='playing'){const left=Math.max(0,this.duration-this.elapsed);if(this.timeBar){this.timeBar.w=this.timeBarWidth*(left/this.duration);if(left<5)this.timeBar.color='rgb(255,0,0)'}const sc=Math.ceil(left);if(sc!==this.lastSec){this.lastSec=sc;if(sc>=1&&sc<=5&&this.duration>=15){Sfx.play('tick');if(sc<=3){this.bannerAll(String(sc),'rgba(255,217,138,.55)',64,.55);this.flashAll('#ff3b3b',.07)}}}if(left<=0)this.timeUp()}}
+  else if(this.phase==='playing'){this.elapsed+=dt;this.gameUpdate(dt);if(this.duration>0&&this.phase==='playing'){const left=Math.max(0,this.duration-this.elapsed);if(this.timeBar){this.timeBar.w=this.timeBarWidth*(left/this.duration);if(left<5){this.timeBar.color='rgb(255,0,0)';this.timeBar.sy=1+.5*Math.abs(Math.sin(left*Math.PI*2))}}
+   if(left<5&&this.duration>=15){const ps=Math.ceil(left*2);if(ps!==this.pulseSec){this.pulseSec=ps;if(ps%2===0)Juice.haptic('light')}}const sc=Math.ceil(left);if(sc!==this.lastSec){this.lastSec=sc;if(sc>=1&&sc<=5&&this.duration>=15){Sfx.play('tick');if(sc<=3){this.bannerAll(String(sc),'rgba(255,217,138,.55)',64,.55);this.flashAll('#ff3b3b',.07)}}}if(left<=0)this.timeUp()}}
   this.step(dt)}
  seatFor(p){if(!this.seats.length)return null;if(this.layout==='turns')return this.seats[Math.min(this.activeSeatIndex,this.seats.length-1)];
   for(const s of this.seats){const z=s.zone;if(p.x>=z.x&&p.x<=z.x+z.w&&p.y>=z.y&&p.y<=z.y+z.h)return s}
@@ -140,6 +153,12 @@ class MiniScene extends Node{
  touchMove(id,pt){const i=this.touchOwner[id];if(i==null)return;const s=this.seats[i];if(this.phase==='playing'&&s.alive)this.moved(s,s.local(pt),id)}
  touchUp(id,pt){const i=this.touchOwner[id];if(i==null)return;const s=this.seats[i];if(this.phase==='playing'&&s.alive)this.ended(s,s.local(pt),id);delete this.touchOwner[id]}
 }
+
+/* ---------- Juice: Vibration + automatische Effekte bei Toren ---------- */
+const Juice={last:0,haptic(k){const now=performance.now();if(now-this.last<45)return;this.last=now;try{if(window.Haptic)k==='heavy'?Haptic.good():Haptic.tap(k)}catch(e){}}};
+if(window.Sfx&&!Sfx._juiced){const _p=Sfx.play;Sfx._juiced=true;Sfx.play=function(name){_p.apply(Sfx,arguments);const sc=window.Arcade&&Arcade.scene;if(!sc||sc.phase!=='playing')return;
+ if(name==='goal'){sc.hitStop(.09);sc.camShake(7);Juice.haptic('heavy')}else if(name==='hit'||name==='kick'||name==='stomp'||name==='save')Juice.haptic('light');else if(name==='miss'||name==='wrong'){try{window.Haptic&&Haptic.bad()}catch(e){}}}}
+window.Juice=Juice;
 
 /* ---------- Host ---------- */
 const Arcade={SKC(){return SKC},setSH(v){SH=v;if(this.cv){const d=this.dpr||2;this.cv.width=Math.round(SW*d);this.cv.height=Math.round(SH*d)}},reg:{},scene:null,cv:null,c:null,raf:0,last:0,running:false,

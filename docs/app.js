@@ -157,7 +157,7 @@ game(){const g=GI(ctx.sess.id);
 
 result(){const r=ctx.res,t=ctx.tour,fin=t&&t.round===t.rounds-1;
  const rows=r.order.map((si,k)=>{const s=r.seats[si],sc=r.scores[si];return `<div class="rank${k===0?' win':''}"><span class="p">${r.pos[k]}</span>${bimg(s.skin,34,true)}<span class="nm" style="color:${SEAT[s.card]}">${esc(s.name)}</span><span class="sc">${sc==null?(k===0?'Sieg':''):sc+' '+unitOf(ctx.sess.id)}${t?'<br>+'+r.pts[si]+' Pkt':''}</span></div>`}).join('');
- return `<div class="body" style="justify-content:center"><div style="text-align:center">${r.tie?'':`<div class="halo">${bimg(r.seats[r.order[0]].skin,104,true)}</div>`}<div class="lab">${NAME[ctx.sess.id]}</div><div class="big" style="margin-top:6px">${r.tie?'Unentschieden':esc(r.seats[r.order[0]].name)+' gewinnt'}</div>${r.gain?`<div class="mut" style="margin-top:10px">+${r.coins} ${coin(' s')} · +${r.gain} XP${r.rec?' · Neuer Rekord!':''}</div>`:''}${(r.msgs||[]).map(m=>`<div class="pill" style="margin-top:6px">${esc(m)}</div>`).join('<br>')}</div>
+ return `<div class="body" style="justify-content:center"><div style="text-align:center">${r.tie?'':`<div class="halo">${bimg(r.seats[r.order[0]].skin,104,true)}</div>`}<div class="lab">${NAME[ctx.sess.id]}</div><div class="big" style="margin-top:6px">${r.tie?'Unentschieden':esc(r.seats[r.order[0]].name)+' gewinnt'}</div>${r.gain?`<div class="mut" style="margin-top:10px">+${r.coins} ${coin(' s')} · +${r.gain} XP${r.rec?' · Neuer Rekord!':''}</div>`:''}${r.comeback?`<div class="pill" style="margin-top:8px;border-color:rgba(255,138,0,.7);color:#ffd98a">${GI_.flame} Aufholjagd! ${esc(r.comeback)} +2 Bonus</div><br>`:''}${(r.msgs||[]).map(m=>`<div class="pill" style="margin-top:6px">${esc(m)}</div>`).join('<br>')}</div>
  <div style="display:grid;gap:10px">${rows}</div>
  ${t?`<button class="btn" data-a="next">${fin?'Zur Siegerehrung':'Nächste Runde'}</button>`:`<button class="btn" data-a="again">↻ Nochmal</button><button class="btn blue sm" data-a="picker2">Anderes Spiel</button><button class="btn alt sm" data-a="share">↗ Ergebnis teilen</button><button class="btn alt sm" data-a="home">Hauptmenü</button>`}</div>`},
 
@@ -171,7 +171,7 @@ tsetup(){const ss=seatsOf(),n=ss.length,r=ctx.rounds,tb=n===2?'Sieg 3 · Niederl
 
 tour(){const t=ctx.tour,fin=t.round===t.rounds-1,ord=t.seats.map((_,i)=>i).sort((a,b)=>t.points[b]-t.points[a]);
  return bar('Runde '+(t.round+1)+' / '+t.rounds,true)+`<div class="body">
- <div class="card" style="--c:${accOf(t.next)};text-align:center"><div class="lab" style="color:var(--or)">${fin?'Finale · zählt doppelt':'Die Glücksmaschine lost aus …'}</div><div class="big" style="font-size:36px;margin-top:8px">${NAME[t.next]}</div></div>
+ <div class="card" style="--c:${accOf(t.next)};text-align:center"><div class="lab" style="color:var(--or)">${fin?'Finale · zählt doppelt':'Die Glücksmaschine lost aus …'}</div><div class="big" style="font-size:36px;margin-top:8px">${NAME[t.next]}</div>${tourLast(t)>=0?`<p class="mut" style="margin-top:8px">${GI_.flame} Aufholjagd: Gewinnt <b style="color:${SEAT[t.seats[tourLast(t)].card]}">${esc(t.seats[tourLast(t)].name)}</b> diese Runde, gibt es +2 Bonus.</p>`:''}</div>
  <div class="card" style="--c:${accOf(t.next)};padding:6px"><img src="img/games/${t.next}.jpg" alt="" style="width:100%;border-radius:12px;display:block;aspect-ratio:16/10;object-fit:cover;object-position:top"></div>
  <div style="display:grid;gap:8px">${ord.map((i,k)=>`<div class="rank"><span class="p">${k+1}</span>${bimg(t.seats[i].skin,32,true)}<span class="nm" style="color:${SEAT[t.seats[i].card]}">${esc(t.seats[i].name)}</span><span class="sc" style="color:#fff;font-size:22px">${t.points[i]}</span></div>`).join('')}</div></div>
  <div class="foot"><button class="btn" data-a="tourplay">▶ Spielen</button></div>`},
@@ -310,8 +310,8 @@ function finish(o){
   coins=4+(winnerHuman?6:0);if(S.coinBoost>0){coins*=2;S.coinBoost--}addCoins(coins);
   gain=14+(winnerHuman?18:0)+(ctx.tour?6:0);if(S.xpBoost>0){gain*=2;S.xpBoost--}
   msgs.push(...addXP(gain),...checkAch(),...checkDaily());save();
-  if(ctx.tour)ctx.tour.points=ctx.tour.points.map((p,i)=>p+pts[i]);
-  ctx.res={seats:s.seats,order,pos,scores,pts,gain,coins,rec,winnerHuman,tie,msgs};beep(winnerHuman?660:330,.25);buzz(30);if(winnerHuman)setTimeout(confetti,300);
+  let comeback=null;if(ctx.tour){const li=tourLast(ctx.tour);if(li>=0&&order[0]===li&&!tie){pts[li]+=2;comeback=s.seats[li].name}ctx.tour.points=ctx.tour.points.map((p,i)=>p+pts[i])}
+  ctx.res={seats:s.seats,order,pos,scores,pts,gain,coins,rec,winnerHuman,tie,msgs,comeback};beep(winnerHuman?660:330,.25);buzz(30);if(winnerHuman)setTimeout(confetti,300);
   ctx.inGame=false;ctx.fromGame=true;replace('result');
 }
 function pause(){if(!ctx.inGame)return;if(isNew(ctx.sess.id)){AR.pause();ctx.prevOv='';setOv(`<h2>Pause</h2><p>${esc(RULES[ctx.sess.id]||'')}</p><button class="btn" data-a="resume">▶ Weiter</button><button class="btn alt" data-a="restart">Neu starten</button><button class="btn red" data-a="quit">${ctx.tour?'Turnier abbrechen':'Zur Spielwahl'}</button>`);return}R.pause();ctx.prevOv=ctx.ov;setOv('<h2>Pause</h2><button class="btn" data-a="resume">Weiterspielen</button><button class="btn alt" data-a="quit">Spiel beenden</button>')}
@@ -375,6 +375,7 @@ $app.addEventListener('click',e=>{
    case'reset':if(ctx.confirmReset){S=defS();rollDaily();ctx.confirmReset=false;save();toast('Fortschritt gelöscht')}else ctx.confirmReset=true;render('settings');break;
   }});
 $app.addEventListener('input',e=>{const i=e.target.dataset.name;if(i!=null){S.names[+i]=e.target.value;save()}});
+const tourLast=t=>{if(!t||t.round<1||t.seats.length<2)return -1;const mn=Math.min(...t.points);if(t.points.filter(p=>p===mn).length>1||Math.max(...t.points)===mn)return -1;return t.points.indexOf(mn)};
 function pickRound(){const t=ctx.tour,pool=gamesFor(t.seats.length).filter(id=>id!==t.last);t.next=pool[Math.floor(Math.random()*pool.length)];t.last=t.next}
 window.__app={ctx,S:()=>S,render};
 applyTheme();render('hub');
