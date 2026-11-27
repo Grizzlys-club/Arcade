@@ -1,10 +1,10 @@
 (()=>{
 const {Node,Sprite,A,Gfx,Theme,rgba,white,label,Rand}=SK;
-const rr=(a,b)=>a+Math.random()*(b-a),MU=90,MAXS=5;
+const rr=(a,b)=>a+Math.random()*(b-a),MU=90;let MAXS=5;
 const al=(c,a)=>c.replace(/[\d.]+\)$/,a+')');
 class CurlingGame extends MiniScene{
  static get layout(){return 'turns'}
- setupGame(){this.turnWait=0;this.pads=[];this.finishing=false;for(const s of this.seats){const p={seat:s,stones:[],thrown:0,mode:'ready',cur:null,timer:0,tx:0,ty:0,R:0,r:12,startY:0,dots:[],ghost:null,pull:null,counter:null,hint:null,anchor:null,touch:null,trailT:0,bear:null,lastHit:-1,idle:0,cpuWait:.8,slideT:0,prevTotal:0};this.pads.push(p);this.buildP(p);this.spawnStone(p)}this.setActiveSeat(0)}
+ setupGame(){MAXS=this.seats.length>=3?3:4;this.turnWait=0;this.pads=[];this.finishing=false;for(const s of this.seats){const p={seat:s,stones:[],thrown:0,mode:'ready',cur:null,timer:0,tx:0,ty:0,R:0,r:12,startY:0,dots:[],ghost:null,pull:null,counter:null,hint:null,anchor:null,touch:null,trailT:0,bear:null,lastHit:-1,idle:0,cpuWait:.8,slideT:0,prevTotal:0};this.pads.push(p);this.buildP(p);this.spawnStone(p)}this.setActiveSeat(0)}
  buildP(p){const s=p.seat,w=s.w,h=s.h;p.r=w<250?11:13;p.R=Math.min(w*.36,56);p.tx=0;p.ty=h/2-32-p.R;p.startY=-h/2+p.r+32;
   const ice=new Sprite(this.iceTex(w-6,h-6,p.ty,p.R,p.r,s.index),w-6,h-6);ice.z=-30;s.field.add(ice);
   const glow=new Sprite(Gfx.glow(),p.R*3,p.R*3);glow.color=s.color;glow.cbf=1;glow.blend='add';glow.alpha=.5;glow.x=p.tx;glow.y=p.ty;glow.z=-29;s.field.add(glow);glow.run(A.forever(A.sequence([A.fadeTo(.28,1.1),A.fadeTo(.55,1.1)])));
@@ -48,7 +48,7 @@ class CurlingGame extends MiniScene{
  ended(seat,at,id){const p=this.pads[seat.index];if(p.mode!=='ready'||p.touch!==id||!p.anchor)return;const a=p.anchor;p.anchor=null;p.touch=null;const r=this.aim(p,a,at);
   if(r.pow<.12){this.hideAim(p);if(Math.hypot(at.x-a.x,at.y-a.y)>8)seat.floatText('ZIEHEN!',{x:0,y:p.startY+30},'#fff',14);return}this.launch(p,r.dir,this.vmax(p)*r.pow)}
  advanceTurn(){const n=this.seats.length;for(let k=1;k<=Math.max(1,n);k++){const j=(this.activeSeatIndex+k)%n;if(this.pads[j].mode!=='done'){this.pads[j].idle=0;this.pads[j].cpuWait=.8+Math.random()*.5;this.setActiveSeat(j);return}}}
- gameUpdate(dt){const p=this.pads[this.activeSeatIndex];
+ gameUpdate(dt){const p=this.pads[this.activeSeatIndex];/* Schuss für Schuss abwechseln */{const a=this.activeSeatIndex,q=this.pads[a];if(q&&this.seats.length>1){if(this._ta!==a){this._ta=a;this._ts=q.thrown;this._tw=0}else if(q.thrown>this._ts&&q.mode==='ready'){this._tw+=dt;if(this._tw>.8){this._ta=-1;this.advanceTurn();if(this.activeSeatIndex!==a)return}}}}
   if(p.mode==='ready'){p.idle+=dt;if(p.seat.isCPU){p.cpuWait-=dt;if(p.cpuWait<=0)this.cpuThrow(p)}else if(p.idle>14&&!p.anchor){const ang=rr(-1,1)*.7*.2,v=Math.sqrt(2*MU*(p.ty-p.startY))*rr(.85,1.1);this.launch(p,{x:Math.sin(ang),y:Math.cos(ang)},v)}}
   else if(p.mode==='sliding'){p.slideT+=dt;this.phys(p,dt);this.trail(p,dt);if(p.stones.every(s=>!s.moving)||p.slideT>9){for(const s of p.stones)s.vel={x:0,y:0};p.mode='settling';p.timer=.45}}
   else if(p.mode==='settling'){p.timer-=dt;if(p.timer<=0)this.evaluate(p)}

@@ -1,10 +1,10 @@
 (()=>{
 const {Node,Sprite,A,Gfx,Theme,rgba,white,label}=SK;
 const Skin=id=>META.SKINS.find(k=>k.id===id);
-const TOTAL=8,rr=(a,b)=>a+Math.random()*(b-a);
+let TOTAL=8;const rr=(a,b)=>a+Math.random()*(b-a);
 class PowerShotGame extends MiniScene{
  static get layout(){return 'turns'}
- setupGame(){this.duration=0;this.turnWait=0;this.st=[];
+ setupGame(){TOTAL=this.seats.length>=3?4:6;this.duration=0;this.turnWait=0;this.st=[];
   for(const s of this.seats){const o={rand:this.newRand(),m:0,dir:1,speed:.8,center:.5,width:.2,shot:0,locked:false,done:false,waitTimer:0,cpuTarget:.5,cpuArmed:0,idle:0,dots:[]};this.st.push(o);const w=s.w,h=s.h,scale=Math.min(1,w/300),sc=Math.max(.85,scale);
    const floor=new Sprite(Gfx.texture('power_floor'+Math.floor(w)+'x'+Math.floor(h),w,h,1,c=>{Gfx.gradientColors(c,rgba(.16,.12,.04,.85),rgba(.06,.05,.08,.9),w,h);c.strokeStyle='rgba(255,255,255,.08)';c.lineWidth=2;c.beginPath();c.arc(w/2,h*.4,w*.3,0,7);c.stroke()}),w,h);floor.z=-10;s.field.add(floor);
    o.goalW=Math.min(w*.7,210);o.goalH=Math.max(44,o.goalW*.36);o.goalY=h/2-42-o.goalH;const g=new Sprite(Gfx.goal(o.goalW,o.goalH),o.goalW+16,o.goalH+12);g.y=o.goalY+o.goalH/2-2;g.z=2;s.field.add(g);o.goal=g;
@@ -43,7 +43,7 @@ class PowerShotGame extends MiniScene{
    else if(pts>=4)Sfx.play('hit');else Sfx.play('miss')}),after]));
   o.keeper.run(SK.easeOut(A.moveToX(kx,.25)))}
  advanceTurn(){for(let k=1;k<=Math.max(1,this.n);k++){const j=(this.activeSeatIndex+k)%this.n;if(!this.st[j].done){this.st[j].idle=0;this.st[j].cpuArmed=.6;this.setActiveSeat(j);return}}}
- gameUpdate(dt){for(const s of this.seats){if(s.index!==this.activeSeatIndex)continue;const o=this.st[s.index];if(o.done)continue;
+ gameUpdate(dt){/* Schuss für Schuss abwechseln */{const a=this.activeSeatIndex,q=this.st[a];if(q&&this.seats.length>1){if(this._ta!==a){this._ta=a;this._ts=q.shot;this._tw=0}else if(q.shot>this._ts&&!q.locked&&!q.done){this._tw+=dt;if(this._tw>.8){this._ta=-1;this.advanceTurn();if(this.activeSeatIndex!==a)return}}}}for(const s of this.seats){if(s.index!==this.activeSeatIndex)continue;const o=this.st[s.index];if(o.done)continue;
    if(o.locked){o.waitTimer-=dt;if(o.waitTimer<=0){if(o.shot>=TOTAL){o.done=true;o.marker.alpha=.3;s.banner('FERTIG',s.color,34,1)}else this.newShot(s,o)}continue}
    const prev=o.m;o.m+=o.dir*o.speed*dt;if(o.m>1){o.m=2-o.m;o.dir=-1}if(o.m<0){o.m=-o.m;o.dir=1}o.marker.x=-o.meterW/2+o.m*o.meterW;o.idle+=dt;
    if(!s.isCPU&&o.idle>7){this.tap(s,o);continue}

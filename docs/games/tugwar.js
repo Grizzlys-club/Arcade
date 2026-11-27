@@ -3,6 +3,9 @@ const {Node,Sprite,A,Gfx,Theme,rgba,white,label}=SK;
 const alpha=(c,a)=>c.replace(/[\d.]+\)$/,a+')');
 const SW=SKC.SW,KS=38,TH=.35,LIM=20,rr=(a,b)=>a+Math.random()*(b-a);
 class TugWarGame extends MiniScene{
+ configure(players,d){this.realN=players.length;if(players.length<3)return super.configure(players,d);
+  const team=ix=>{const m=ix.map(i=>players[i]).filter(Boolean),hum=m.filter(p=>!p.cpu);return{name:m.map(p=>p.name).join(' + '),skin:(hum[0]||m[0]).skin,cpu:hum.length===0,w:hum.length?1/hum.length:1}};
+  const A=team([0,2]),B=team([1,3]);this.tapW=[A.w,B.w];super.configure([A,B],d)}
  setupGame(){this.duration=0;this.useCountdown=true;this.R=Math.min(340,(this.bandY-SKC.bottomInset)-36);this.pullers=[];this.state='ready';this.round=1;this.f=0;this.fv=0;this.readyT=0;this.roundT=0;this.overT=0;this.clock=0;this.knots=[];
   if(this.seats.length<2)return;for(let i=2;i<this.seats.length;i++)this.seats[i].knockOut('—');
   for(let i=0;i<2;i++)this.pullers.push({seat:this.seats[i],heat:0,wins:0,roundTaps:0,totalPull:0,nextTap:0,phase:Math.random()*6.28,restUntil:0,rateJitter:rr(.92,1.08)});
@@ -26,7 +29,7 @@ class TugWarGame extends MiniScene{
  beginRound(first){this.f=0;this.fv=0;this.roundT=0;for(const p of this.pullers){p.heat=0;p.roundTaps=0;p.nextTap=this.clock+.4;p.restUntil=0;p.rateJitter=rr(.92,1.08)}
   this.state='ready';this.readyT=first?.5:1.5;this.roundLabel.text='RUNDE '+this.round+'/3';this.bannerAll('RUNDE '+this.round,'#fff',40,.9)}
  began(seat){if(seat.index>=2||this.state!=='active')return;this.tap(this.pullers[seat.index],true)}
- tap(p,human){p.heat+=1;p.roundTaps++;const s=p.seat;p.bear.removeAction('pull');p.bear.run(A.sequence([A.group([A.rotateTo(.16,.05),A.moveToX(p.bx-5,.05)]),A.group([A.rotateTo(0,.1),A.moveToX(p.bx,.1)])]),'pull');p.bear.squash();
+ tap(p,human){p.heat+=human&&this.tapW?this.tapW[this.pullers.indexOf(p)]:1;p.roundTaps++;const s=p.seat;p.bear.removeAction('pull');p.bear.run(A.sequence([A.group([A.rotateTo(.16,.05),A.moveToX(p.bx-5,.05)]),A.group([A.rotateTo(0,.1),A.moveToX(p.bx,.1)])]),'pull');p.bear.squash();
   p.ring.removeAction('pulse');p.ring.setScale(1);p.ring.run(A.sequence([A.scaleTo(1.22,.04),A.scaleTo(1,.08)]),'pulse');
   const bw=p.bear.height*SKC.bearAspect,fx=p.bear.x-bw*.25,fy=p.bear.y+2;
   for(let i=0;i<2;i++){const sz=rr(7,12),d=new Sprite(Gfx.dot(),sz,sz);d.color=rgba(.85,.78,.62);d.cbf=1;d.alpha=.6;d.x=fx+rr(-8,8);d.y=fy;d.z=18;s.node.add(d);d.run(A.sequence([A.group([A.moveBy(rr(-34,-8),rr(6,22),.4),A.fadeOut(.4),A.scaleTo(2,.4)]),A.remove()]))}
@@ -52,7 +55,7 @@ class TugWarGame extends MiniScene{
   const ring=new Sprite(Gfx.circle(20,'rgba(0,0,0,0)',w.seat.color),40,40);ring.blend='add';ring.x=this.flag.x;ring.y=this.flag.y;ring.z=46;this.world.add(ring);ring.run(A.sequence([A.group([A.scaleTo(9,.6),A.fadeOut(.6)]),A.remove()]));
   for(const p of P){if(!p.seat.isCPU){if(p===w){Sfx.play('win');Haptic.good()}else{Sfx.play('lose');Haptic.bad()}}}
   if(P.every(p=>p.seat.isCPU))Sfx.play('horn')}
- finishAll(){const a=this.pullers[0],b=this.pullers[1];let s0=a.wins*10,s1=b.wins*10;if(s0===s1){if(a.totalPull>=b.totalPull)s0++;else s1++}this.finishGame([s0,s1])}
+ finishAll(){const a=this.pullers[0],b=this.pullers[1];let s0=a.wins*10,s1=b.wins*10;if(s0===s1){if(a.totalPull>=b.totalPull)s0++;else s1++}const sc=[s0,s1];if(this.realN>=3)this.finishGame([s0,s1,s0,s1].slice(0,this.realN));else this.finishGame(sc)}
 }
 Arcade.register('tugwar',TugWarGame);
 })();

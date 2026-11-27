@@ -79,7 +79,7 @@ class MiniScene extends Node{
    if(count<=2){placed.push(['bottom',{x:0,y:midBottom,w:SW,h:hh}]);placed.push(['top',{x:0,y:topY,w:SW,h:hh}])}
    else{const w=SW/2-2;placed.push(['bottom',{x:0,y:midBottom,w,h:hh}]);placed.push(['bottom',{x:SW/2+2,y:midBottom,w,h:hh}]);placed.push(['top',{x:SW/2+2,y:topY,w,h:hh}]);placed.push(['top',{x:0,y:topY,w,h:hh}])}
    this.arena={x:0,y:0,w:SW,h:SH}}
-  else if(lay==='turns'){const full={x:0,y:usableBottom+30,w:SW,h:usableTop-usableBottom-30};for(let i=0;i<count;i++)placed.push(['bottom',full]);this.arena=full;this.bandY=usableBottom+15}
+  else if(lay==='turns'){const full={x:0,y:usableBottom+30,w:SW,h:usableTop-usableBottom-30};for(let i=0;i<count;i++)placed.push([i%2?'top':'bottom',full]);this.arena=full;this.bandY=usableBottom+15}
   else{const t=this.constructor.stripThickness,ts=t*.8,sides=count>=3,x0=sides?ts:0,x1=sides?SW-ts:SW;
    placed.push(['bottom',{x:x0,y:usableBottom,w:x1-x0,h:t}]);placed.push(['top',{x:x0,y:usableTop-t,w:x1-x0,h:t}]);placed.push(['left',{x:0,y:usableBottom+t,w:ts,h:usableTop-usableBottom-2*t}]);placed.push(['right',{x:SW-ts,y:usableBottom+t,w:ts,h:usableTop-usableBottom-2*t}]);
    this.arena={x:x0,y:usableBottom+t,w:x1-x0,h:usableTop-usableBottom-2*t}}
@@ -93,7 +93,7 @@ class MiniScene extends Node{
  buildSeatChrome(s){const panel=new Sprite(Gfx.pill(s.w,s.h,s.color.replace(/[\d.]+\)$/,'.07)'),s.color.replace(/[\d.]+\)$/,'.55)'),18,false),s.w,s.h);panel.z=-40;s.node.add(panel);
   const fs=s.h<120?12:14,name=label(s.name.toUpperCase()+(s.isCPU?' · CPU':''),fs,s.color);name.ha='left';name.x=-s.w/2+14;name.y=s.h/2-14;name.z=400;name.alpha=.9;s.node.add(name);
   const sc=label('0',fs+8,'#fff');sc.ha='right';sc.x=s.w/2-14;sc.y=s.h/2-16;sc.z=400;s.node.add(sc);s.scoreLabel=sc}
- buildHUD(){const lay=this.layout;let pp;if(lay==='zones')pp={x:24,y:this.bandY};else if(lay==='turns')pp={x:SW/2,y:SH-topInset-20};else if(this.n>=3)pp={x:this.arena.x/2,y:(this.arena.y+bottomInset)/2};else pp={x:22,y:this.arena.y+this.arena.h/2};
+ buildHUD(){const lay=this.layout;let pp;if(lay==='zones')pp={x:24,y:this.bandY};else if(lay==='turns')pp={x:20,y:SH/2};else if(this.n>=3)pp={x:this.arena.x/2,y:(this.arena.y+bottomInset)/2};else pp={x:22,y:this.arena.y+this.arena.h/2};
   const pause=new Sprite(Gfx.circle(16,white(0,.6),Theme.orange),32,32);pause.x=pp.x;pause.y=pp.y;pause.name='pause';pause.z=20;pause.alpha=.85;this.hud.add(pause);
   const pl=label('II',13,Theme.orange);pl.x=pp.x;pl.y=pp.y;pl.z=21;pl.alpha=.85;this.hud.add(pl);
   if(lay==='turns'&&this.n>1){const step=SW/this.n;this.seats.forEach(s=>{const l=label('',13,s.color);l.x=step*(s.index+.5);l.y=bottomInset+15;l.z=30;this.hud.add(l);this.turnLabels.push(l)});this.refreshTurnBoard()}
@@ -101,7 +101,7 @@ class MiniScene extends Node{
    const back=new Sprite(Gfx.pill(w,8,white(1,.12),null,4),w,8);back.ax=0;back.x=x0;back.y=y;this.hud.add(back);
    const bar=new Sprite(null,w,6,Theme.orange);bar.ax=0;bar.x=x0;bar.y=y;bar.z=1;this.hud.add(bar);this.timeBar=bar;this.timeBarWidth=w;
    if(lay==='arena'){back.y=this.arena.y+8;bar.y=this.arena.y+8}}}
- setActiveSeat(i){if(!this.seats.length)return;this.activeSeatIndex=Math.max(0,Math.min(this.seats.length-1,i));this.seats.forEach(s=>s.node.hidden=s.index!==this.activeSeatIndex);this.refreshTurnBoard();
+ setActiveSeat(i){if(!this.seats.length)return;this.activeSeatIndex=Math.max(0,Math.min(this.seats.length-1,i));const prevA=this._prevActive;this.seats.forEach(s=>s.node.hidden=s.index!==this.activeSeatIndex);this.refreshTurnBoard();if(prevA!=null&&prevA!==this.activeSeatIndex){const nn=this.seats[this.activeSeatIndex].node;nn.alpha=0;nn.run(A.fadeTo(1,.3),'turnIn')}this._prevActive=this.activeSeatIndex;
   if(this.seats.length>1&&this.phase==='playing'){const s=this.seats[this.activeSeatIndex];s.banner(s.name.toUpperCase()+' IST DRAN',s.color,26,.9)}}
  refreshTurnBoard(){this.turnLabels.forEach((l,i)=>{if(i>=this.seats.length)return;const s=this.seats[i];l.text=s.name.slice(0,7).toUpperCase()+' '+s.score;l.alpha=i===this.activeSeatIndex?1:.5})}
  /* Juice: Hit-Stop, Kamera-Wackeln, Zeitlupe */
@@ -142,7 +142,7 @@ class MiniScene extends Node{
   if(this.slowT>0){this.slowT-=dt;if(this.slowT<=0)this.timeScale=1;dt*=this.timeScale}
   if(this.phase==='countdown'){this.countdownTime-=dt;const c=Math.ceil(this.countdownTime);if(c!==this.lastCount){this.lastCount=c;if(c>=1&&c<=3){this.bannerAll(String(c),'#f6e3b4',84,.6);this.flashAll('#d9ac5c',.12);Sfx.play('beep')}}
    if(this.countdownTime<=0){this.bannerAll('LOS!','#ffd98a',72,.6);this.flashAll('#ffd98a',.3);this.seats.forEach(q=>q.burst({x:0,y:0},'#ffd98a',22,200));Sfx.play('go');this.phase='playing';this.gameStarted()}}
-  else if(this.phase==='playing'){this.elapsed+=dt;this.gameUpdate(dt);if(this.duration>0&&this.phase==='playing'){const left=Math.max(0,this.duration-this.elapsed);if(this.timeBar){this.timeBar.w=this.timeBarWidth*(left/this.duration);if(left<5){this.timeBar.color='rgb(255,0,0)';this.timeBar.sy=1+.5*Math.abs(Math.sin(left*Math.PI*2))}}
+  else if(this.phase==='playing'){this.elapsed+=dt;this.gameUpdate(dt);if(this.phase==='playing'&&this.elapsed>=MiniScene.MAX_TIME){this.bannerAll('ZEIT!','#ff8a00',48,.8);this.timeUp();if(!this.finished)this.finishGame()}if(this.duration>0&&this.phase==='playing'){const left=Math.max(0,this.duration-this.elapsed);if(this.timeBar){this.timeBar.w=this.timeBarWidth*(left/this.duration);if(left<5){this.timeBar.color='rgb(255,0,0)';this.timeBar.sy=1+.5*Math.abs(Math.sin(left*Math.PI*2))}}
    if(left<5&&this.duration>=15){const ps=Math.ceil(left*2);if(ps!==this.pulseSec){this.pulseSec=ps;if(ps%2===0)Juice.haptic('light')}}const sc=Math.ceil(left);if(sc!==this.lastSec){this.lastSec=sc;if(sc>=1&&sc<=5&&this.duration>=15){Sfx.play('tick');if(sc<=3){this.bannerAll(String(sc),'rgba(255,217,138,.55)',64,.55);this.flashAll('#ff3b3b',.07)}}}if(left<=0)this.timeUp()}}
   this.step(dt)}
  seatFor(p){if(!this.seats.length)return null;if(this.layout==='turns')return this.seats[Math.min(this.activeSeatIndex,this.seats.length-1)];
@@ -174,5 +174,6 @@ const Arcade={SKC(){return SKC},setSH(v){SH=v;if(this.cv){const d=this.dpr||2;th
   const c=this.c,d=this.dpr;c.setTransform(1,0,0,1,0,0);c.fillStyle=Theme.dark;c.fillRect(0,0,this.cv.width,this.cv.height);c.setTransform(this.cv.width/SW,0,0,-this.cv.height/SH,0,this.cv.height);c.globalAlpha=1;sc.draw(c)},
  pause(){if(this.scene)this.scene.userPaused=true},resume(){if(this.scene){this.scene.userPaused=false;this.last=performance.now()}},
  stop(){this.running=false;cancelAnimationFrame(this.raf);this.scene=null}};
+MiniScene.MAX_TIME=90;
 window.SKC=SKC;window.MiniScene=MiniScene;window.BearNode=BearNode;window.Seat=Seat;window.Arcade=Arcade;
 })();

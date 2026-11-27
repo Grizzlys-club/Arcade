@@ -1,7 +1,7 @@
 (()=>{
 const {Node,Sprite,A,Gfx,Theme,rgba,white,label}=SK;
 const alpha=(c,a)=>c.replace(/[\d.]+\)$/,a+')');
-const N=6,rr=(a,b)=>a+Math.random()*(b-a);
+let N=6;const rr=(a,b)=>a+Math.random()*(b-a);
 const boardTex=(R,col,idx)=>{const sz=R*2+12;return Gfx.texture('darts_board_'+Math.floor(R)+'_'+idx,sz,sz,2,c=>{const cx=sz/2,cy=sz/2,disc=(r,f)=>{c.fillStyle=f;c.beginPath();c.arc(cx,cy,r,0,7);c.fill()};
  disc(R+3,'rgb(8,8,8)');const W=12;for(let i=0;i<W;i++){const a0=i/W*2*Math.PI,a1=(i+1)/W*2*Math.PI;c.beginPath();c.moveTo(cx,cy);c.arc(cx,cy,R,a0,a1,false);c.closePath();c.fillStyle=i%2===0?alpha(col,.2):'rgb(26,26,26)';c.fill()}
  disc(R*.3,'rgb(15,15,15)');disc(R*.3,alpha(col,.3));disc(R*.12,'rgba(255,51,51,.95)');c.lineWidth=2.2;
@@ -13,7 +13,7 @@ const dartTex=(col,idx)=>Gfx.texture('darts_dart_'+idx,20,42,2,c=>{c.fillStyle='
 const pipTex=()=>Gfx.texture('darts_pip',10,22,2,c=>{c.fillStyle='#fff';c.beginPath();c.moveTo(3,1);c.lineTo(7,1);c.lineTo(7,12);c.lineTo(5,21);c.lineTo(3,12);c.closePath();c.fill()});
 class DartsGame extends MiniScene{
  static get layout(){return 'turns'}
- setupGame(){this.duration=0;const r0=this.newRand(),px=r0.range(0,6.28),py=r0.range(0,6.28);this.boards=[];
+ setupGame(){N=this.seats.length>=3?3:5;this.duration=0;const r0=this.newRand(),px=r0.range(0,6.28),py=r0.range(0,6.28);this.boards=[];
   for(const s of this.seats){const b={R:Math.min(s.w*.43,132,(s.h-96)/2),center:{x:0,y:-4},thrown:0,phx:px,phy:py,fx:1,fy:1.37,pips:[],lastThrow:0,cpuReady:.7+(1-s.skill)*.9+Math.random()*.4,cpuFireAt:null,done:false,doneAt:0};
    const glow=new Sprite(Gfx.glow(),b.R*2.9,b.R*2.9);glow.color=s.color;glow.cbf=1;glow.blend='add';glow.alpha=.35;glow.x=b.center.x;glow.y=b.center.y;glow.z=1;s.field.add(glow);glow.run(A.forever(A.sequence([A.fadeTo(.22,1),A.fadeTo(.38,1)])));
    const board=new Sprite(boardTex(b.R,s.color,s.index),b.R*2+12,b.R*2+12);board.x=b.center.x;board.y=b.center.y;board.z=2;s.field.add(board);
@@ -43,7 +43,7 @@ class DartsGame extends MiniScene{
   if(b.thrown>=N){b.done=true;b.doneAt=this.elapsed;b.cross.run(A.fadeOut(.2));b.crossGlow.run(A.fadeOut(.2));s.banner(''+s.score,s.color,54,1.2)}}
  startTurn(i){const s=this.seats[i],b=this.boards[i];b.lastThrow=this.elapsed;b.cpuFireAt=null;b.cpuReady=this.elapsed+.8+(1-s.skill)*.9+Math.random()*.4;this.setActiveSeat(i)}
  nextTurn(i){for(let k=1;k<=Math.max(1,this.seats.length);k++){const j=(i+k)%this.seats.length;if(!this.boards[j].done)return j}return null}
- gameUpdate(dt){const s=this.seats[this.activeSeatIndex],b=this.boards[s.index];
+ gameUpdate(dt){const s=this.seats[this.activeSeatIndex],b=this.boards[s.index];/* Schuss für Schuss abwechseln */{const a=this.activeSeatIndex,q=this.boards[a];if(q&&this.seats.length>1){if(this._ta!==a){this._ta=a;this._ts=q.thrown;this._tw=0}else if(q.thrown>this._ts&&!q.done){this._tw+=dt;if(this._tw>.8){this._ta=-1;{const j=this.nextTurn(a);if(j!=null&&j!==a)this.startTurn(j)};if(this.activeSeatIndex!==a)return}}}}
   if(!b.done){const m=this.speedMult(b);b.phx+=1.75*b.fx*m*dt;b.phy+=1.75*b.fy*m*dt;this.updateCross(s,b);
    if(s.isCPU){if(b.cpuFireAt===null&&this.elapsed>=b.cpuReady){const p=this.crossPos(b),d=Math.hypot(p.x-b.center.x,p.y-b.center.y),waited=this.elapsed-b.cpuReady,thr=b.R*(.1+(1-s.skill)*.45)+waited*b.R*.35;if(d<thr)b.cpuFireAt=this.elapsed+.03+(1-s.skill)*.16+Math.random()*.05}
     if(b.cpuFireAt!==null&&this.elapsed>=b.cpuFireAt)this.throwDart(s)}

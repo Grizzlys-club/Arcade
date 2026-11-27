@@ -1,10 +1,10 @@
 (()=>{
 const {Node,Sprite,A,Gfx,Theme,rgba,white,label,Rand}=SK;
 const rr=(a,b)=>a+Math.random()*(b-a);
-const MAXT=5;
+let MAXT=5;
 class BowlingGame extends MiniScene{
  static get layout(){return 'turns'}
- setupGame(){this.turnWait=0;this.lanes=[];this.finishing=false;for(const s of this.seats){const l={seat:s,pins:[],ball:null,ballSpin:null,bpos:{x:0,y:0},bvel:{x:0,y:0},spinAcc:0,gutter:false,ballDone:false,mode:'ready',throwsDone:0,timer:0,rollT:0,laneW:200,gutW:14,pr:10,br:14,y0:0,backY:0,headY:0,sx:28,counter:null,hint:null,bear:null,touch:null,touchStart:{x:0,y:0},samples:[],idle:0,cpuWait:1,lastHit:-1,trailT:0};this.lanes.push(l);this.buildL(l);this.newBall(l)}this.setActiveSeat(0)}
+ setupGame(){MAXT=this.seats.length>=3?3:4;this.turnWait=0;this.lanes=[];this.finishing=false;for(const s of this.seats){const l={seat:s,pins:[],ball:null,ballSpin:null,bpos:{x:0,y:0},bvel:{x:0,y:0},spinAcc:0,gutter:false,ballDone:false,mode:'ready',throwsDone:0,timer:0,rollT:0,laneW:200,gutW:14,pr:10,br:14,y0:0,backY:0,headY:0,sx:28,counter:null,hint:null,bear:null,touch:null,touchStart:{x:0,y:0},samples:[],idle:0,cpuWait:1,lastHit:-1,trailT:0};this.lanes.push(l);this.buildL(l);this.newBall(l)}this.setActiveSeat(0)}
  buildL(l){const s=l.seat,w=s.w,h=s.h,narrow=w<250;l.laneW=narrow?w*.82:250;l.gutW=Math.max(8,Math.min(16,(w-l.laneW)/2-1));l.pr=narrow?8.5:10.5;l.br=l.pr*1.45;l.sx=l.pr*2.7;const dy=l.sx*.87;l.backY=h/2-46;l.headY=l.backY-3*dy;l.y0=-h/2+l.br+36;
   const homes=[];for(let row=0;row<4;row++){const cnt=row+1,y=l.headY+row*dy;for(let k=0;k<cnt;k++)homes.push({x:(k-(cnt-1)/2)*l.sx,y})}
   const tw=w-6,th=h-6,lane=new Sprite(this.laneTex(tw,th,l.laneW,l.gutW,homes,l.pr,s.index,s.color),tw,th);lane.z=-30;s.field.add(lane);
@@ -52,7 +52,7 @@ class BowlingGame extends MiniScene{
   if(pts.length>=5){const mid=pts[Math.floor(pts.length/2)],a1=Math.atan2(mid.p.x-pts[0].p.x,Math.max(1,mid.p.y-pts[0].p.y)),a2=Math.atan2(e.p.x-mid.p.x,Math.max(1,e.p.y-mid.p.y)),diff=a2-a1;if(Math.abs(diff)>.1)spin=Math.max(-120,Math.min(120,diff*240))}
   this.launch(l,{x:Math.sin(ang),y:Math.cos(ang)},speed,spin)}
  advanceTurn(){const n=this.seats.length;for(let k=1;k<=Math.max(1,n);k++){const j=(this.activeSeatIndex+k)%n;if(this.lanes[j].mode!=='done'){this.lanes[j].idle=0;this.lanes[j].cpuWait=.8+Math.random()*.5;this.setActiveSeat(j);return}}}
- gameUpdate(dt){const l=this.lanes[this.activeSeatIndex];
+ gameUpdate(dt){const l=this.lanes[this.activeSeatIndex];/* Schuss für Schuss abwechseln */{const a=this.activeSeatIndex,q=this.lanes[a];if(q&&this.seats.length>1){if(this._ta!==a){this._ta=a;this._ts=q.throwsDone;this._tw=0}else if(q.throwsDone>this._ts&&q.mode==='ready'){this._tw+=dt;if(this._tw>.8){this._ta=-1;this.advanceTurn();if(this.activeSeatIndex!==a)return}}}}
   if(l.mode==='ready'){l.idle+=dt;if(l.seat.isCPU){l.cpuWait-=dt;if(l.cpuWait<=0)this.cpuThrow(l)}else if(l.idle>14&&l.touch===null){const a=rr(-.12,.12);this.launch(l,{x:Math.sin(a),y:Math.cos(a)},400,0)}}
   else if(l.mode==='rolling'){l.rollT+=dt;this.stp(l,dt);if((l.ballDone&&!l.pins.some(p=>p.moving))||l.rollT>6){for(const p of l.pins)p.vel={x:0,y:0};if(!l.ballDone)this.removeBall(l);l.mode='settling';l.timer=.9;this.evaluate(l)}}
   else if(l.mode==='settling'){l.timer-=dt;if(l.timer<=0)this.nextL(l)}

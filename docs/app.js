@@ -128,7 +128,7 @@ setup(){const ss=activeCards();
   ${m==='human'?`<input id="nm${c}" data-name="${c}" maxlength="12" value="${esc(S.names[c])}" aria-label="Name Spieler ${c+1}" autocomplete="off">`:`<div class="nm">${m==='cpu'?CPUN[c]+' (CPU)':'–'}</div>`}
   <div class="modes" style="--c:${SEAT[c]}"><button data-slot="${c}:human" aria-pressed="${m==='human'}" aria-label="Mensch">${IC.user}</button><button data-slot="${c}:cpu" aria-pressed="${m==='cpu'}" aria-label="CPU">${IC.cpu}</button><button data-slot="${c}:off" aria-pressed="${m==='off'}" aria-label="Aus">${IC.x}</button></div></div>`};
  const d=S.diff;
- return bar('SPIELER',true)+`<div class="body"><p class="mut" style="text-align:center">Bis zu 4 Spieler an einem Handy. Gib das Handy nach jedem Zug weiter. Bei Duell-Spielen sitzen zwei gegenüber.</p>
+ return bar('SPIELER',true)+`<div class="body"><p class="mut" style="text-align:center">Bis zu 4 Spieler an einem Handy. Legt es in die Mitte: Alle spielen gleichzeitig, jeder auf seiner Seite. Kein Spiel dauert länger als 1,5 Minuten.</p>
  <div class="grid2">${[0,1,2,3].map(card).join('')}</div>
  <div class="card" style="--c:rgba(255,138,0,.5)"><div class="lab" style="color:var(--or)">So sitzt ihr</div><p class="mut" style="margin-top:6px">${ss.length<=2?'Einer unten, einer oben (gegenüber).':'Bei Punktespielen kommt jeder der Reihe nach dran.'} Duell-Spiele wie Air-Hockey gehen zu zweit: unten und oben.</p></div>
  <div class="card" style="--c:rgba(64,204,255,.6)"><div class="row" style="justify-content:space-between"><span class="lab">CPU-Stärke</span><b style="color:${DC[d]};font-size:15px">${DN[d]}</b></div>
@@ -143,11 +143,11 @@ picker(){const n=nSeats(),f=ctx.filter,list=ALL.filter(a=>playable(a[0])&&(f==='
  <p class="mut" style="text-align:center">${n} Spieler · ${nHum()} Mensch${nHum()===1?'':'en'}</p></div>`},
 
 intro(){const id=ctx.sess.id,g=GI(id),sd=ctx.sess.seats,c=accOf(id),t=ctx.tour,n=sd.length,lay=layoutOf(id);
- const hint=lay==='turns'?'Ihr spielt der Reihe nach auf dem ganzen Bildschirm. Gib das Handy weiter, wenn du fertig bist.':lay==='arena'?(n>=3?'Gemeinsames Spielfeld: Jeder steuert von seiner Handy-Kante aus (unten, oben, links, rechts).':'Gemeinsames Spielfeld: einer unten, einer oben.'):(n>=3?'Jeder hat sein eigenes Viertel des Bildschirms.':'Jeder hat seine eigene Bildschirmhälfte: einer unten, einer oben.');
+ const hint=lay==='turns'?'Legt das Handy zwischen euch. Ihr seid abwechselnd dran, Schuss für Schuss. Das Feld dreht sich immer zu dem, der gerade dran ist.':lay==='arena'?(n>=3?'Gemeinsames Spielfeld: Jeder steuert von seiner Handy-Kante aus (unten, oben, links, rechts).':'Gemeinsames Spielfeld: einer unten, einer oben.'):(n>=3?'Jeder hat sein eigenes Viertel des Bildschirms.':'Jeder hat seine eigene Bildschirmhälfte: einer unten, einer oben.');
  return `<div class="bar"><button class="ib" data-a="back" aria-label="Zurück" style="width:auto;border-radius:99px;padding:0 14px;font-size:15px;height:40px">‹ ZURÜCK</button></div><div class="body">
  <div class="card" style="--c:${c};padding:6px;overflow:hidden"><img src="img/games/${id}.jpg" alt="Spielbild ${g.name}" style="width:100%;border-radius:12px;display:block;aspect-ratio:16/10;object-fit:cover;object-position:top"><div style="text-align:center;padding:10px 4px 6px"><b style="font-size:26px;text-transform:uppercase;letter-spacing:.02em">${g.name}</b></div></div>
- <div class="lab" style="text-align:center;color:${c}">${TAG[id]==='Sport'?'Unihockey':'Party'} · ${g.sub.replace('Sekunden','Sek.').toUpperCase()} · ${id==='tugwar'?'2':'2-4'} Spieler</div>
- <div class="card" style="--c:${c}"><div class="lab" style="color:#e0b45f"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="vertical-align:-2px"><path d="M12 2l2.2 7.3L22 12l-7.8 2.7L12 22l-2.2-7.3L2 12l7.8-2.7z"/></svg> So geht's</div><p style="font-size:17px;margin-top:6px;font-weight:700">${g.help}</p>${isNew(id)&&lay==='arena'&&id!=='tugwar'&&sd.filter(x=>!x.cpu).length>=3?`<div class="chips" style="margin-top:10px"><button class="chip" aria-pressed="${S.playMode!=='sim'}" data-a="pm" data-v="turns">Duelle nacheinander</button><button class="chip" aria-pressed="${S.playMode==='sim'}" data-a="pm" data-v="sim">Alle gleichzeitig</button></div><p class="mut" style="margin-top:8px">${S.playMode==='sim'?'Alle spielen zusammen auf einem Feld.':'Jeder gegen jeden, zwei spielen auf dem ganzen Bildschirm, dann kommt das nächste Duell. Siege zählen 3 Punkte.'}</p>`:id==='tugwar'&&sd.filter(x=>!x.cpu).length>=3?'<p class="mut" style="margin-top:8px">Jeder gegen jeden, ein Duell nach dem anderen. Siege zählen 3 Punkte.</p>':isNew(id)&&lay==='zones'&&sd.filter(x=>!x.cpu).length>=2?`<div class="chips" style="margin-top:10px"><button class="chip" aria-pressed="${S.playMode!=='sim'}" data-a="pm" data-v="turns">Abwechselnd</button><button class="chip" aria-pressed="${S.playMode==='sim'}" data-a="pm" data-v="sim">Gleichzeitig</button></div><p class="mut" style="margin-top:8px">${S.playMode==='sim'?'Alle spielen gleichzeitig, jeder auf seinem Teil des Bildschirms.':'Einer nach dem anderen, 3 Runden, ganzer Bildschirm. Die Punkte zählen zusammen.'}</p>`:isNew(id)?'<p class="mut" style="margin-top:8px">'+hint+'</p>':g.versus?'<p class="mut" style="margin-top:8px">'+(sd.every(s=>!s.cpu)?esc(sd[0].name)+' spielt unten, '+esc(sd[1].name)+' oben.':'Du spielst unten, die CPU oben.')+'</p>':sd.length>1?'<p class="mut" style="margin-top:8px">Jeder spielt für sich, der Reihe nach. Gib das Handy weiter, wenn du fertig bist.</p>':''}</div>
+ <div class="lab" style="text-align:center;color:${c}">${TAG[id]==='Sport'?'Unihockey':'Party'} · ${g.sub.replace('Sekunden','Sek.').toUpperCase()} · 2-4 Spieler</div>
+ <div class="card" style="--c:${c}"><div class="lab" style="color:#e0b45f"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="vertical-align:-2px"><path d="M12 2l2.2 7.3L22 12l-7.8 2.7L12 22l-2.2-7.3L2 12l7.8-2.7z"/></svg> So geht's</div><p style="font-size:17px;margin-top:6px;font-weight:700">${g.help}</p>${id==='tugwar'&&n>=3?'<p class="mut" style="margin-top:8px">Team gegen Team: '+(n===3?'Spieler 1 und 3 gegen Spieler 2. Wer allein ist, zieht doppelt so stark.':'Spieler 1 und 3 gegen Spieler 2 und 4.')+'</p>':''}</div>
  <div class="strip" style="cursor:default">${sd.map(s=>`<div class="p">${bimg(s.skin,40,true)}<span style="color:${SEAT[s.card]}">${esc(s.name)}</span>${s.cpu?'<span class="mut" style="font-size:9px">CPU</span>':''}</div>`).join('')}</div></div>
  <div class="foot"><button class="btn" data-a="start"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="vertical-align:-2px"><path d="M7 4l13 8-13 8z"/></svg> Los geht's</button></div>`},
 
@@ -246,8 +246,8 @@ function begin(id,fromReplace){
   ctx.inGame=true;
   if(isNew(id)){startNew();return}
   nextTurn()}
-const seqOn=(id,seats)=>layoutOf(id)==='zones'&&seats.filter(x=>!x.cpu).length>=2&&S.playMode!=='sim';
-const duelOn=(id,seats)=>seats.filter(x=>!x.cpu).length>=3&&(id==='tugwar'||(layoutOf(id)==='arena'&&S.playMode!=='sim'));
+const seqOn=()=>false;
+const duelOn=()=>false;
 function duelStep(){const s=ctx.sess,q=ctx.duel,hum=q.hum;
   if(q.t>=q.pairs.length){Sfx.music('menu');finish({scores:s.seats.map(x=>{const i=hum.indexOf(x);return i>=0?q.pts[i]:0}),stats:{},neu:true});return}
   const [i,j]=q.pairs[q.t],A=hum[i],B=hum[j];
@@ -268,7 +268,6 @@ function startNew(){const s=ctx.sess;ctx.ov='';setOv('');fit();
   if(duelOn(s.id,s.seats)){const hum=s.seats.filter(x=>!x.cpu),pairs=[];for(let i=0;i<hum.length;i++)for(let j=i+1;j<hum.length;j++)pairs.push([i,j]);
     if(hum.length===4)pairs.splice(0,6,[0,1],[2,3],[0,2],[1,3],[0,3],[1,2]);
     ctx.duel={t:0,pairs,hum,pts:hum.map(()=>0),last:null};duelStep();return}
-  if(s.id==='tugwar'&&s.seats.length>2){s.seats=s.seats.slice(0,2)}
   if(seqOn(s.id,s.seats)){const hum=s.seats.filter(x=>!x.cpu);ctx.seq={t:0,R:3,hum,totals:hum.map(()=>0),stats:{},last:null};seqStep();return}
   Sfx.music('game');
   AR.play(s.id,{seats:s.seats,difficulty:S.diff},r=>{Sfx.music('menu');finish({scores:r.scores,stats:r.stats,neu:true})},()=>{pause()})}
